@@ -1,0 +1,6 @@
+version : '3'
+services:
+  grean-env.env-front:
+    image: grean-env/env-front
+    ports:
+      - "14400:80"

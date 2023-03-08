@@ -1,0 +1,55 @@
+image: tico/docker
+
+# 定义三个阶段
+stages:
+  - build
+  - run
+  - clean
+
+
+
+# 第一阶段
+build:
+  # 指定阶段
+  stage: build
+  # 运行脚本, 使用变量时要用到 $ 符号
+  script:
+    - "docker build -t grean-env/env-front ."
+  # 只作用在master分支
+  only:
+    - master
+  # 创建runner时指定的tag
+  tags:
+    - build
+
+
+run:
+  stage: run
+  script:
+    - "docker-compose up -d"
+  only:
+    - master
+  tags:
+    - run
+
+clean:
+  stage: clean
+  script:
+    - |
+      aa=`docker images -q -f dangling=true`;
+      for i in $aa
+      do
+         docker rmi $i
+         if [ $? -eq 1 ];then
+           echo "异常"
+           for k in $(docker ps --filter ancestor=$i |awk 'NR == 1 {next} {print $1}')
+           do
+             echo "container:"$k
+             docker stop $k;docker rm $k;docker rmi $i;
+           done
+         fi
+      done
+  only:
+    - master
+  tags:
+    - clean

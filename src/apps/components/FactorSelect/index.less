@@ -1,0 +1,36 @@
+.form-factor-content {
+  width: 100%;
+  display: flex;
+  margin-top: 10px;
+  > div {
+    border-top: 1px solid #efefef;
+    padding-top: 10px;
+    padding-bottom: 24px;
+  }
+  > div:first-child {
+    flex: 1;
+  }
+  > div:last-child {
+    flex-basis: 200px;
+    border-left: 1px solid #efefef;
+    padding-left: 12px;
+  }
+
+  .checkedList {
+    padding: 6px;
+    border-radius: 4px;
+    position: relative;
+  }
+
+  .checkedList:hover {
+    background: #ebecf0;
+  }
+
+  .checkedList span {
+    position: absolute;
+    right: 20px;
+    cursor: pointer;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}

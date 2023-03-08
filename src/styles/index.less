@@ -1,0 +1,140 @@
+@import "./theme.less";
+// 寄出布局
+.flex-row-base {
+  display: flex;
+  flex-direction: wrap;
+}
+.flex-colum-base {
+  display: flex;
+  flex-direction: column;
+}
+.flex-justify-center {
+  justify-content: center;
+}
+.flex-align-center {
+  align-items: center;
+}
+
+// 布局
+.main-content {
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+@media (max-width: 767px) {
+  .main-content {
+    transform: none !important;
+  }
+}
+.content-wrap {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  flex: 1;
+  padding: 17px 23px;
+}
+
+@media (max-width: 1000px) {
+  .content-wrap {
+    overflow-x: scroll;
+  }
+}
+// 共有样式
+// 搜索
+.search {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+.satation-name {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 20px;
+  height: 30px;
+  margin-bottom: 0;
+}
+.module-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0 0 20px 0;
+  height: 30px;
+}
+.second-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+}
+
+.prompt {
+  font-style: normal;
+  color: #ff3204;
+}
+// antd 样式覆盖
+// MENU
+// .menu-warp .ant-layout-sider {
+//   max-width: 56px !important;
+//   min-width: 56px !important;
+//   width: 56px !important;
+//   flex: 0 0 56px !important;
+// }
+
+// Tree
+.staff {
+  .ant-tree {
+    font-size: 14px !important;
+  }
+  .ant-tree .ant-tree-treenode {
+    width: 100%;
+    > span {
+      line-height: 40px;
+    }
+    > span:last-child {
+      span {
+        line-height: 40px;
+      }
+    }
+  }
+  .ant-tree.ant-tree-directory .ant-tree-treenode-selected:hover::before,
+  .ant-tree.ant-tree-directory .ant-tree-treenode-selected::before {
+    background-color: #ebecf0;
+    color: #0052cc !important;
+  }
+  .ant-tree.ant-tree-directory .ant-tree-treenode-selected .ant-tree-switcher {
+    color: #0052cc !important;
+  }
+  .ant-tree.ant-tree-directory
+    .ant-tree-treenode
+    .ant-tree-node-content-wrapper.ant-tree-node-selected {
+    color: #0052cc !important;
+  }
+}
+
+//Table
+.ant-table-title {
+  padding: 0;
+}
+.body-flex
+  :where(.css-dev-only-do-not-override-1qulcft).ant-form-horizontal
+  .ant-form-item-control {
+  margin-left: 30px;
+}
+
+//Statistic
+.ant-statistic {
+  display: inline-block;
+}
+.ant-statistic-content-prefix {
+  margin-right: 0px;
+}
+
+// CheckBox
+:where(.css-dev-only-do-not-override-1qulcft).ant-checkbox-wrapper {
+  align-items: center;
+}
+
+.width-3 {
+  width: 300px;
+}
+.width-18 {
+  width: 180px;
+}

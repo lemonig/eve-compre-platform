@@ -1,0 +1,81 @@
+.login_warp {
+  display: flex;
+  width: 730px;
+  justify-content: center;
+  align-items: center;
+  img {
+    vertical-align: middle;
+    border-style: none;
+  }
+}
+
+.login_warp > div:first-child {
+  flex-basis: 245px;
+  img {
+    // width: 100%;
+    height: 360px;
+  }
+}
+
+.form_warp {
+  flex: 1;
+  background-color: #fff;
+  padding: 49px 49px 0;
+  // margin-left: 10%;
+  height: 360px;
+  box-sizing: border-box;
+}
+
+.form_warp h2 {
+  font-weight: bold;
+  margin-bottom: 20px;
+  font-size: 20px;
+  color: #172b4d;
+  text-align: left;
+}
+
+.login_outer {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  background-image: url(../../../assets//image/beij.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login_outer > div {
+  overflow: auto;
+}
+
+.login_outer > div::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: #dee0e2;
+}
+
+.login_outer > div::-webkit-scrollbar-thumb {
+  background: #6e6e6e;
+}
+
+.body {
+}
+
+.footer {
+  text-align: center;
+  color: #fff;
+  padding-bottom: 30px;
+  margin-top: 11%;
+  font-size: 12px;
+  position: absolute;
+  bottom: 5%;
+}
+.affix {
+  position: fixed;
+  bottom: 40px;
+  right: 20px;
+  z-index: 999999;
+}

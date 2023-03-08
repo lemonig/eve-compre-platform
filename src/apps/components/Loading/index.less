@@ -1,0 +1,92 @@
+.loading {
+  top: 0;
+  left: 0;
+  height:2px;
+  padding:2px;
+  background: #007FFF;
+  position: fixed;
+  z-index:999;
+  -webkit-background-size: 30px 30px; 
+  -moz-background-size: 30px 30px; 
+  background-size: 30px 30px;
+  background-image: -webkit-gradient(linear, left top, right bottom, 
+  color-stop(.25, rgba(255, 255, 255, .35)), color-stop(.25, transparent), 
+  color-stop(.5, transparent), color-stop(.5, rgba(255, 255, 255, .35)), 
+  color-stop(.75, rgba(255, 255, 255, .35)), color-stop(.75, transparent), 
+  to(transparent));
+  background-image: -webkit-linear-gradient(135deg, rgba(255, 255, 255, .35) 25%, transparent 25%, 
+  transparent 50%, rgba(255, 255, 255, .35) 50%, rgba(255, 255, 255, .35) 75%, 
+  transparent 75%, transparent); 
+  background-image: -moz-linear-gradient(135deg, rgba(255, 255, 255, .35) 25%, transparent 25%, 
+  transparent 50%, rgba(255, 255, 255, .35) 50%, rgba(255, 255, 255, .35) 75%, 
+  transparent 75%, transparent); 
+  background-image: -ms-linear-gradient(135deg, rgba(255, 255, 255, .35) 25%, transparent 25%, 
+  transparent 50%, rgba(255, 255, 255, .35) 50%, rgba(255, 255, 255, .35) 75%, 
+  transparent 75%, transparent); 
+  background-image: -o-linear-gradient(135deg, rgba(255, 255, 255, .35) 25%, transparent 25%, 
+  transparent 50%, rgba(255, 255, 255, .35) 50%, rgba(255, 255, 255, .35) 75%, 
+  transparent 75%, transparent); 
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, .35) 25%, transparent 25%, 
+  transparent 50%, rgba(255, 255, 255, .35) 50%, rgba(255, 255, 255, .35) 75%, 
+  transparent 75%, transparent);
+  animation:animate-stripes .15s linear infinite; 
+  -webkit-animation:animate-stripes .15s linear infinite; 
+  -moz-animation:animate-stripes .15s linear infinite; 
+} 
+@keyframes animate-stripes { 
+  0% {background-position: 0 0;} 
+  100% {background-position: 30px 0;} 
+}
+@-webkit-keyframes animate-stripes { 
+  0% {background-position: 0 0;} 
+  100% {background-position: 30px 0;} 
+} 
+@-moz-keyframes animate-stripes { 
+  0% {background-position: 0 0;} 
+  100% {background-position: 30px 0;} 
+}
+
+.full-load {
+  width:100%;height:100%;background:rgba(0,0,0,0.8);position:fixed;top:0;left:0;z-index:1000;
+  .text{
+    text-align:center;color:#35C4F0;    
+    position:absolute; width:600px; height:36px; left:50%;top:230px; margin-left:-300px; overflow:visible;
+  }
+  .load {
+    position:absolute; width:600px; height:36px; left:50%; top:200px; margin-left:-300px; overflow:visible;
+    user-select:none; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;
+
+    div {
+      width:20px; height:36px; position:absolute; opacity:0; color:#35C4F0;
+      animation:move 2s linear infinite; -moz-animation:move 2s linear infinite; -webkit-animation:move 2s linear infinite;
+      transform:rotate(180deg); -moz-transform:rotate(180deg); -webkit-transform:rotate(180deg);
+    }
+  }
+  .load div:nth-child(2) {animation-delay:0.2s; -moz-animation-delay:0.2s; -webkit-animation-delay:0.2s;}
+  .load div:nth-child(3) {animation-delay:0.4s; -webkit-animation-delay:0.4s;}
+  .load div:nth-child(4) {animation-delay:0.6s; -moz-animation-delay:0.6s; -webkit-animation-delay:0.6s;}
+  .load div:nth-child(5) {animation-delay:0.8s; -moz-animation-delay:0.8s; -webkit-animation-delay:0.8s;}
+  .load div:nth-child(6) {animation-delay:1s; -moz-animation-delay:1s; -webkit-animation-delay:1s;}
+  .load div:nth-child(7) {animation-delay:1.2s; -moz-animation-delay:1.2s; -webkit-animation-delay:1.2s;}
+
+  @keyframes move {
+    0% {right:0; opacity:0;}
+    35% {right:41%; opacity:1; transform:rotate(0deg);}
+    65% {right:59%; opacity:1; transform:rotate(0deg);}
+    100% {right:100%; opacity:0; transform:rotate(-180deg);}
+  }
+
+  @-moz-keyframes move {
+    0% {right:0; opacity:0;}
+    35% {right:41%; opacity:1; -moz-transform:rotate(0deg);}
+    65% {right:59%; opacity:1; -moz-transform:rotate(0deg);}
+    100% {right:100%; opacity:0; -moz-transform:rotate(-180deg);}
+  }
+
+  @-webkit-keyframes move {
+    0% {right:0; opacity:0;}
+    35% {right:41%; opacity:1; -webkit-transform:rotate(0deg);}
+    65% {right:59%; opacity:1; -webkit-transform:rotate(0deg);}
+    100% {right:100%; opacity:0; -webkit-transform:rotate(-180deg);}
+  }
+}
