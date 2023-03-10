@@ -15,14 +15,18 @@ import {
 import Lbreadcrumb from "@Components/Lbreadcrumb";
 import IconFont from "@Components/IconFont";
 import OpForm from "./OpForm";
-import { groupUpdate, groupList } from "@Api/set_station_group.js";
+import { regionList, regionDelete, regionUpdate } from "@Api/set_region.js";
 import PageHead from "@Components/PageHead";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 const { Option } = Select;
 
-function ChildGroup({ precord, pcloseModal }) {
+function ChildGroup({ precord, pcloseModal, show }) {
   const [searchForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState({
+    modal: false,
+    child: false,
+  });
   const [operate, setOperate] = useState(null); //正在操作id
 
   const [data, setData] = useState([]);
@@ -31,13 +35,9 @@ function ChildGroup({ precord, pcloseModal }) {
     getPageData();
   }, []);
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
   const getPageData = async () => {
     setLoading(true);
-    let { data } = await groupList({
+    let { data } = await regionList({
       parentCode: precord.code,
     });
     setData(data);
@@ -47,15 +47,63 @@ function ChildGroup({ precord, pcloseModal }) {
   // 新建
   const handleAdd = () => {
     setOperate(null);
-    setIsModalOpen(true);
+    setIsModalOpen({
+      ...isModalOpen,
+      modal: true,
+    });
   };
   // 编辑
   const handleEdit = (record) => {
     setOperate(record);
-    setIsModalOpen(true);
+    setIsModalOpen({
+      ...isModalOpen,
+      modal: true,
+    });
   };
   //
-  const handleChild = () => {};
+  const handleChild = (record) => {
+    setOperate(record);
+    setIsModalOpen({
+      ...isModalOpen,
+      child: true,
+    });
+  };
+  // 删除
+  const handleDel = ({ id }) => {
+    Modal.confirm({
+      title: "确定删除？",
+      icon: <ExclamationCircleOutlined />,
+      content: "删除后无法恢复",
+      okText: "确认",
+      cancelText: "取消",
+      onOk: async () => {
+        let { success, message: msg } = await regionDelete({ id });
+        if (success) {
+          message.success(msg);
+          setIsModalOpen({
+            ...isModalOpen,
+            modal: false,
+          });
+          getPageData();
+        } else {
+          message.error(msg);
+        }
+      },
+    });
+  };
+
+  const handleStatusChange = async (checked, record) => {
+    let { success, message: msg } = await regionUpdate({
+      id: record.id,
+      status: checked ? "1" : "0",
+    });
+    if (success) {
+      message.success(msg);
+      closeModal(true);
+    } else {
+      message.error(msg);
+    }
+  };
 
   const columns = [
     {
@@ -65,19 +113,36 @@ function ChildGroup({ precord, pcloseModal }) {
       render: (_, record, index) => index + 1,
     },
     {
-      title: "分组名称",
+      title: "级别  ",
+      dataIndex: "levelName",
+      key: "levelName",
+    },
+    {
+      title: "名称",
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "分组编码",
+      title: "编码",
       dataIndex: "code",
       key: "code  ",
     },
+
     {
-      title: "站点数量（个）",
-      dataIndex: "stationNum",
-      key: "stationNum  ",
+      title: "是否启用",
+      dataIndex: "status",
+      key: "status",
+      render: (value, record) => (
+        <Switch
+          checked={!!Number(value)}
+          onChange={(checked) => handleStatusChange(checked, record)}
+        />
+      ),
+    },
+    {
+      title: "展示次序",
+      dataIndex: "orderNum",
+      key: "orderNum",
     },
 
     {
@@ -87,7 +152,7 @@ function ChildGroup({ precord, pcloseModal }) {
       render: (_, record) => (
         <Space>
           <a onClick={() => handleEdit(record)}>编辑</a>
-          <a onClick={() => handleEdit(record)}>删除</a>
+          <a onClick={() => handleDel(record)}>删除</a>
         </Space>
       ),
     },
@@ -96,14 +161,18 @@ function ChildGroup({ precord, pcloseModal }) {
   //表单回调
   const closeModal = (flag) => {
     // flag 确定还是取消
-    setIsModalOpen(false);
+    setOperate(null);
+    setIsModalOpen({
+      modal: false,
+      child: false,
+    });
     if (flag) getPageData();
   };
   return (
-    <div className="content-wrap">
-      {!isModalOpen && (
+    <div>
+      {!isModalOpen.child && (
         <>
-          <PageHead title={precord.name} onClick={() => pcloseModal(false)} />
+          <PageHead title={precord.name} onClick={() => pcloseModal(true)} />
           <div className="search">
             <Form layout="inline" form={searchForm} onFinish={getPageData}>
               <Form.Item>
@@ -125,7 +194,7 @@ function ChildGroup({ precord, pcloseModal }) {
         </>
       )}
       {/* 弹出表单 */}
-      {isModalOpen && (
+      {isModalOpen.modal && (
         <OpForm
           open={isModalOpen}
           closeModal={closeModal}

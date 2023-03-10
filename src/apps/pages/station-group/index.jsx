@@ -15,8 +15,9 @@ import {
 import Lbreadcrumb from "@Components/Lbreadcrumb";
 import IconFont from "@Components/IconFont";
 import OpForm from "./components/OpForm";
-import { groupUpdate, groupList } from "@Api/set_station_group.js";
+import { groupUpdate, groupList, groupDelete } from "@Api/set_station_group.js";
 import ChildGroup from "./components/ChildGroup";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 const { Option } = Select;
 
 function StationGroup() {
@@ -73,6 +74,29 @@ function StationGroup() {
       child: true,
     });
   };
+  // 删除
+  const handleDel = ({ id }) => {
+    Modal.confirm({
+      title: "确定删除？",
+      icon: <ExclamationCircleOutlined />,
+      content: "删除后无法恢复",
+      okText: "确认",
+      cancelText: "取消",
+      onOk: async () => {
+        let { success, message: msg } = await groupDelete({ id });
+        if (success) {
+          message.success(msg);
+          setIsModalOpen({
+            ...isModalOpen,
+            modal: false,
+          });
+          getPageData();
+        } else {
+          message.error(msg);
+        }
+      },
+    });
+  };
 
   const columns = [
     {
@@ -114,7 +138,7 @@ function StationGroup() {
       render: (_, record) => (
         <Space>
           <a onClick={() => handleEdit(record)}>编辑</a>
-          <a onClick={() => handleEdit(record)}>删除</a>
+          <a onClick={() => handleDel(record)}>删除</a>
         </Space>
       ),
     },

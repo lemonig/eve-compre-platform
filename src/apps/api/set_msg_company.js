@@ -2,21 +2,21 @@
   import { _post, _download } from "@App/server/http";
   const basePath='undefined'
   // 企业查询 
-  export function list(data) {  
+  export function companylist(data) {  
     return _post({    
       url:`/api/info/company/list`,    
       data  
     })
   }
   // 企业更新 
-  export function update(data) {  
+  export function companyupdate(data) {  
     return _post({    
       url:`/api/info/company/update`,    
       data  
     })
   }
   // 企业删除 
-  export function delete(data) {  
+  export function companydelete(data) {  
     return _post({    
       url:`/api/info/company/delete`,    
       data  
@@ -30,7 +30,7 @@
     })
   }
   // 企业添加 
-  export function add(data) {  
+  export function companyadd(data) {  
     return _post({    
       url:`/api/info/company/add`,    
       data  

@@ -17,21 +17,30 @@ import {
   Col,
 } from "antd";
 import IconFont from "@Components/IconFont";
-import { groupAdd, groupUpdate } from "@Api/set_station_group.js";
+import { groupAdd, groupUpdate, groupGet } from "@Api/set_station_group.js";
 import StationSelect from "@Components/StationSelect";
 import { stationPage } from "@Api/set_station.js";
 
+//precord 父 --> code
 function OpForm({ record, open, closeModal, precord }) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [stationList, setStationList] = useState([]);
 
   useEffect(() => {
-    getStationList();
     if (!!record) {
-      form.setFieldsValue(record);
+      getPageData();
     }
+    getStationList();
   }, []);
+  const getPageData = async () => {
+    let { data } = await groupGet({
+      id: record.id,
+    });
+    setTimeout(() => {
+      form.setFieldsValue(data);
+    }, 0);
+  };
 
   const getStationList = async () => {
     const { data } = await stationPage({
@@ -53,7 +62,7 @@ function OpForm({ record, open, closeModal, precord }) {
     // 编辑
     // son or p
     if (precord) {
-      values.parentCode = precord.parentCode;
+      values.parentCode = precord.code;
     }
     if (record?.id) {
       values.id = record.id;
@@ -152,7 +161,7 @@ function OpForm({ record, open, closeModal, precord }) {
           <Row>
             <Col span={24}>
               <Form.Item
-                name="idList"
+                name="stationIdList"
                 wrapperCol={{
                   span: 24,
                 }}

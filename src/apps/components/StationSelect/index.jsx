@@ -23,7 +23,7 @@ import IconFont from "@Components/IconFont";
 import difference from "lodash/difference";
 import MetaSelect from "@Shared/MetaSelect";
 import { stationPage as stationMetaPage } from "@Api/set_meta_station.js";
-import { regionList } from "@Api/set_regin.js";
+import { regionList } from "@Api/set_region.js";
 import { riverList } from "@Api/set_rival.js";
 
 const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
@@ -35,6 +35,7 @@ const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
       onItemSelect,
       selectedKeys: listSelectedKeys,
     }) => {
+      console.log(filteredItems);
       const columns = direction === "left" ? leftColumns : rightColumns;
       const rowSelection = {
         onSelectAll(selected, selectedRows) {
@@ -91,6 +92,7 @@ const tableColumns = [
 ];
 
 function StationSelect({ value = [], onChange, options = [] }) {
+  const optionsClone = JSON.parse(JSON.stringify(options));
   const [searchForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [targetKeys, setTargetKeys] = useState(value);
@@ -100,27 +102,49 @@ function StationSelect({ value = [], onChange, options = [] }) {
   const [originOptions, setOriginOptions] = useState([]);
   const [riverOptions, setRiverOptions] = useState([]);
   const [stationList, setStationList] = useState([]);
+  //
+  const [data, setData] = useState(options);
 
   useEffect(() => {
     // 元数据获取
+
     getOriginPage();
+    getRiverPage();
     getStationMetaPage();
-    // if (!!idList) {
-    //   form.setFieldsValue(idList);
-    // }
   }, []);
 
+  useEffect(() => {
+    setData(options);
+  }, [options]);
+
+  useEffect(() => {
+    console.log(value);
+    console.log(options);
+    setTargetKeys(value);
+  }, [value.length]);
+
   const getOriginPage = async () => {
-    let { data } = await regionList();
+    let { data } = await regionList({
+      level: "1",
+    });
     let newd = data.map((item) => ({
       ...item,
       isLeaf: false,
     }));
     setOriginOptions(newd);
   };
+  const getRiverPage = async () => {
+    let { data } = await riverList({
+      level: "1",
+    });
+    let newd = data.map((item) => ({
+      ...item,
+      isLeaf: false,
+    }));
+    setRiverOptions(newd);
+  };
 
   const getStationMetaPage = async () => {
-    setLoading(true);
     let { data } = await stationMetaPage();
     setStationList(data);
   };
@@ -174,9 +198,37 @@ function StationSelect({ value = [], onChange, options = [] }) {
     }
     setRiverOptions([...riverOptions]);
   };
+  // !!value.region ? item.regionName.indexOf(value.region?.join("/")) : true
+
   const onFormChange = () => {
     let value = searchForm.getFieldsValue();
     console.log(value);
+    let res = optionsClone
+      .filter(
+        (item) => item.stationType === value.stationType || !value.stationType
+      )
+      .filter((item) => {
+        console.log(item.regionName.indexOf(value.region?.join("/")));
+
+        console.log(value.region?.join("/"));
+        return !!value.region
+          ? item.regionName.indexOf(value.region?.join("/")) === 0
+          : true;
+      })
+      .filter((item) =>
+        !!value.river
+          ? item?.riverName?.indexOf(value.river?.join("/")) === 0
+          : true
+      )
+      .filter(
+        (item) =>
+          item.controlLevel === value.controlLevel || !value.controlLevel
+      );
+    console.log(res);
+    //将已选的拿出
+    let res1 = optionsClone.filter((ele) => targetKeys.includes(ele.id));
+    console.log(res1);
+    setData([...new Set([...res, ...res1])]);
   };
 
   return (
@@ -196,7 +248,7 @@ function StationSelect({ value = [], onChange, options = [] }) {
                   placeholder="请选择"
                   fieldNames={{
                     label: "name",
-                    value: "id",
+                    value: "name",
                   }}
                   allowClear
                   style={{ width: "120px" }}
@@ -210,11 +262,11 @@ function StationSelect({ value = [], onChange, options = [] }) {
                   style={{ width: "120px" }}
                   options={originOptions}
                   loadData={loadeReginData}
-                  onChange={onReginChange}
+                  onChange={onFormChange}
                   changeOnSelect
                   fieldNames={{
                     label: "name",
-                    value: "code",
+                    value: "name",
                   }}
                 />
               </Form.Item>
@@ -225,7 +277,7 @@ function StationSelect({ value = [], onChange, options = [] }) {
                   style={{ width: "120px" }}
                   options={riverOptions}
                   loadData={loadRiverData}
-                  onChange={onRiverChange}
+                  onChange={onFormChange}
                   changeOnSelect
                   fieldNames={{
                     label: "name",
@@ -247,7 +299,7 @@ function StationSelect({ value = [], onChange, options = [] }) {
       </div>
       <div style={{ clear: "both" }}></div>
       <TableTransfer
-        dataSource={options}
+        dataSource={data}
         targetKeys={targetKeys}
         showSearch={true}
         onChange={onTanferChange}

@@ -15,8 +15,10 @@ import {
 import Lbreadcrumb from "@Components/Lbreadcrumb";
 import IconFont from "@Components/IconFont";
 import OpForm from "./components/OpForm";
-import { riverUpdate, riverList } from "@Api/set_rival.js";
-import ChildGroup from "./components/ChildGroup";
+import { riverList, riverDelete, riverUpdate } from "@Api/set_rival.js";
+import ChildGroup1 from "./components/ChildGroup1";
+
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 const { Option } = Select;
 
 function SetMsgRiver() {
@@ -34,17 +36,11 @@ function SetMsgRiver() {
     getPageData();
   }, []);
 
-  const showModal = () => {
-    setIsModalOpen({
-      ...isModalOpen,
-      modal: true,
-    });
-  };
-
   const getPageData = async () => {
     setLoading(true);
-    let values = searchForm.getFieldsValue();
-    let { data } = await riverList(values);
+    let { data } = await riverList({
+      level: "1",
+    });
     setData(data);
     setLoading(false);
   };
@@ -73,6 +69,42 @@ function SetMsgRiver() {
       child: true,
     });
   };
+  // 删除
+  const handleDel = ({ id }) => {
+    Modal.confirm({
+      title: "确定删除？",
+      icon: <ExclamationCircleOutlined />,
+      content: "删除后无法恢复",
+      okText: "确认",
+      cancelText: "取消",
+      onOk: async () => {
+        let { success, message: msg } = await riverDelete({ id });
+        if (success) {
+          message.success(msg);
+          setIsModalOpen({
+            ...isModalOpen,
+            modal: false,
+          });
+          getPageData();
+        } else {
+          message.error(msg);
+        }
+      },
+    });
+  };
+
+  const handleStatusChange = async (checked, record) => {
+    let { success, message: msg } = await riverUpdate({
+      id: record.id,
+      status: checked ? "1" : "0",
+    });
+    if (success) {
+      message.success(msg);
+      closeModal(true);
+    } else {
+      message.error(msg);
+    }
+  };
 
   const columns = [
     {
@@ -82,22 +114,23 @@ function SetMsgRiver() {
       render: (_, record, index) => index + 1,
     },
     {
-      title: "分组名称",
+      title: "级别  ",
+      dataIndex: "levelName",
+      key: "levelName",
+    },
+    {
+      title: "名称",
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "分组编码",
+      title: "编码",
       dataIndex: "code",
       key: "code  ",
     },
+
     {
-      title: "站点数量（个）",
-      dataIndex: "stationNum",
-      key: "stationNum  ",
-    },
-    {
-      title: "子分组（个）",
+      title: "下级水体",
       dataIndex: "childrenNum",
       key: "childrenNum",
       render: (value, record) => (
@@ -105,6 +138,22 @@ function SetMsgRiver() {
           <a onClick={() => handleChild(record)}>{value}</a>
         </Space>
       ),
+    },
+    {
+      title: "是否启用",
+      dataIndex: "status",
+      key: "status",
+      render: (value, record) => (
+        <Switch
+          checked={!!Number(value)}
+          onChange={(checked) => handleStatusChange(checked, record)}
+        />
+      ),
+    },
+    {
+      title: "展示次序",
+      dataIndex: "orderNum",
+      key: "orderNum",
     },
 
     {
@@ -114,7 +163,7 @@ function SetMsgRiver() {
       render: (_, record) => (
         <Space>
           <a onClick={() => handleEdit(record)}>编辑</a>
-          <a onClick={() => handleEdit(record)}>删除</a>
+          <a onClick={() => handleDel(record)}>删除</a>
         </Space>
       ),
     },
@@ -132,18 +181,11 @@ function SetMsgRiver() {
   };
   return (
     <div className="content-wrap">
-      <Lbreadcrumb data={["系统设置", "站点管理", "站点分组"]} />
-      {!isModalOpen.modal && !isModalOpen.child && (
+      <Lbreadcrumb data={["系统设置", "信息管理", "水体"]} />
+      {!isModalOpen.child && (
         <>
           <div className="search">
             <Form layout="inline" form={searchForm} onFinish={getPageData}>
-              <Form.Item label="" name="name">
-                <Input
-                  placeholder="分组名称/分组编码"
-                  className="width-18"
-                  // value={searchVal}
-                />
-              </Form.Item>
               <Form.Item>
                 <Space>
                   <Button type="primary" htmlType="submit">
@@ -171,7 +213,7 @@ function SetMsgRiver() {
         />
       )}
       {isModalOpen.child && (
-        <ChildGroup
+        <ChildGroup1
           open={isModalOpen.child}
           pcloseModal={closeModal}
           precord={operate}

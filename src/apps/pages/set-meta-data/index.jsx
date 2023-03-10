@@ -113,14 +113,14 @@ function SetMetaData() {
       onOk: async () => {
         let { success, message: msg } = await metadataTypeDelete({ id });
         if (success) {
-          message.success("删除成功");
+          message.success(msg);
           setIsModalOpen({
             ...isModalOpen,
             modal: false,
           });
           getPageData();
         } else {
-          message.error("删除失败");
+          message.error(msg);
         }
       },
     });

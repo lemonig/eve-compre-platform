@@ -22,6 +22,7 @@ import IconFont from "@Components/IconFont";
 import PageHead from "@Components/PageHead";
 import MetaSelect from "@Shared/MetaSelect";
 import Map from "./Map";
+import dayjs from "dayjs";
 
 import {
   stationAdd,
@@ -45,9 +46,12 @@ import {
   stationGet as stationMetaGet,
 } from "@Api/set_meta_station.js";
 import { riverList, riverTree } from "@Api/set_rival.js";
-import { regionList, regionTree } from "@Api/set_regin.js";
+import { regionList, regionTree } from "@Api/set_region.js";
 import { templateList } from "@Api/set_factor_template.js";
-import dayjs from "dayjs";
+import { drinkWaterSourcelist } from "@Api/set_msg_drink.js";
+import { waterZonelist } from "@Api/set_msg_river_area.js";
+import { airZonelist } from "@Api/set_msg_air_area.js";
+import { companylist } from "@Api/set_msg_company.js";
 
 function OpForm({ record, open, closeModal }) {
   const [form] = Form.useForm();
@@ -67,7 +71,6 @@ function OpForm({ record, open, closeModal }) {
   useEffect(() => {
     getStationTpeData();
     getfieldList();
-
     getFormFeild();
   }, []);
 
@@ -86,8 +89,6 @@ function OpForm({ record, open, closeModal }) {
     let { data } = await stationMetaGet({
       id: value,
     });
-    console.log(fieldList);
-    console.log(data);
     let res = fieldList
       .filter((ele) => data.stationField.includes(ele.id) || ele.isCommon)
       .map((item) => item.code);
@@ -100,14 +101,9 @@ function OpForm({ record, open, closeModal }) {
     let { data } = await fieldListApi();
     setFieldList(data);
   };
+
   /*****表格数据****/
   const getFormFeild = async () => {
-    //1
-    const getTopicList = async () => {
-      let { data } = await topicList();
-
-      return data;
-    };
     const getRiverPage = async () => {
       let { data } = await riverTree();
 
@@ -118,23 +114,49 @@ function OpForm({ record, open, closeModal }) {
 
       setOriginOptions(data);
     };
-    //2
-    // const getStationMetaPage = async () => {
-    //   let { data } = await stationMetaPage();
+    //0
+    const getTopicList = async () => {
+      let { data } = await topicList();
+      return data;
+    };
 
-    //   return data;
-    // };
-
-    //3
+    //1
     const getTemplateList = async () => {
       let { data } = await templateList();
+      return data;
+    };
+    //2 饮用水
+    const getdrinkWaterSourcelist = async () => {
+      let { data } = await drinkWaterSourcelist();
+      return data;
+    };
+    //3 水环境功能去
+    const getwaterZonelist = async () => {
+      let { data } = await waterZonelist();
+      return data;
+    };
+    //4 大气环境功能去
+    const getairZonelist = async () => {
+      let { data } = await airZonelist();
+      return data;
+    };
+    //5. 公司
+    const getcompanylist = async () => {
+      let { data } = await companylist();
       return data;
     };
 
     getRiverPage();
     getOriginPage();
 
-    Promise.all([getTopicList(), getTemplateList()]).then((res) => {
+    Promise.all([
+      getTopicList(),
+      getTemplateList(),
+      getdrinkWaterSourcelist(),
+      getwaterZonelist(),
+      getairZonelist(),
+      getcompanylist(),
+    ]).then((res) => {
       setFormField(res);
       setTimeout(() => {
         if (!!record) {
@@ -154,6 +176,7 @@ function OpForm({ record, open, closeModal }) {
     data.build_date = dayjs(data.build_date);
     form.setFieldsValue(data);
     setStationTypes(data.station_type);
+    get_station_connect_upper_region_code(data.station_connect_type_code);
     // setTimeout(() => {
     //   getStationTypeDetail(data.station_type);
     // }, 0);
@@ -214,15 +237,21 @@ function OpForm({ record, open, closeModal }) {
   };
   // 元数据获取
   const station_connect_type_code_change = (val) => {
-    console.log(val);
     get_station_connect_upper_region_code(val);
   };
 
   const get_station_connect_upper_region_code = async (regin) => {
-    let { data } = await regionList({
-      level: regin,
-    });
-    setReginList(data);
+    if (regin) {
+      let { data } = await regionList({
+        level: regin,
+      });
+      setReginList(data);
+    } else {
+      form.setFieldsValue({
+        station_connect_upper_region_code: "",
+        station_connect_lower_region_code: "",
+      });
+    }
   };
 
   let inputwidtg = {
@@ -233,6 +262,20 @@ function OpForm({ record, open, closeModal }) {
   });
 
   const filterRequire = (name) => stationField.find((ele) => ele === name);
+
+  const treeDropdownRender = (data) => {
+    console.log(data);
+    const data1 = data.map((item) => {
+      if (item.children && item.children.length) {
+        item.selectable = false;
+        treeDropdownRender(item.children);
+      }
+      return item;
+    });
+    console.log(data1);
+    return data1;
+  };
+
   return (
     <>
       <PageHead
@@ -255,6 +298,7 @@ function OpForm({ record, open, closeModal }) {
             }}
             onChange={getStationTypeDetail}
             value={stationTypes}
+            disabled={!!record}
           />
         </div>
       </div>
@@ -351,13 +395,13 @@ function OpForm({ record, open, closeModal }) {
                 <Input className="width-3" placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={12} style={filterElement("station_status_code")}>
+            <Col span={12} style={filterElement("status")}>
               <Form.Item
                 label="运行状态"
-                name="station_status_code"
+                name="status"
                 rules={[
                   {
-                    required: filterRequire("station_status_code"),
+                    required: filterRequire("status"),
                     message: "请输入",
                   },
                 ]}
@@ -466,18 +510,19 @@ function OpForm({ record, open, closeModal }) {
                 ]}
               >
                 <TreeSelect
-                  treeData={originOptions}
+                  treeData={treeDropdownRender(originOptions)}
                   fieldNames={{
                     label: "label",
                     value: "id",
                   }}
                   style={inputwidtg}
+                  // dropdownRender={treeDropdownRender}
                 />
               </Form.Item>
             </Col>
             <Col span={12} style={filterElement("river_code_3")}>
               <Form.Item
-                label="流域"
+                label="河流"
                 name="river_code_3"
                 rules={[
                   {
@@ -487,7 +532,7 @@ function OpForm({ record, open, closeModal }) {
                 ]}
               >
                 <TreeSelect
-                  treeData={riverOptions}
+                  treeData={treeDropdownRender(riverOptions)}
                   fieldNames={{
                     label: "label",
                     value: "id",
@@ -557,7 +602,7 @@ function OpForm({ record, open, closeModal }) {
                     value: "id",
                   }}
                   allowClear
-                  options={formField?.drink_water_source_code}
+                  options={formField[2]}
                   style={inputwidtg}
                 />
               </Form.Item>
@@ -581,7 +626,7 @@ function OpForm({ record, open, closeModal }) {
                     value: "id",
                   }}
                   allowClear
-                  options={formField?.function_zone_water_code}
+                  options={formField[3]}
                   style={inputwidtg}
                 />
               </Form.Item>
@@ -605,7 +650,7 @@ function OpForm({ record, open, closeModal }) {
                     value: "id",
                   }}
                   allowClear
-                  options={formField?.function_zone_air_code}
+                  options={formField[4]}
                   style={inputwidtg}
                 />
               </Form.Item>
@@ -629,7 +674,7 @@ function OpForm({ record, open, closeModal }) {
                     value: "id",
                   }}
                   allowClear
-                  options={formField?.pollution_company_code}
+                  options={formField[5]}
                   style={inputwidtg}
                 />
               </Form.Item>
@@ -655,7 +700,7 @@ function OpForm({ record, open, closeModal }) {
                 rules={[
                   {
                     required: filterRequire("is_staion_at_lake"),
-                    message: "请输入",
+                    message: "请选择",
                   },
                 ]}
               >
@@ -684,7 +729,7 @@ function OpForm({ record, open, closeModal }) {
                 rules={[
                   {
                     required: filterRequire("is_station_connect_section"),
-                    message: "请输入",
+                    message: "请选择",
                   },
                 ]}
               >
@@ -710,7 +755,8 @@ function OpForm({ record, open, closeModal }) {
               <Form.Item label="断面跨界类型" name="station_connect_type_code">
                 <MetaSelect
                   dictType="station_connect_type"
-                  onChange={station_connect_type_code_change}
+                  onChange={get_station_connect_upper_region_code}
+                  allowClear
                 />
               </Form.Item>
             </Col>
@@ -721,12 +767,12 @@ function OpForm({ record, open, closeModal }) {
               <Form.Item
                 label="断面交接类别"
                 name="station_connect_attribute_code"
-                rules={[
-                  {
-                    required: filterRequire("station_connect_attribute_code"),
-                    message: "请输入",
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: filterRequire("station_connect_attribute_code"),
+                //     message: "请输入",
+                //   },
+                // ]}
               >
                 <MetaSelect dictType="station_connect_attribute" />
               </Form.Item>
@@ -792,7 +838,7 @@ function OpForm({ record, open, closeModal }) {
                 rules={[
                   {
                     required: filterRequire("factor_template_id"),
-                    message: "请输入",
+                    message: "请选择",
                   },
                 ]}
               >
@@ -825,7 +871,12 @@ function OpForm({ record, open, closeModal }) {
             </Col>
             <Col span={12} style={filterElement("hour_big_period")}>
               <Form.Item label="大周期小时" name="hour_big_period">
-                <MetaSelect dictType="hour_big_period" />
+                <MetaSelect
+                  dictType="hour_big_period"
+                  allowClear
+                  mode="multiple"
+                  maxTagCount="responsive"
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -855,15 +906,10 @@ function OpForm({ record, open, closeModal }) {
                 <Input className="width-3" placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={24}>
-              <Form.Item
-                wrapperCol={{
-                  offset: 5,
-                  span: 16,
-                }}
-                labelCol={{ span: 5 }}
-                label=""
-              >
+          </Row>
+          <Row>
+            <Col span={12}>
+              <Form.Item label=" ">
                 <Button type="primary" htmlType="submit">
                   保存
                 </Button>

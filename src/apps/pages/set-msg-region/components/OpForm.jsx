@@ -15,7 +15,7 @@ import {
   Checkbox,
 } from "antd";
 import IconFont from "@Components/IconFont";
-import { riverAdd, riverUpdate, riverGet } from "@Api/set_rival.js";
+import { regionAdd, regionUpdate, regionGet } from "@Api/set_region.js";
 import { inputTrim } from "@Utils/util";
 import { metaList } from "@Api/util.js";
 
@@ -29,7 +29,7 @@ function OpForm({ record, open, closeModal, precord }) {
   }, []);
 
   const getMetaData = async () => {
-    let { data } = await riverGet({
+    let { data } = await regionGet({
       id: record.id,
     });
     setData(data);
@@ -48,7 +48,7 @@ function OpForm({ record, open, closeModal, precord }) {
     }
     if (record?.id) {
       values.id = record.id;
-      let { success, message: msg } = await riverUpdate(values);
+      let { success, message: msg } = await regionUpdate(values);
       if (success) {
         message.success(msg);
         closeModal(true);
@@ -56,7 +56,7 @@ function OpForm({ record, open, closeModal, precord }) {
         message.error(msg);
       }
     } else {
-      let { success, message: msg } = await riverAdd(values);
+      let { success, message: msg } = await regionAdd(values);
       if (success) {
         message.success(msg);
         closeModal(true);
@@ -100,7 +100,6 @@ function OpForm({ record, open, closeModal, precord }) {
           >
             <Input placeholder="请输入" />
           </Form.Item>
-
           <Form.Item
             label="编码"
             name="code"

@@ -96,6 +96,44 @@ const routerList = [
         path: "meta_map",
         element: lazyLoad("set-meta-data"),
       },
+      // 信息管理
+      {
+        path: "msg_region",
+        element: lazyLoad("set-msg-region"),
+      },
+      {
+        path: "msg_river",
+        element: lazyLoad("set-msg-river"),
+      },
+      {
+        path: "msg_company",
+        element: lazyLoad("set-msg-region"),
+      },
+      {
+        path: "msg_park",
+        element: lazyLoad("set-msg-park"),
+      },
+      {
+        path: "msg_drink_water_source",
+        element: lazyLoad("set-msg-drink"),
+      },
+      {
+        path: "msg_air_zone",
+        element: lazyLoad("set-msg-air"),
+      },
+      {
+        path: "msg_water_zone",
+        element: lazyLoad("set-msg-water"),
+      },
+      {
+        path: "msg_sensitive_point",
+        element: lazyLoad("set-msg-sensitive"),
+      },
+      {
+        path: "msg_domestic_pollution_source",
+        element: lazyLoad("set-msg-live"),
+      },
+    
     ],
   },
 ];

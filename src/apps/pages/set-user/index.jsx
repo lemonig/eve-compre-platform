@@ -122,7 +122,7 @@ function SetUser() {
           setIsModalOpen(false);
           getPageData();
         } else {
-          message.error("删除失败");
+          message.error(msg);
         }
       },
     });
