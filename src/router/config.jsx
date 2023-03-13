@@ -42,6 +42,12 @@ const routerList = [
   {
     path: "dataList",
     element: lazyLoad("data-list"),
+    children: [
+      {
+        path: ":id",
+        element: lazyLoad("set-user"),
+      },
+    ],
   },
   {
     path: "dataBase",
@@ -133,7 +139,6 @@ const routerList = [
         path: "msg_domestic_pollution_source",
         element: lazyLoad("set-msg-live"),
       },
-    
     ],
   },
 ];

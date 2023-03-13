@@ -7,7 +7,7 @@ export function metaList(data) {
     data,
   });
 }
-// 元数据单个获取
+// 元数据批量获取
 export function metaBatchList(data) {
   return _post({
     url: `/api/metadata/batchList`,
@@ -32,6 +32,13 @@ export function stationTreeA(data) {
 export function stationTreeR(data) {
   return _post({
     url: `/api/station/river/tree`,
+    data,
+  });
+}
+// 站点流域树
+export function stationTreeAll(data) {
+  return _post({
+    url: `/api/station/all/tree`,
     data,
   });
 }

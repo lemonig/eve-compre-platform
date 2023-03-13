@@ -112,7 +112,7 @@ function OpForm({ record, open, closeModal }) {
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
             initialValues={{
-              factorType: "自定义因子",
+              factorType: "1",
             }}
           >
             <h2 className="second-title ">基本信息</h2>

@@ -18,6 +18,7 @@ const getRouteMenu = async () => {
   let menuTree = handleMenu(data);
 
   localStorage.setItem("menuTree", JSON.stringify(menuTree));
+
   return data;
 };
 
@@ -29,22 +30,23 @@ export const menulistSlice = createSlice({
   reducers: {
     // 数据请求完触发
     loadMenuData: (state, { payload }) => {
-      state = payload;
+      return (state = payload);
     },
   },
-  // extraReducers(builder) {
-  //   builder
-  //     .addCase(getMenuData.pending, (state) => {
-  //       console.log("🚀 ~ 进行中！");
-  //     })
-  //     .addCase(getMenuData.fulfilled, (state, { payload }) => {
-  //       console.log("🚀 ~ fulfilled", payload);
-  //       state = payload.data;
-  //     })
-  //     .addCase(getMenuData.rejected, (state, err) => {
-  //       console.log("🚀 ~ rejected", err);
-  //     });
-  // },
+  extraReducers(builder) {
+    builder
+      .addCase(getMenuData.pending, (state) => {
+        console.log("🚀 ~ 进行中！");
+      })
+      .addCase(getMenuData.fulfilled, (state, { payload }) => {
+        console.log("🚀 ~ fulfilled", payload);
+        window.location.href = "/";
+        return (state = payload.data);
+      })
+      .addCase(getMenuData.rejected, (state, err) => {
+        console.log("🚀 ~ rejected", err);
+      });
+  },
 });
 
 const { actions, reducer } = menulistSlice;

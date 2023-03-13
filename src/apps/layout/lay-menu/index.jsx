@@ -21,14 +21,14 @@ function LayMenu({ menuList }) {
     setOpenKeys([res.pid]);
   }, []);
 
-  // useEffect(() => {
-  //   console.log(resolvedPath);
-  //   let res = menu.find((item) => item.path === resolvedPath.pathname);
-  //   console.log(res);
-  //   if (res) {
-  //     setSelectedKeys([res.id]);
-  //   }
-  // }, [resolvedPath.pathname]);
+  useEffect(() => {
+    console.log(resolvedPath);
+    let res = menu.find((item) => item.path === resolvedPath.pathname);
+    console.log(res);
+    if (res) {
+      setSelectedKeys([res.id]);
+    }
+  }, [resolvedPath.pathname]);
 
   const handleMenuClick = ({ item, key, keyPath, selectedKeys }) => {
     setSelectedKeys(key);

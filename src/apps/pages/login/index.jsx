@@ -9,39 +9,24 @@ import { dbLogin, owner } from "@Api/user";
 import { useDispatch, useSelector } from "react-redux";
 import { SET_USER } from "@Store/features/userSlice";
 import { getMenuData } from "@Store/features/menulistSlice";
-import { SET_PLATFORM } from "@Store/features/platformSlice";
+
 import menu from "../../utils/menuData";
 import { handleMenu } from "@Utils/menu";
 import { inputTrim } from "@Utils/util";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import { settingGet, settingUpdate } from "@Api/set_base.js";
 
 function Login() {
   let dispatch = useDispatch();
   let navigate = useNavigate();
   const [isCodeLogin, setIsCodeLogin] = useState(true);
-  const [data, setData] = useState({
-    footer_message: "",
-    company_name: "",
-    company_name_simple: "",
-    header_logo: "",
-    header_name: "",
-  });
 
-  useEffect(() => {
-    getPageData();
-  }, []);
-  const getPageData = async () => {
-    let { data } = await settingGet();
-    dispatch(SET_PLATFORM(data));
-    setData(data);
-  };
+  useEffect(() => {}, []);
 
   const onFinish = async (values) => {
     let { message: msg, success, data } = await dbLogin(values);
     if (success) {
       localStorage.setItem("token", data.access_token);
-      getUserInfo();
+      await getUserInfo();
       getMenuList();
     } else {
       message.error(msg);
@@ -174,7 +159,7 @@ function Login() {
           </div> */}
         </div>
       </div>
-      <div className="footer">{data.footer_message}</div>
+      <div className="footer">杭州绿洁科技股份有限公司</div>
     </div>
   );
 }

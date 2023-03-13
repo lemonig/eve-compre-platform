@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import LayMenu from "@App/layout/lay-menu";
 import StationTree from "@Shared/stationTree";
 import Lbreadcrumb from "@Components/Lbreadcrumb";
 import { Tabs } from "antd";
 import DataTable from "./components/DataTable";
+
+import { handleMenu } from "@Utils/menu";
+import { useDispatch, useSelector } from "react-redux";
 
 const onChange = (key) => {
   console.log(key);
@@ -27,9 +30,16 @@ const items = [
 ];
 
 function DataList() {
+  const menu = useSelector((state) => state.menu);
+  const menuTree = menu ? handleMenu(menu) : [];
+  let dataMenu = menuTree
+    .find((ele) => ele.label === "数据查询")
+    .children.find((ele) => ele.label === "监测数据");
+  console.log(dataMenu);
+  useEffect(() => {}, []);
   return (
     <>
-      <LayMenu />
+      <LayMenu menuList={dataMenu.children || []} />
       <section className="main-content">
         <StationTree />
         <div className="content-wrap">

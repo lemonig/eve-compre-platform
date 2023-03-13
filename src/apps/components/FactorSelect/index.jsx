@@ -84,12 +84,11 @@ function FactorSelect({ value = [], onChange }) {
   };
   const onCheckAllChange = (e) => {
     if (e.target.checked) {
-      data.map((item) => (item.checked = true));
+      groupFilter(data).map((item) => (item.checked = true));
     } else {
-      data.map((item) => (item.checked = false));
+      groupFilter(data).map((item) => (item.checked = false));
     }
     let checkIdList = data.filter((ele) => ele.checked).map((item) => item.id);
-    onChange(checkIdList);
     onChange(checkIdList);
     setData([...data]);
     setIndeterminate(false);
@@ -104,14 +103,22 @@ function FactorSelect({ value = [], onChange }) {
   const factorGroupChange = async (e) => {
     console.log(e);
     if (e) {
-      let { data } = await groupGet({
+      let { data: dataIn } = await groupGet({
         id: e,
       });
-      console.log(data);
-      setGroupDetail(data.factorIdList ?? []);
+      console.log(dataIn);
+      setGroupDetail(dataIn.factorIdList ?? []);
     } else {
       setGroupDetail([]);
     }
+    let checkIdList = data.filter((ele) => ele.checked).map((item) => item.id);
+    setIndeterminate(!!checkIdList.length && checkIdList.length < data.length);
+  };
+
+  const groupFilter = (data) => {
+    return data
+      .filter((ele) => groupDetail.includes(ele.id) || !groupDetail.length)
+      .filter((ele) => ele.name.includes(name));
   };
 
   return (

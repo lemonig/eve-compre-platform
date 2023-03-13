@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input, Tree } from "antd";
 import "./index.less";
+import { stationTreeAll } from "@Api/util.js";
 
 const treeData = [
   {
@@ -48,6 +49,8 @@ function StationTree() {
   const [currentTab, setCurrentTab] = useState(1);
   const [showTree, setShowTree] = useState(true);
 
+  useEffect(() => {}, []);
+
   return (
     <div className={`AllTree_warp ${showTree ? "hasWidth" : ""}`}>
       <div style={{ display: showTree ? `block` : "none" }}>
@@ -66,7 +69,7 @@ function StationTree() {
           <Input type="text" placeholder="站点名称"></Input>
           <div className="station_tree">
             <Tree
-              checkable
+              // checkable
               defaultExpandedKeys={["0-0-0", "0-0-1"]}
               defaultSelectedKeys={["0-0-0", "0-0-1"]}
               defaultCheckedKeys={["0-0-0", "0-0-1"]}

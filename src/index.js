@@ -14,7 +14,7 @@ import { store } from "./store/index";
 import * as dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import { theme } from "./styles/theme";
-// dayjs.locale("zh-cn");
+dayjs.locale("zh-cn");
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(

@@ -204,9 +204,9 @@ function StationSelect({ value = [], onChange, options = [] }) {
     let value = searchForm.getFieldsValue();
     console.log(value);
     let res = optionsClone
-      .filter(
-        (item) => item.stationType === value.stationType || !value.stationType
-      )
+      .filter((item) => {
+        return item.stationType === value.stationType || !value.stationType;
+      })
       .filter((item) => {
         console.log(item.regionName.indexOf(value.region?.join("/")));
 
@@ -248,7 +248,7 @@ function StationSelect({ value = [], onChange, options = [] }) {
                   placeholder="请选择"
                   fieldNames={{
                     label: "name",
-                    value: "name",
+                    value: "id",
                   }}
                   allowClear
                   style={{ width: "120px" }}
