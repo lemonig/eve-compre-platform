@@ -42,12 +42,12 @@ const routerList = [
   {
     path: "dataList",
     element: lazyLoad("data-list"),
-    children: [
-      {
-        path: ":id",
-        element: lazyLoad("set-user"),
-      },
-    ],
+    // children: [
+    //   {
+    //     path: ":id",
+    //     element: lazyLoad("set-user"),
+    //   },
+    // ],
   },
   {
     path: "dataBase",

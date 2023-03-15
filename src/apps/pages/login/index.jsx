@@ -44,11 +44,11 @@ function Login() {
   };
 
   const getMenuList = async () => {
-    // await dispatch(getMenuData());
-    localStorage.setItem("menuList", JSON.stringify(menu));
-    let menuTree = handleMenu(menu);
-    localStorage.setItem("menuTree", JSON.stringify(menuTree));
-    navigate("/", { replace: true });
+    await dispatch(getMenuData());
+    // localStorage.setItem("menuList", JSON.stringify(menu));
+    // let menuTree = handleMenu(menu);
+    // localStorage.setItem("menuTree", JSON.stringify(menuTree));
+    // navigate("/", { replace: true });
   };
   const onFinishFailed = (errorInfo) => {};
 

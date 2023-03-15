@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { menuList } from "@Api/user.js";
 import { handleMenu } from "@Utils/menu";
+import IconFont from "@Components/IconFont";
 // 菜单列表
 const initialState = localStorage.getItem("menuList")
   ? JSON.parse(localStorage.getItem("menuList"))
@@ -13,6 +14,9 @@ const getRouteMenu = async () => {
     if (!item.visible) {
       delete item.pid;
     }
+    item.pid = item.pid + "";
+    item.id = item.id + ""; //菜单需要
+    item.title = item.label; //内部字段
   });
   localStorage.setItem("menuList", JSON.stringify(data));
   let menuTree = handleMenu(data);
@@ -39,12 +43,13 @@ export const menulistSlice = createSlice({
         console.log("🚀 ~ 进行中！");
       })
       .addCase(getMenuData.fulfilled, (state, { payload }) => {
-        console.log("🚀 ~ fulfilled", payload);
+        console.log("~ fulfilled");
         window.location.href = "/";
+        // window.history.push("", "", "/");
         return (state = payload.data);
       })
       .addCase(getMenuData.rejected, (state, err) => {
-        console.log("🚀 ~ rejected", err);
+        console.log(" ~ rejected", err);
       });
   },
 });

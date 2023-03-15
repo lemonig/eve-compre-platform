@@ -193,7 +193,6 @@ function OpForm({ record, open, closeModal }) {
     // if (flag) ();
   };
   const mapConfirm = (value) => {
-    console.log(value);
     form.setFieldsValue({
       longitude: value.lng,
       latitude: value.lat,
@@ -264,7 +263,6 @@ function OpForm({ record, open, closeModal }) {
   const filterRequire = (name) => stationField.find((ele) => ele === name);
 
   const treeDropdownRender = (data) => {
-    console.log(data);
     const data1 = data.map((item) => {
       if (item.children && item.children.length) {
         item.selectable = false;
@@ -272,7 +270,6 @@ function OpForm({ record, open, closeModal }) {
       }
       return item;
     });
-    console.log(data1);
     return data1;
   };
 

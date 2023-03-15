@@ -67,7 +67,7 @@ const menu = [
     id: "2-1-1-1",
     pid: "2-1-1",
     icon: "",
-    path: "/dataList/:id",
+    // path: "/dataList/:id",
     // component: "data-list",
     label: "空气站",
     query: 1,

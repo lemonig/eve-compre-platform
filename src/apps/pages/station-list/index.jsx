@@ -87,7 +87,6 @@ function StationList() {
 
     Promise.all([getTopicList(), getStationTpeData(), getOther()]).then(
       (res) => {
-        console.log(res);
         setFilterData(res);
       }
     );

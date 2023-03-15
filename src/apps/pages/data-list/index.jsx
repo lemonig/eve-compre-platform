@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import LayMenu from "@App/layout/lay-menu";
 import StationTree from "@Shared/stationTree";
 import Lbreadcrumb from "@Components/Lbreadcrumb";
@@ -8,44 +8,92 @@ import DataTable from "./components/DataTable";
 import { handleMenu } from "@Utils/menu";
 import { useDispatch, useSelector } from "react-redux";
 
-const onChange = (key) => {
-  console.log(key);
-};
-const items = [
-  {
-    key: "1",
-    label: `Tab 1`,
-    children: <DataTable />,
-  },
-  {
-    key: "2",
-    label: `Tab 2`,
-    children: `Content of Tab Pane 2`,
-  },
-  {
-    key: "3",
-    label: `Tab 3`,
-    children: `Content of Tab Pane 3`,
-  },
-];
-
 function DataList() {
+  const [menuSelect, setMenuSelect] = useState({
+    title: "",
+    key: "",
+    query: "",
+  });
+
+  const [stationSelect, setStationSelect] = useState({
+    title: "",
+    key: "",
+  });
+
+  useEffect(() => {
+    setMenuSelect({
+      key: dataMenu.children[0].children[0].id,
+      title: dataMenu.children[0].children[0].title,
+      query: dataMenu.children[0].children[0].query,
+    });
+  }, []);
+
   const menu = useSelector((state) => state.menu);
   const menuTree = menu ? handleMenu(menu) : [];
+
   let dataMenu = menuTree
     .find((ele) => ele.label === "数据查询")
     .children.find((ele) => ele.label === "监测数据");
-  console.log(dataMenu);
-  useEffect(() => {}, []);
+
+  dataMenu.children.forEach((element) => {
+    element.type = "group";
+  });
+
+  const onMenuChange = (key, title, query) => {
+    setMenuSelect({
+      title,
+      key: key[0],
+      query,
+    });
+  };
+
+  const onTabChange = (key) => {
+    console.log(key);
+  };
+  const onStationChange = (e) => {
+    setStationSelect(e);
+  };
+
+  const items = [
+    {
+      key: "1",
+      label: `站点数据`,
+      children: <DataTable stationMsg={stationSelect} menuMsg={menuSelect} />,
+    },
+    {
+      key: "2",
+      label: `单站单参分析`,
+      children: `Content of Tab Pane 2`,
+    },
+    {
+      key: "3",
+      label: `单站多参分析`,
+      children: `Content of Tab Pane 3`,
+    },
+  ];
+
   return (
     <>
-      <LayMenu menuList={dataMenu.children || []} />
+      <LayMenu
+        menuList={dataMenu.children}
+        onChange={onMenuChange}
+        value={[dataMenu.children[0].children[0].id]}
+      />
       <section className="main-content">
-        <StationTree />
+        {!!menuSelect.query ? (
+          <StationTree query={menuSelect.query} onChange={onStationChange} />
+        ) : null}
         <div className="content-wrap">
-          <Lbreadcrumb data={["数据查询", "监测数据", "大气环境", "空气站"]} />
-          <h2 className="satation-name">半山国家森林</h2>
-          <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+          <Lbreadcrumb
+            data={[
+              "数据查询",
+              "监测数据",
+              `${menuSelect.title}`,
+              `${stationSelect.title}`,
+            ]}
+          />
+          <h2 className="satation-name">{stationSelect.title}</h2>
+          <Tabs defaultActiveKey="1" items={items} onChange={onTabChange} />
         </div>
       </section>
     </>

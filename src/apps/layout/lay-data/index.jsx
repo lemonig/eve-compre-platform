@@ -5,7 +5,7 @@ import { NavLink, Link, Outlet } from "react-router-dom";
 import { handleMenu } from "@Utils/menu";
 import { useDispatch, useSelector } from "react-redux";
 
-function DataLayout() {
+function SetLayout() {
   const menu = useSelector((state) => state.menu);
   const menuTree = menu ? handleMenu(menu) : [];
   let settingMenu = menuTree.find((ele) => ele.component === "lay-set");
@@ -19,4 +19,4 @@ function DataLayout() {
   );
 }
 
-export default DataLayout;
+export default SetLayout;

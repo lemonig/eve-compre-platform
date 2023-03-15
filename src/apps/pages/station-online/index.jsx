@@ -89,7 +89,6 @@ function StationOnline() {
 
     Promise.all([getTopicList(), getStationTpeData(), getOther()]).then(
       (res) => {
-        console.log(res);
         setFilterData(res);
       }
     );
@@ -151,7 +150,6 @@ function StationOnline() {
     if ("river" in values) {
       values.river = getFormCasData(values.river);
     }
-    console.log(pageMsg);
     let { additional_data, data } = await onlinePage({
       page: pageMsg.pagination.current,
       size: pageMsg.pagination.pageSize,
@@ -306,7 +304,6 @@ function StationOnline() {
 
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
-    console.log(filters);
     setPagemsg({
       pagination,
       filters,

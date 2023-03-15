@@ -80,8 +80,8 @@ const Header = ({ message }) => {
                 activeMenu === item.id ? "activeStyle" : undefined
               }`}
             >
-              {item.icon}
-              {/* <IconFont name={item.icon} size="16" color="#fff" /> */}
+              {/* {item.icon} */}
+              <IconFont name={item.icon} size="16" color="#fff" />
               <span style={{ marginLeft: "4px" }}>{item.label} </span>
             </li>
           </Dropdown>
@@ -92,8 +92,8 @@ const Header = ({ message }) => {
           >
             {/* 手工注册样式 */}
             <li className="li-outer">
-              {item.icon}
-              {/* <IconFont name={item.icon} size="16" color="#fff" /> */}
+              {/* {item.icon} */}
+              <IconFont name={item.icon} size="16" color="#fff" />
               <span style={{ marginLeft: "4px" }}>{item.label} </span>
             </li>
           </NavLink>

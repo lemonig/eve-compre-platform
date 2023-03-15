@@ -2,49 +2,73 @@ import React from "react";
 import IconFont from "@Components/IconFont";
 
 // 数组转树
-export function arrayToTree(items) {
-  const result = []; // 存放结果集
-  const itemMap = {}; //
-  for (const item of items) {
-    item.key = item.id;
-    const id = item.id;
-    const pid = item.pid;
-    if (item.icon && typeof item.icon === "string") {
-      item.icon = <IconFont name={item.icon} size={16}></IconFont>;
-    }
-    if (!itemMap[id] && !item.isleaf) {
-      itemMap[id] = {
-        children: [],
-      };
-    }
+// export function arrayToTree(items) {
+//   const result = []; // 存放结果集
+//   const itemMap = {}; //
+//   for (const item of items) {
+//     item.key = item.id;
+//     const id = item.id;
+//     const pid = item.pid;
+//     // if (item.icon && typeof item.icon === "string") {
+//     //   item.icon = <IconFont name={item.icon} size={16}></IconFont>;
+//     // }
+//     if (!itemMap[id] && !item.isleaf) {
+//       itemMap[id] = {
+//         children: [],
+//       };
+//     }
 
-    // itemMap[id] = {
-    //   ...item,
-    //   children: itemMap[id]["children"],
-    // };
-    if (!item.isleaf) {
-      itemMap[id] = {
-        ...item,
-        children: itemMap[id]["children"],
-      };
-    } else {
-      itemMap[id] = item;
-    }
+//     if (!item.isleaf) {
+//       itemMap[id] = {
+//         ...item,
+//         children: itemMap[id]["children"],
+//       };
+//     } else {
+//       itemMap[id] = item;
+//     }
 
-    const treeItem = itemMap[id];
+//     const treeItem = itemMap[id];
 
-    if (pid == 0) {
-      result.push(treeItem);
-    } else {
-      if (!itemMap[pid]) {
-        itemMap[pid] = {
-          children: [],
-        };
-      }
-      itemMap[pid].children.push(treeItem);
-    }
-  }
-  return result;
+//     if (pid == 0) {
+//       result.push(treeItem);
+//     } else {
+//       console.log(itemMap[pid]);
+//       if (!itemMap[pid]) {
+//         itemMap[pid] = {
+//           children: [],
+//         };
+//       }
+//       console.log(itemMap[pid]);
+
+//       itemMap[pid].children.push(treeItem);
+//     }
+//   }
+//   return result;
+// }
+
+export function arrayToTree(data) {
+  const parent = data.filter(
+    (value) => value.pid === "undefined" || value.pid === null || value.pid == 0
+  );
+  const children = data.filter(
+    (value) => value.pid !== "undefined" && value.pid !== null && value.pid != 0
+  );
+  const translator = (parent, children) => {
+    parent.forEach((parent) => {
+      children.forEach((current, index) => {
+        if (current.pid === parent.id) {
+          const temp = JSON.parse(JSON.stringify(children));
+          temp.splice(index, 1);
+          translator([current], temp);
+          typeof parent.children !== "undefined"
+            ? parent.children.push(current)
+            : (parent.children = [current]);
+        }
+      });
+    });
+  };
+  translator(parent, children);
+  return parent;
 }
 
 //节流

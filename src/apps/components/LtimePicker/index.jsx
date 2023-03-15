@@ -2,48 +2,39 @@ import React, { useState, useEffect } from "react";
 import { DatePicker, Space, Select, TimePicker } from "antd";
 import dayjs from "dayjs";
 
-const timeOption = [
-  {
-    value: "mm",
-    label: "分钟",
-  },
-  {
-    value: "hh",
-    label: "小时",
-  },
-  {
-    value: "day",
-    label: "日",
-  },
-  {
-    value: "week",
-    label: "周",
-  },
-  {
-    value: "quarter",
-    label: "季度",
-  },
-  {
-    value: "year",
-    label: "年",
-  },
-];
 const disabledDate = (current) => {
   // Can not select days before today and today
   return current && current > dayjs().endOf("day");
 };
 
+const formatePickTime = (type, value) => {
+  console.log(Object.prototype.toString.call(value));
+  // if (Object.prototype.toString.call(value) === "[object Date]") {
+  if (type === "mm" || type === "hh" || type === "d") {
+    return dayjs(value).format("YYYYMMDDHHmm");
+  } else if (type === "w") {
+    return dayjs(value).format("YYYYMMWW");
+  } else if (type === "m") {
+    return dayjs(value).format("YYYYMM");
+  } else if (type === "q") {
+    return dayjs(value).format("YYYYQ");
+  } else if (type === "y") {
+    return dayjs(value).format("YYYY");
+  }
+  // }
+};
+
 const PickerWithType = ({ type, value, onChange }) => {
-  if (type === "mm" || type === "hh" || type === "day")
+  if (type === "mm" || type === "hh" || type === "d")
     return (
       <DatePicker
-        value={dayjs("2021-9-6")}
+        value={dayjs(value)}
         onChange={onChange}
-        // disabledDate={disabledDate}
-        defaultPickerValue={dayjs("2021-10-6")}
+        disabledDate={disabledDate}
+        // defaultPickerValue={dayjs("2021-10-6")}
       />
     );
-  if (type === "week")
+  else if (type === "w")
     return (
       <DatePicker
         value={value}
@@ -52,7 +43,16 @@ const PickerWithType = ({ type, value, onChange }) => {
         disabledDate={disabledDate}
       />
     );
-  if (type === "quarter")
+  else if (type === "m")
+    return (
+      <DatePicker
+        value={value}
+        picker="month"
+        onChange={onChange}
+        disabledDate={disabledDate}
+      />
+    );
+  else if (type === "q")
     return (
       <DatePicker
         value={value}
@@ -61,7 +61,7 @@ const PickerWithType = ({ type, value, onChange }) => {
         disabledDate={disabledDate}
       />
     );
-  if (type === "year")
+  else if (type === "y")
     return (
       <DatePicker
         value={value}
@@ -70,27 +70,41 @@ const PickerWithType = ({ type, value, onChange }) => {
         disabledDate={disabledDate}
       />
     );
+  else {
+    return (
+      <DatePicker
+        value={value}
+        onChange={onChange}
+        disabledDate={disabledDate}
+        // defaultPickerValue={dayjs("2021-10-6")}
+      />
+    );
+  }
 };
 
-function LtimePicker({ value = {}, onChange }) {
-  const [type, setType] = useState("mm");
-  const [startTime, setStartTime] = useState(dayjs());
+function LtimePicker({ value = {}, onChange, options = [] }) {
+  const [type, setType] = useState("");
+  const [startTime, setStartTime] = useState(dayjs().subtract(1, "month"));
   const [endTime, setEndTime] = useState(dayjs());
 
+  useEffect(() => {
+    setStartTime(value.startTime);
+    setEndTime(value.endTime);
+    setType(options[0]?.value);
+  }, []);
+  useEffect(() => {}, []);
   const triggerChange = (changedValue) => {
     onChange?.({
       type,
-      startTime,
-      endTime,
+      startTime: formatePickTime(type, startTime),
+      endTime: formatePickTime(type, endTime),
       ...value,
       ...changedValue,
     });
   };
 
   const typeChange = (newVal) => {
-    if (!("type" in value)) {
-      setType(newVal);
-    }
+    setType(newVal);
     triggerChange({
       type: newVal,
     });
@@ -101,7 +115,7 @@ function LtimePicker({ value = {}, onChange }) {
       setStartTime(newVal);
     }
     triggerChange({
-      startTime: newVal,
+      startTime: formatePickTime(type, newVal),
     });
   };
   const pickerEndChange = (newVal) => {
@@ -109,7 +123,7 @@ function LtimePicker({ value = {}, onChange }) {
       setEndTime(newVal);
     }
     triggerChange({
-      endTime: newVal,
+      endTime: formatePickTime(type, newVal),
     });
   };
 
@@ -120,11 +134,11 @@ function LtimePicker({ value = {}, onChange }) {
         style={{
           width: 120,
         }}
-        value={value.type || type}
-        options={timeOption}
+        // value={type}
+        options={options}
         onChange={typeChange}
       />
-      {/* <PickerWithType
+      <PickerWithType
         type={type}
         onChange={pickerStartChange}
         value={value.startTime || startTime}
@@ -134,7 +148,7 @@ function LtimePicker({ value = {}, onChange }) {
         type={type}
         onChange={pickerEndChange}
         value={value.endTime || endTime}
-      /> */}
+      />
     </Space>
   );
 }

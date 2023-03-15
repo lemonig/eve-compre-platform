@@ -7,6 +7,20 @@
   position: sticky;
   top: 0;
   width: 0;
+  :where(.css-dev-only-do-not-override-1qulcft).ant-tree .ant-tree-treenode {
+    align-items: center !important;
+  }
+  :where(.css-dev-only-do-not-override-1qulcft).ant-tree .ant-tree-switcher {
+    width: auto;
+    align-self: center;
+    line-height: 0;
+  }
+
+  :where(.css-dev-only-do-not-override-1qulcft).ant-tree
+    .ant-tree-node-content-wrapper.ant-tree-node-selected {
+    background-color: @primary-color;
+    color: #fff;
+  }
 }
 
 .AllTree_warp > div {
@@ -19,12 +33,12 @@
 }
 
 .tree_warp {
-  height: calc(100% - 40px);
+  height: calc(100% - 40px - 48px);
   padding: 10px;
 }
 
 .station_tree {
-  height: calc(100% - 42px);
+  height: calc(100% - 42px - 48px);
   margin-top: 8px;
   overflow-y: auto;
 }
@@ -52,7 +66,6 @@
   box-sizing: border-box;
   cursor: pointer;
 }
-
 .sort > div.active {
   background-color: #fff;
   color: @primary-color;
@@ -71,7 +84,7 @@
   cursor: pointer;
   display: inline-block;
   padding: 4px 4px 4px 4px;
-  margin-left: 6px;
+  // margin-left: 6px;
 }
 
 .titleTemplate.active {

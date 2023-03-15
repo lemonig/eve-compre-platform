@@ -23,7 +23,6 @@ let aMap = {}; //地图实例
 let mapIcon = null;
 
 function Map({ value, open, closeModal, confirm }) {
-  console.log(value);
   const [loading, setLoading] = useState(false);
   const [pos, setPos] = useState(value); //地图poi 信息
   const [mapMove, setmapMove] = useState(false); //地图是否移动
@@ -182,7 +181,6 @@ function Map({ value, open, closeModal, confirm }) {
               extensions: "all", //all，返回地址信息及附近poi、道路、道路交叉口等信息base，返回基本地址信息；
             });
             geocoder.getAddress([lnglat], (status, result) => {
-              console.log(result);
               if (status === "complete" && result.info === "OK") {
                 setPos(lnglat);
                 setAddress(result.regeocodes[0].formattedAddress);
@@ -201,7 +199,6 @@ function Map({ value, open, closeModal, confirm }) {
         // 扎点中心坐标
         function setCenterIcon() {
           let lnglat = aMap.getCenter();
-          console.log(lnglat);
           let pixel = aMap.lngLatToContainer(lnglat);
           setCenterPixel(pixel);
           getCenterPoi(); // 获取地址

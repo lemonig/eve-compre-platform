@@ -38,7 +38,6 @@ function StationForm({ list, open, onOK, onCancel }) {
     console.log("Failed:", errorInfo);
   };
   const onStationChange = (id) => {
-    console.log(id);
     setIdList(id);
   };
 

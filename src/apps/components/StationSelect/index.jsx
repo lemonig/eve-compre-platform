@@ -35,7 +35,6 @@ const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
       onItemSelect,
       selectedKeys: listSelectedKeys,
     }) => {
-      console.log(filteredItems);
       const columns = direction === "left" ? leftColumns : rightColumns;
       const rowSelection = {
         onSelectAll(selected, selectedRows) {
@@ -118,8 +117,6 @@ function StationSelect({ value = [], onChange, options = [] }) {
   }, [options]);
 
   useEffect(() => {
-    console.log(value);
-    console.log(options);
     setTargetKeys(value);
   }, [value.length]);
 
@@ -150,7 +147,6 @@ function StationSelect({ value = [], onChange, options = [] }) {
   };
 
   const onTanferChange = (nextTargetKeys) => {
-    console.log(nextTargetKeys);
     setTargetKeys(nextTargetKeys);
     onChange(nextTargetKeys);
   };
@@ -202,15 +198,11 @@ function StationSelect({ value = [], onChange, options = [] }) {
 
   const onFormChange = () => {
     let value = searchForm.getFieldsValue();
-    console.log(value);
     let res = optionsClone
       .filter((item) => {
         return item.stationType === value.stationType || !value.stationType;
       })
       .filter((item) => {
-        console.log(item.regionName.indexOf(value.region?.join("/")));
-
-        console.log(value.region?.join("/"));
         return !!value.region
           ? item.regionName.indexOf(value.region?.join("/")) === 0
           : true;
@@ -224,10 +216,8 @@ function StationSelect({ value = [], onChange, options = [] }) {
         (item) =>
           item.controlLevel === value.controlLevel || !value.controlLevel
       );
-    console.log(res);
     //将已选的拿出
     let res1 = optionsClone.filter((ele) => targetKeys.includes(ele.id));
-    console.log(res1);
     setData([...new Set([...res, ...res1])]);
   };
 
@@ -304,7 +294,6 @@ function StationSelect({ value = [], onChange, options = [] }) {
         showSearch={true}
         onChange={onTanferChange}
         filterOption={(inputValue, item) => {
-          console.log(inputValue);
           return (
             item.name.indexOf(inputValue) !== -1 ||
             item.code.indexOf(inputValue) !== -1

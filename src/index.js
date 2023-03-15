@@ -14,7 +14,12 @@ import { store } from "./store/index";
 import * as dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import { theme } from "./styles/theme";
+var advancedFormat = require("dayjs/plugin/advancedFormat");
+var weekOfYear = require("dayjs/plugin/weekOfYear");
+dayjs.extend(advancedFormat);
+dayjs.extend(weekOfYear);
 dayjs.locale("zh-cn");
+dayjs.extend(advancedFormat);
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
