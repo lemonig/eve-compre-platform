@@ -50,8 +50,15 @@ function LayMenu({ menuList, onChange, value = [] }) {
     setCollapsed(!collapsed);
   };
   const handleMenuClick = ({ item, key, keyPath, selectedKeys }) => {
+
     if (onChange) {
-      onChange(key, item.props.title, item.props.query);
+      let findMenu = menu.find((ele) => ele.id === item.props.pid);
+      onChange({
+        key,
+        title: item.props.title,
+        ptitle: findMenu.title,
+        query: item.props.query,
+      });
     }
     setSelectedKeys(selectedKeys);
     if (item.props.path) {

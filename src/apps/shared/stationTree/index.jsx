@@ -22,36 +22,125 @@ const getParentKey = (key, tree) => {
   return parentKey;
 };
 
+const titleIn = {
+  region: "区域",
+  river: "河流",
+  group: "分组",
+};
+
 function StationTree({ query, onChange }) {
   const [currentTab, setCurrentTab] = useState("region");
   const [showTree, setShowTree] = useState(true);
-  // const [treeData, setTreeData] = useState({});
+  const [treeData1, setTreeData1] = useState([]); //区域
+  const [treeData2, setTreeData2] = useState([]); //河流
+  const [treeData3, setTreeData3] = useState([]); //分组
   const [activeNode, setActiveNode] = useState("");
   const [expandedKeys, setExpandedKeys] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [autoExpandParent, setAutoExpandParent] = useState(true);
-  const [pageData, setPageData] = useState({
-    region: [],
-    river: [],
-    group: [],
-  });
+
+  const [pageDataTit, setPageDataTit] = useState([]);
 
   useEffect(() => {
     getTreeData(query);
   }, [query]);
 
   const getTreeData = async (query) => {
+    setTreeData1([]);
     let { data } = await stationTreeAll({
       stationType: query,
     });
     // setTreeData(data);
-    setPageData(data);
+    let title = [];
+    // for (let i in data) {
+    //   if (!!data[i]) {
+    //     title.push({
+    //       label: titleIn[i],
+    //       name: i,
+    //     });
+    //   }
+    // }
+    if (data.region) {
+      setTreeData1(loop(data.region));
+      title.push({
+        label: "区域",
+        name: "region",
+      });
+    }
+    if (data.river) {
+      setTreeData2(data.river);
+      title.push({
+        label: "河流",
+        name: "river",
+      });
+    }
+    if (data.group) {
+      setTreeData3(data.group);
+      title.push({
+        label: "分组",
+        name: "group",
+      });
+    }
+
+    setCurrentTab(title[0].name);
+    setPageDataTit(title);
+  };
+  useEffect(() => {});
+  // 树循环
+  let flag = true; //第一次递归
+  const loop = (data) => {
+    if (!data) {
+      return null;
+    }
+    let newTree = [];
+    newTree = data?.map((item, idx) => {
+      const label = item.label;
+      // if (item.stationNum === 0) {
+      //   return [];
+      // }
+      if (item.children) {
+        if (idx === 0 && item.isStation && flag) {
+          //默认选中
+
+          flag = false;
+          console.log(flag);
+          console.log(item);
+          setActiveNode([item.key]);
+          onChange({
+            key: item.id || "",
+            title: item.label || "",
+          });
+        }
+        return {
+          label,
+          key: item.key,
+          ...item,
+          children: loop(item.children),
+        };
+      }
+      return {
+        label,
+        ...item,
+        key: item.key,
+      };
+    });
+    // newTree = newTree.filter((ele) => {
+    //   return Object.prototype.toString.call(ele) === "[object Object]";
+    // });
+    return newTree;
   };
 
   const titleRender = (nodeData) => {
     return (
       <span className={`titleTemplate`}>
         <span>
+          {nodeData.isStation ? (
+            nodeData.isConnected ? (
+              <img className="imgStyle" src={stationIcon} alt="x"></img>
+            ) : (
+              <img className="imgStyle" src={stationOffIcon} alt="x"></img>
+            )
+          ) : null}
           {nodeData.label}&nbsp;
           {nodeData.isStation ? null : (
             <span style={{ color: "#999" }}>({nodeData.stationNum})</span>
@@ -62,17 +151,25 @@ function StationTree({ query, onChange }) {
   };
 
   const switcherIconRender = (props) => {
-    if (props.expanded) {
-      return <img src={treeOpenIcon} alt=""></img>;
+    if (props.isStation) {
+      if (props.isConnected) {
+        return <img className="imgStyle" src={stationIcon} alt="x"></img>;
+      } else {
+        return <img src={stationOffIcon} alt="x"></img>;
+      }
     } else {
-      return <img src={treeIcon} alt=""></img>;
+      if (props.expanded) {
+        return <img src={treeOpenIcon} alt=""></img>;
+      } else {
+        return <img src={treeIcon} alt=""></img>;
+      }
     }
   };
   const treeSelect = (selectedKeys, { node }, e) => {
     if (node.isStation) {
       setActiveNode([node.key]);
       onChange({
-        key: node.key || "",
+        key: node.id || "",
         title: node.label || "",
       });
     } else {
@@ -81,84 +178,45 @@ function StationTree({ query, onChange }) {
   };
 
   const onTreeExpand = (newExpandedKeys) => {
+    console.log(newExpandedKeys);
     setExpandedKeys(newExpandedKeys);
     setAutoExpandParent(false);
   };
 
   const onSearchChange = (e) => {
-    const { value } = e.target;
-    const newExpandedKeys = pageData[currentTab]
-      .map((item) => {
-        if (item.label.indexOf(value) > -1) {
-          return getParentKey(item.key, pageData[currentTab]);
-        }
-        return null;
-      })
-      .filter((item, i, self) => item && self.indexOf(item) === i);
-    setExpandedKeys(newExpandedKeys);
-    setSearchValue(value);
-    setAutoExpandParent(true);
+    // const { value } = e.target;
+    // const newExpandedKeys = pageData[currentTab]
+    //   .map((item) => {
+    //     if (item.label.indexOf(value) > -1) {
+    //       return getParentKey(item.key, pageData[currentTab]);
+    //     }
+    //     return null;
+    //   })
+    //   .filter((item, i, self) => item && self.indexOf(item) === i);
+    // setExpandedKeys(newExpandedKeys);
+    // setSearchValue(value);
+    // setAutoExpandParent(true);
   };
-  const treeData = useMemo(() => {
-    const loop = (data) =>
-      data?.map((item) => {
-        const label = item.label;
-        const index = label.indexOf(searchValue);
-        // const beforeStr = strTitle.substring(0, index);
-        // const afterStr = strTitle.slice(index + searchValue.length);
-        const title =
-          index > -1 ? (
-            <span>
-              {/* {beforeStr} */}
-              <span className="site-tree-search-value">{searchValue}</span>
-              {/* {afterStr} */}
-            </span>
-          ) : (
-            <span>{label}</span>
-          );
-        if (item.children) {
-          return {
-            label,
-            key: item.key,
-            ...item,
-            children: loop(item.children),
-          };
-        }
-        return {
-          label,
-          ...item,
-          key: item.key,
-        };
-      });
-    return loop(pageData[currentTab]);
-  }, [searchValue, pageData, currentTab]);
+
+  // useEffect(() => {
+  //   let filterTree = loop(pageData[currentTab]);
+  // }, [searchValue, pageData]);
   return (
     <div className={`AllTree_warp ${showTree ? "hasWidth" : ""}`}>
       <div style={{ display: showTree ? `block` : "none" }}>
         <div className="sort">
           {/* 区域2 3 1 */}
-          {[
-            {
-              label: "区域",
-              name: "region",
-            },
-            {
-              label: "河流",
-              name: "river",
-            },
-            {
-              label: "分组",
-              name: "group",
-            },
-          ].map((item, idx) => (
-            <div
-              className={currentTab === item.name ? `active` : ""}
-              onClick={() => setCurrentTab(item.name)}
-              key={item.name}
-            >
-              {item.label}
-            </div>
-          ))}
+          {pageDataTit.map((item, idx) => {
+            return (
+              <div
+                className={currentTab === item.name ? `active` : ""}
+                onClick={() => setCurrentTab(item.name)}
+                key={item.name}
+              >
+                {item.label}
+              </div>
+            );
+          })}
         </div>
         <div className="tree_warp">
           <Input
@@ -167,20 +225,65 @@ function StationTree({ query, onChange }) {
             onChange={onSearchChange}
           ></Input>
           <div className="station_tree">
-            <Tree
-              // checkable
+            {treeData1.length && currentTab === "region" ? (
+              <Tree
+                // checkable
+                treeData={treeData1}
+                titleRender={titleRender}
+                showIcon={true}
+                switcherIcon={switcherIconRender}
+                onSelect={treeSelect}
+                selectedKeys={activeNode}
+                // onExpand={onTreeExpand}
+                // expandedKeys={expandedKeys}
+                defaultExpandAll
+                // autoExpandParent={true}
+                // showLine={{
+                //   showLeafIcon: true,
+                // }}
 
-              treeData={treeData}
-              titleRender={titleRender}
-              // icon={treeIconRender}
-              showIcon={true}
-              switcherIcon={switcherIconRender}
-              onSelect={treeSelect}
-              selectedKeys={activeNode}
-              onExpand={onTreeExpand}
-              expandedKeys={expandedKeys}
-              autoExpandParent={autoExpandParent}
-            />
+                // autoExpandParent={autoExpandParent}
+              />
+            ) : null}
+            {treeData2.length && currentTab === "river" ? (
+              <Tree
+                // checkable
+                treeData={treeData2}
+                titleRender={titleRender}
+                showIcon={true}
+                switcherIcon={switcherIconRender}
+                onSelect={treeSelect}
+                // selectedKeys={activeNode}
+                // onExpand={onTreeExpand}
+                // expandedKeys={expandedKeys}
+                // defaultExpandAll
+                // autoExpandParent={true}
+                // showLine={{
+                //   showLeafIcon: true,
+                // }}
+
+                // autoExpandParent={autoExpandParent}
+              />
+            ) : null}
+            {treeData3.length && currentTab === "group" ? (
+              <Tree
+                // checkable
+                treeData={treeData3}
+                titleRender={titleRender}
+                showIcon={true}
+                switcherIcon={switcherIconRender}
+                onSelect={treeSelect}
+                // selectedKeys={activeNode}
+                // onExpand={onTreeExpand}
+                // expandedKeys={expandedKeys}
+                // autoExpandParent={true}
+                // showLine={{
+                //   showLeafIcon: true,
+                // }}
+
+                // autoExpandParent={autoExpandParent}
+              />
+            ) : null}
           </div>
         </div>
       </div>

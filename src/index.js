@@ -16,10 +16,11 @@ import "dayjs/locale/zh-cn";
 import { theme } from "./styles/theme";
 var advancedFormat = require("dayjs/plugin/advancedFormat");
 var weekOfYear = require("dayjs/plugin/weekOfYear");
-dayjs.extend(advancedFormat);
+var isoWeek = require("dayjs/plugin/isoWeek");
 dayjs.extend(weekOfYear);
-dayjs.locale("zh-cn");
 dayjs.extend(advancedFormat);
+dayjs.extend(isoWeek);
+dayjs.locale("zh-cn");
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(

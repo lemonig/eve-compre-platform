@@ -13,6 +13,7 @@ function DataList() {
     title: "",
     key: "",
     query: "",
+    ptitle: "",
   });
 
   const [stationSelect, setStationSelect] = useState({
@@ -25,6 +26,7 @@ function DataList() {
       key: dataMenu.children[0].children[0].id,
       title: dataMenu.children[0].children[0].title,
       query: dataMenu.children[0].children[0].query,
+      ptitle: dataMenu.children[0].title,
     });
   }, []);
 
@@ -39,11 +41,12 @@ function DataList() {
     element.type = "group";
   });
 
-  const onMenuChange = (key, title, query) => {
+  const onMenuChange = ({ key, title, query, ptitle }) => {
     setMenuSelect({
       title,
       key: key[0],
       query,
+      ptitle,
     });
   };
 
@@ -88,8 +91,8 @@ function DataList() {
             data={[
               "数据查询",
               "监测数据",
+              `${menuSelect.ptitle}`,
               `${menuSelect.title}`,
-              `${stationSelect.title}`,
             ]}
           />
           <h2 className="satation-name">{stationSelect.title}</h2>

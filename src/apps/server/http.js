@@ -28,6 +28,8 @@ axios.interceptors.response.use(
       if (response.data.code === 401) {
         window.location.href = window.location.origin + "/loading";
       } else if (response.data.code === 403) {
+      } else if (!response.data.success) {
+        message.error(response.data.message);
       }
       return Promise.resolve(response);
     } else {

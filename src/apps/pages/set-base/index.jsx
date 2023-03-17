@@ -77,9 +77,9 @@ function SetBase() {
     }
     if (info.file.status === "done") {
       // Get this url from response in real world.
-      if (info.file.response.data.path) {
+      if (info.file.response.data.url) {
         setLoading(false);
-        setImageUrl(info.file.response.data.path);
+        setImageUrl(info.file.response.data.url);
       }
     } else if (info.file.status === "error") {
       message.error(`${info.file.name} 上传失败`);
@@ -158,7 +158,7 @@ function SetBase() {
             showUploadList={false}
             beforeUpload={beforeUpload}
             onChange={handleChange}
-            action="/api/upload/file"
+            action="/api/upload/picture"
           >
             {imageUrl ? (
               <img

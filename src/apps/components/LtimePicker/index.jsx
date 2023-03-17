@@ -7,24 +7,8 @@ const disabledDate = (current) => {
   return current && current > dayjs().endOf("day");
 };
 
-const formatePickTime = (type, value) => {
-  console.log(Object.prototype.toString.call(value));
-  // if (Object.prototype.toString.call(value) === "[object Date]") {
-  if (type === "mm" || type === "hh" || type === "d") {
-    return dayjs(value).format("YYYYMMDDHHmm");
-  } else if (type === "w") {
-    return dayjs(value).format("YYYYMMWW");
-  } else if (type === "m") {
-    return dayjs(value).format("YYYYMM");
-  } else if (type === "q") {
-    return dayjs(value).format("YYYYQ");
-  } else if (type === "y") {
-    return dayjs(value).format("YYYY");
-  }
-  // }
-};
-
 const PickerWithType = ({ type, value, onChange }) => {
+  console.log(type);
   if (type === "mm" || type === "hh" || type === "d")
     return (
       <DatePicker
@@ -87,17 +71,12 @@ function LtimePicker({ value = {}, onChange, options = [] }) {
   const [startTime, setStartTime] = useState(dayjs().subtract(1, "month"));
   const [endTime, setEndTime] = useState(dayjs());
 
-  useEffect(() => {
-    setStartTime(value.startTime);
-    setEndTime(value.endTime);
-    setType(options[0]?.value);
-  }, []);
   useEffect(() => {}, []);
   const triggerChange = (changedValue) => {
     onChange?.({
       type,
-      startTime: formatePickTime(type, startTime),
-      endTime: formatePickTime(type, endTime),
+      startTime,
+      endTime,
       ...value,
       ...changedValue,
     });
@@ -115,7 +94,7 @@ function LtimePicker({ value = {}, onChange, options = [] }) {
       setStartTime(newVal);
     }
     triggerChange({
-      startTime: formatePickTime(type, newVal),
+      startTime: newVal,
     });
   };
   const pickerEndChange = (newVal) => {
@@ -123,29 +102,28 @@ function LtimePicker({ value = {}, onChange, options = [] }) {
       setEndTime(newVal);
     }
     triggerChange({
-      endTime: formatePickTime(type, newVal),
+      endTime: newVal,
     });
   };
 
   return (
     <Space>
       <Select
-        defaultValue="mm"
         style={{
           width: 120,
         }}
-        // value={type}
+        value={value.type || type}
         options={options}
         onChange={typeChange}
       />
       <PickerWithType
-        type={type}
+        type={value.type || type}
         onChange={pickerStartChange}
         value={value.startTime || startTime}
       />
       至
       <PickerWithType
-        type={type}
+        type={value.type || type}
         onChange={pickerEndChange}
         value={value.endTime || endTime}
       />
