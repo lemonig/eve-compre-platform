@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { DatePicker, Space, Select, TimePicker } from "antd";
 import dayjs from "dayjs";
 
+// i have never thouht that it will wright again,but it did ,beacuse i dont know it
 const disabledDate = (current) => {
   // Can not select days before today and today
   return current && current > dayjs().endOf("day");
@@ -65,26 +66,17 @@ const PickerWithType = ({ type, value, onChange }) => {
   }
 };
 
-function LtimePicker({ value = {}, onChange, options = [] }) {
-  const [type, setType] = useState("");
-  const [startTime, setStartTime] = useState(dayjs().subtract(1, "month"));
+function CompareTime({ value = {}, onChange, type }) {
+  const [startTime, setStartTime] = useState(dayjs());
   const [endTime, setEndTime] = useState(dayjs());
 
   useEffect(() => {}, []);
   const triggerChange = (changedValue) => {
     onChange?.({
-      type,
       startTime,
       endTime,
       ...value,
       ...changedValue,
-    });
-  };
-
-  const typeChange = (newVal) => {
-    setType(newVal);
-    triggerChange({
-      type: newVal,
     });
   };
 
@@ -107,14 +99,6 @@ function LtimePicker({ value = {}, onChange, options = [] }) {
 
   return (
     <Space>
-      <Select
-        style={{
-          width: 120,
-        }}
-        value={value.type || type}
-        options={options}
-        onChange={typeChange}
-      />
       <PickerWithType
         type={value.type || type}
         onChange={pickerStartChange}
@@ -130,4 +114,4 @@ function LtimePicker({ value = {}, onChange, options = [] }) {
   );
 }
 
-export default LtimePicker;
+export default CompareTime;

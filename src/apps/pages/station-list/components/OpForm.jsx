@@ -92,7 +92,6 @@ function OpForm({ record, open, closeModal }) {
     let res = fieldList
       .filter((ele) => data.stationField.includes(ele.id) || ele.isCommon)
       .map((item) => item.code);
-    console.log(res);
     setStationField(res);
     setStationTypes(value);
   };

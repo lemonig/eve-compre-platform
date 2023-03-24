@@ -61,7 +61,13 @@ function StationTree({ query, onChange }) {
     //   }
     // }
     if (data.region) {
-      setTreeData1(loop(data.region));
+      setTreeData1(loop(data.region)); //初始化
+      setExpandedKeys([
+        data.region[0].key,
+        data.region[0].children[0].key,
+        data.region[0].children[0].children[0].key,
+      ]); //FIXME第一条数据一定有的基础上。
+
       title.push({
         label: "区域",
         name: "region",
@@ -103,8 +109,7 @@ function StationTree({ query, onChange }) {
           //默认选中
 
           flag = false;
-          console.log(flag);
-          console.log(item);
+
           setActiveNode([item.key]);
           onChange({
             key: item.id || "",
@@ -178,13 +183,14 @@ function StationTree({ query, onChange }) {
   };
 
   const onTreeExpand = (newExpandedKeys) => {
-    console.log(newExpandedKeys);
     setExpandedKeys(newExpandedKeys);
     setAutoExpandParent(false);
   };
 
   const onSearchChange = (e) => {
-    // const { value } = e.target;
+    const { value } = e.target;
+    // treeData1.map(item)
+
     // const newExpandedKeys = pageData[currentTab]
     //   .map((item) => {
     //     if (item.label.indexOf(value) > -1) {
@@ -234,8 +240,8 @@ function StationTree({ query, onChange }) {
                 switcherIcon={switcherIconRender}
                 onSelect={treeSelect}
                 selectedKeys={activeNode}
-                // onExpand={onTreeExpand}
-                // expandedKeys={expandedKeys}
+                onExpand={onTreeExpand}
+                expandedKeys={expandedKeys}
                 defaultExpandAll
                 // autoExpandParent={true}
                 // showLine={{

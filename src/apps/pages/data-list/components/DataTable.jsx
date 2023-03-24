@@ -13,29 +13,12 @@ import {
 } from "antd";
 import LtimePicker from "@Components/LtimePicker";
 import WaterLevel from "@Components/WaterLevel";
-import { queryStation, searchMeta } from "@Api/data-list.js";
+import { queryStation, searchMeta, exportStation } from "@Api/data-list.js";
 import FiledSelect from "@Components/FiledSelect";
 import dayjs from "dayjs";
 import { SettingOutlined, WarningFilled } from "@ant-design/icons";
 import { getFactor } from "@Api/data-list.js";
-
-const formatePickTime = (type, value) => {
-  if (type === "mm") {
-    return dayjs(value).format("YYYYMMDDHHmm");
-  } else if (type === "hh") {
-    return dayjs(value).format("YYYYMMDDHH");
-  } else if (type === "d") {
-    return dayjs(value).format("YYYYMMDD");
-  } else if (type === "w") {
-    return dayjs(value).format("YYYYWW");
-  } else if (type === "m") {
-    return dayjs(value).format("YYYYMM");
-  } else if (type === "q") {
-    return dayjs(value).format("YYYY0Q");
-  } else if (type === "y") {
-    return dayjs(value).format("YYYY");
-  }
-};
+import { formatePickTime } from "@Utils/util";
 
 function tableRender(value) {
   if (value.divColor) {
@@ -68,9 +51,10 @@ function tableRender(value) {
   }
 }
 
-function DataTable({ stationMsg, menuMsg }) {
+function DataTable({ stationMsg, menuMsg, facList }) {
   const [searchForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [btnLoading, setBtnLoading] = useState(false);
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([]);
   const [pageMsg, setPagemsg] = useState({
@@ -87,40 +71,52 @@ function DataTable({ stationMsg, menuMsg }) {
   });
   const [visable, setVisable] = useState(false); //因子选择
   const [factorList, setFactorList] = useState([]); //字段选择回调
-  const [facList, setfacList] = useState([]); //因子
+  // const [facList, setfacList] = useState([]); //因子
 
+  useEffect(() => {
+    console.log("init");
+  }, []);
+
+  //menu Change
   useEffect(() => {
     if ((menuMsg.query, stationMsg.key)) {
+      console.log("menu - change");
       getMetaData();
     }
-  }, [menuMsg.query, stationMsg.key]);
+  }, [menuMsg.query]);
 
-  useEffect(() => {
-    if (stationMsg.key) {
-      const getFactorData = async () => {
-        let { data } = await getFactor({
-          id: stationMsg.key,
-        });
-        data?.forEach((item) => {
-          item.checked = true;
-        });
-        console.log(data);
-        setfacList(data);
-      };
-      getFactorData();
-    }
-  }, [stationMsg.key]);
-
-  useEffect(() => {
-    if (stationMsg.key) {
-      search();
-    }
-  }, [JSON.stringify(factorList), JSON.stringify(menuMsg)]);
+  //station Change
   // useEffect(() => {
   //   if (stationMsg.key) {
-  //     getMetaData();
+  //     console.log("station - change");
+  //     const getFactorData = async () => {
+  //       let { data } = await getFactor({
+  //         id: stationMsg.key,
+  //       });
+  //       data?.forEach((item) => {
+  //         item.checked = true;
+  //       });
+  //       setfacList(data);
+  //     };
+  //     getFactorData();
   //   }
-  // }, [JSON.stringify(pageMsg)]);
+  // }, [stationMsg.key]);
+
+  //factorList/menuMsg Change
+  useEffect(() => {
+    if (stationMsg.key) {
+      console.log("factorList - change");
+      search();
+    }
+  }, [JSON.stringify(factorList)]);
+
+  //pageMsg change
+  useEffect(() => {
+    if (stationMsg.key) {
+      console.log("pageMsg - change");
+      getPageData();
+    }
+  }, [JSON.stringify(pageMsg)]);
 
   const getMetaData = async () => {
     let { data, success } = await searchMeta({
@@ -141,6 +137,10 @@ function DataTable({ stationMsg, menuMsg }) {
 
   const getPageData = async () => {
     let values = searchForm.getFieldsValue();
+    console.log(values);
+    if (!values.dataSource || !values.time) {
+      return;
+    }
     setLoading(true);
     values.startTime = formatePickTime(values.time.type, values.time.startTime);
     values.endTime = formatePickTime(values.time.type, values.time.endTime);
@@ -158,13 +158,16 @@ function DataTable({ stationMsg, menuMsg }) {
     });
     setLoading(false);
 
-    setPagemsg({
-      ...pageMsg,
-      pagination: {
-        ...pageMsg.pagination,
-        total: additional_data.pagination.total,
-      },
-    });
+    if (pageMsg.total !== additional_data.pagination.total) {
+      setPagemsg({
+        ...pageMsg,
+        pagination: {
+          ...pageMsg.pagination,
+          total: additional_data.pagination.total,
+        },
+      });
+    }
+
     let newCol = additional_data.columnList.map((item) => {
       return {
         title: item.label,
@@ -227,6 +230,25 @@ function DataTable({ stationMsg, menuMsg }) {
     setFactorList(data);
   };
 
+  //导出
+  const download = async () => {
+    let values = searchForm.getFieldsValue();
+    setBtnLoading(true);
+    values.startTime = formatePickTime(values.time.type, values.time.startTime);
+    values.endTime = formatePickTime(values.time.type, values.time.endTime);
+
+    let params = {
+      beginTime: values.startTime,
+      endTime: values.endTime,
+      timeType: values.time.type,
+      dataSource: values.dataSource,
+      stationId: stationMsg.key,
+      showFieldList: factorList,
+    };
+    await exportStation(params, `站点数据-${stationMsg.title}`);
+    setBtnLoading(false);
+  };
+
   return (
     <>
       <div>
@@ -254,7 +276,9 @@ function DataTable({ stationMsg, menuMsg }) {
               </Button>
             </Form.Item>
             <Form.Item>
-              <Button>导出</Button>
+              <Button onClick={download} loading={btnLoading}>
+                导出
+              </Button>
             </Form.Item>
           </Form>
           <SettingOutlined
@@ -273,6 +297,7 @@ function DataTable({ stationMsg, menuMsg }) {
           }}
           onChange={handleTableChange}
           size="small"
+
           // scroll={{
           //   y: 500,
           // }}

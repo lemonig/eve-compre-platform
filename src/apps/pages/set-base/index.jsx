@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Lbreadcrumb from "@Components/Lbreadcrumb";
-import { Button, Checkbox, Form, Input, Upload, message } from "antd";
+import { Button, Space, Form, Input, Upload, message } from "antd";
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons";
 import { settingGet, settingUpdate } from "@Api/set_base.js";
 
@@ -86,6 +86,10 @@ function SetBase() {
     }
   };
 
+  const deleteLogo = () => {
+    setImageUrl("");
+  };
+
   return (
     <div className="content-wrap">
       <Lbreadcrumb data={["系统设置", "基础设置"]} />
@@ -151,27 +155,38 @@ function SetBase() {
           label="logo"
           extra="文件大小不超过1M,图片高度为28px时展示效果最佳"
         >
-          <Upload
-            name="file"
-            listType="picture-card"
-            className="avatar-uploader"
-            showUploadList={false}
-            beforeUpload={beforeUpload}
-            onChange={handleChange}
-            action="/api/upload/picture"
-          >
+          <Space>
+            <Form.Item noStyle>
+              <Upload
+                name="file"
+                listType="picture-card"
+                className="avatar-uploader"
+                showUploadList={false}
+                beforeUpload={beforeUpload}
+                onChange={handleChange}
+                action="/api/upload/picture"
+              >
+                {imageUrl ? (
+                  <>
+                    <img
+                      src={imageUrl}
+                      alt="avatar"
+                      style={{ width: "100%" }}
+                    />
+                  </>
+                ) : (
+                  uploadButton
+                )}
+              </Upload>
+            </Form.Item>
             {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt="avatar"
-                style={{
-                  width: "100%",
-                }}
-              />
-            ) : (
-              uploadButton
-            )}
-          </Upload>
+              <span className="ant-form-text">
+                <Button type="link" danger onClick={deleteLogo}>
+                  删除
+                </Button>
+              </span>
+            ) : null}
+          </Space>
         </Form.Item>
         <Form.Item label="页脚信息" name="footer_message">
           <Input />

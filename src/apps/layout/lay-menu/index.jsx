@@ -25,7 +25,6 @@ function LayMenu({ menuList, onChange, value = [] }) {
   let resolvedPath = useResolvedPath();
   const menu = useSelector((state) => state.menu);
   useEffect(() => {
-    console.log(value);
     if (value.length > 0) {
       setSelectedKeys(value);
     } else {
@@ -50,7 +49,6 @@ function LayMenu({ menuList, onChange, value = [] }) {
     setCollapsed(!collapsed);
   };
   const handleMenuClick = ({ item, key, keyPath, selectedKeys }) => {
-
     if (onChange) {
       let findMenu = menu.find((ele) => ele.id === item.props.pid);
       onChange({

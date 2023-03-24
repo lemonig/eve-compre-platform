@@ -25,7 +25,7 @@ function BodyLayout() {
         {/* </div> */}
         {/* </section> */}
       </section>
-      <Footer className="content-footer">{platform.footer_message}</Footer>
+      <div className="content-footer">{platform.footer_message}</div>
     </>
   );
 }

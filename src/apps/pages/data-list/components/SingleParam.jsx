@@ -1,0 +1,316 @@
+import React, { useState, useEffect } from "react";
+import {
+  Select,
+  Button,
+  Table,
+  Form,
+  Tooltip,
+  PageHeader,
+  Statistic,
+  Modal,
+  message,
+  Space,
+  Spin,
+  Radio,
+  Checkbox,
+} from "antd";
+import LtimePicker from "@Components/LtimePicker";
+import LcheckBox from "@Components/LcheckBox";
+import {
+  queryStation,
+  searchMeta,
+  oneFactorChart,
+  chartEvaluateIndex,
+} from "@Api/data-list.js";
+import dayjs from "dayjs";
+import { formatePickTime } from "@Utils/util";
+import "./index.less";
+import CompareTime from "./CompareTime";
+
+import ReactECharts from "echarts-for-react";
+
+function SingleParam({ menuMsg, stationMsg, facList }) {
+  const [searchForm] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+
+  const [metaData, setMetaData] = useState({
+    computeDataLevel: [],
+    dataSource: [],
+    stationField: [],
+    evaluateIndex: [],
+  });
+  const [compareVal, setCompareVal] = useState(null);
+  const [timeType, setTimeType] = useState("");
+  const [chartdata, setChartdata] = useState(null);
+  const [evaluteList, setEvaluteList] = useState([]);
+
+  useEffect(() => {
+    if ((menuMsg.query, stationMsg.key)) {
+      console.log("menu - change");
+      getMetaData();
+    }
+  }, [menuMsg.query]);
+
+  useEffect(() => {
+    const getEvaluteData = async () => {
+      let { data, success } = await chartEvaluateIndex({
+        id: stationMsg.key,
+      });
+      if (success) {
+        setEvaluteList(data);
+      }
+    };
+    getEvaluteData();
+  }, [stationMsg.key]);
+
+  const getMetaData = async () => {
+    let { data, success } = await searchMeta({
+      id: menuMsg.query,
+    });
+    if (success) {
+      setMetaData(data);
+      searchForm.setFieldsValue({
+        dataSource: data.dataSource[0].value,
+        time: {
+          startTime: dayjs().subtract(1, "month"),
+          endTime: dayjs(),
+          type: data.computeDataLevel[0].value,
+        },
+        showFieldList: facList[0].value,
+      });
+      setTimeType(data.computeDataLevel[0].value);
+      getPageData();
+    }
+  };
+
+  const getPageData = async () => {
+    let values = searchForm.getFieldsValue();
+    console.log(values);
+    if (!values.dataSource || !values.time) {
+      return;
+    }
+    setLoading(true);
+    values.startTime = formatePickTime(values.time.type, values.time.startTime);
+    values.endTime = formatePickTime(values.time.type, values.time.endTime);
+    if (values.compareTime?.startTime) {
+      values.compareBeginTime = formatePickTime(
+        values.time.type,
+        values.compareTime.startTime
+      );
+    }
+    if (values.compareTime?.endTime) {
+      values.compareEndTime = formatePickTime(
+        values.time.type,
+        values.compareTime.endTime
+      );
+    }
+    let params = {
+      ...values,
+      beginTime: values.startTime,
+      endTime: values.endTime,
+      timeType: values.time.type,
+      dataSource: values.dataSource,
+      stationId: stationMsg.key,
+      showFieldList: [values.showFieldList],
+      compareList: values.compareList ? [values.compareList] : undefined,
+    };
+    let { data } = await oneFactorChart(params);
+    setLoading(false);
+    let res = getOption(data);
+    console.log(res);
+    setChartdata({ ...res });
+  };
+
+  const search = () => {
+    getPageData();
+  };
+
+  const getOption = ({ legend, series, xAxis, title }) => {
+    const colorList = [
+      "#1C47BF",
+      "#DA4688",
+      "#14BA87",
+      "#DB5230",
+      "#9161F3",
+      "#1085E5",
+      "#A7198C",
+      "#1D7733",
+      "#432585",
+      "#958310",
+      "#931515",
+      "#FFD666",
+      "#BAE637",
+      "#73D13D",
+      "#5CDBD3",
+      "#69C0FF",
+      "#85A5FF",
+      "#B37FEB",
+      "#FF85C0",
+      "#A8071A",
+      "#AD6800",
+      "#5B8C00",
+      "#006D75",
+      "#0050B3",
+    ];
+    let yData = [];
+    let xData = xAxis[0].data;
+
+    const option = {
+      // title: {
+      //   text: "商机数量统计",
+      //   left: "center",
+      // },
+      color: colorList,
+      grid: {
+        left: "3%",
+        right: "4%",
+        bottom: "0%",
+        containLabel: true,
+      },
+      legend: legend,
+      tooltip: {
+        trigger: "axis",
+        formatter: function (params) {
+          let html = `<div>${params[0].axisValue}</div>`;
+          params.map((item) => {
+            if (item.value || item.value === 0) {
+              html += `<div>${item.marker} ${item.seriesName}：${item.value} ${
+                item.data.unit ? item.data.unit : ""
+              }</div>`;
+            }
+          });
+          return html;
+        },
+      },
+      toolbox: {
+        feature: {
+          dataZoom: {
+            yAxisIndex: "none",
+            title: {
+              zoom: "区域缩放",
+              back: "区域还原",
+            },
+          },
+          saveAsImage: {
+            title: "保存为图片",
+            name: `${stationMsg.title}-${title.text}`,
+          },
+          dataView: {
+            show: true,
+            title: "数据视图",
+            lang: ["数据视图", "关闭", "刷新"],
+          },
+          magicType: {
+            show: true,
+            type: ["line", "bar", "stack"],
+            title: ["折线图", "柱状图", "堆叠"],
+          },
+        },
+      },
+
+      xAxis: {
+        type: "category",
+        boundaryGap: false,
+        data: xData,
+      },
+      yAxis: {
+        type: "value",
+      },
+      series: series.map((item) => {
+        delete item.xAxisIndex;
+        return item;
+      }),
+    };
+    return option;
+  };
+
+  const onChartReadyCallback = () => {};
+
+  const onCompareChange = (e) => {
+    setCompareVal(e);
+  };
+  const onTimepickerChange = (e) => {
+    setTimeType(e.type);
+  };
+
+  return (
+    <div>
+      <div className="search">
+        <Form
+          layout="inline"
+          form={searchForm}
+          onFinish={search}
+          initialValues={{}}
+        >
+          <Form.Item label="" name="dataSource">
+            <Select
+              style={{ width: 120 }}
+              placeholder="数据来源"
+              options={metaData?.dataSource}
+            />
+          </Form.Item>
+          <Form.Item label="" name="time">
+            <LtimePicker
+              options={metaData?.computeDataLevel}
+              onChange={onTimepickerChange}
+            />
+          </Form.Item>
+          <Form.Item label="" name="showFieldList">
+            <Select
+              style={{ width: 120 }}
+              options={[...facList, ...evaluteList]}
+              placeholder="请选择"
+            />
+          </Form.Item>
+          <Form.Item label="" name="compareList">
+            <LcheckBox
+              options={[
+                {
+                  label: "同比",
+                  value: "1",
+                },
+                {
+                  label: "环比",
+                  value: "2",
+                },
+                {
+                  label: "自定义",
+                  value: "3",
+                },
+              ]}
+              onChange={onCompareChange}
+            />
+          </Form.Item>
+          {compareVal === "3" ? (
+            <Form.Item label="" name="compareTime">
+              <CompareTime type={timeType} />
+            </Form.Item>
+          ) : null}
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              查询
+            </Button>
+          </Form.Item>
+        </Form>
+      </div>
+      {chartdata ? (
+        <>
+          <div className="trendChart_title">
+            {chartdata?.series[0].name}变化趋势图
+          </div>
+          <Spin spinning={loading}>
+            <ReactECharts
+              option={chartdata}
+              // lazyUpdate={true}
+              theme={"theme_name"}
+              onChartReady={onChartReadyCallback}
+            />
+          </Spin>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+export default SingleParam;

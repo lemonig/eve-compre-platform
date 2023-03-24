@@ -11,6 +11,13 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import "./index.less";
 
+function filterCheck(data) {
+  return data.filter((ele) => ele.checked).map((item) => item.value);
+}
+function filterOption(data) {
+  return data.filter((ele) => ele.checked);
+}
+
 function FiledSelect({
   value = [],
   onChange,
@@ -23,50 +30,178 @@ function FiledSelect({
   options3,
 }) {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]); //FIXME因为没有state页面不刷新，故加个
-
+  const [data1, setData1] = useState([]);
+  const [data2, setData2] = useState([]);
+  const [data3, setData3] = useState([]);
+  const [rData, setRdata] = useState([]);
   useEffect(() => {
-    options1?.forEach((item) => {
-      item.checked = false;
-    });
-    options2?.forEach((item) => {
-      item.checked = false;
-    });
-  }, []);
+    console.log("compo", options2);
+    setData1(JSON.parse(JSON.stringify(options1)));
+  }, [options1]);
   useEffect(() => {
-    console.log("options3", options3);
-    setData(options3);
-    onOk(filterCheck(options3));
-  }, [options3.length]);
-
+    setData2(JSON.parse(JSON.stringify(options2)));
+  }, [options2]);
   useEffect(() => {
-    //FIXME组件创建时value还没值，故这里产生第二次更新
-  }, [JSON.stringify(value)]);
+    setData3(JSON.parse(JSON.stringify(options3)));
+    onOk([
+      ...filterCheck(options3),
+      ...filterCheck(data1),
+      ...filterCheck(data2),
+    ]);
+    setRdata([...options3, ...filterOption(data1), ...filterOption(data2)]);
+  }, [options3]);
 
+  // useEffect(() => {
+  // }, options3)]);
+
+  // 选择
   const onCheckChange = (item) => {
     if ("checked" in item) {
       item.checked = !item.checked;
     } else {
       item.checked = true;
     }
-    setData([...data]);
+    setData1([...data1]);
+    setData2([...data2]);
+    setData3([...data3]);
+    // freshData();
+
+    let delIndex = rData.findIndex((ele) => ele.value === item.value);
+    if (delIndex !== -1) {
+      rData.splice(delIndex, 1);
+    } else {
+      rData.push(item);
+    }
+    setRdata([...rData]);
   };
-  function filterCheck(data) {
-    return data.filter((ele) => ele.checked).map((item) => item.value);
+
+  function findItem(item) {
+    let res =
+      data1.find((ele) => ele.value === item.value) ||
+      data2.find((ele) => ele.value === item.value) ||
+      data3.find((ele) => ele.value === item.value);
+    return res;
   }
+
+  const onCheckFalse = (item) => {
+    let res = findItem(item);
+    res.checked = false;
+    rData.splice(item.idx, 1);
+    setData1([...data1]);
+    setData2([...data2]);
+    setData3([...data3]);
+    setRdata([...rData]);
+  };
+
   const handleOk = async () => {
     setLoading(true);
-
-    let res1 = filterCheck(data);
-    let res2 = filterCheck(options1);
-    let res3 = filterCheck(options2);
-    console.log(res1);
-    console.log(res2);
-    console.log(res3);
-    onOk([...res1, ...res2, ...res3]);
-    // 添加
+    onOk(filterCheck(rData));
     setLoading(false);
   };
+
+  // 拖拽
+  const onDragEnd = ({ active, over }) => {
+    if (active.id !== over?.id) {
+      setRdata((previous) => {
+        const activeIndex = previous.findIndex((i) => i.value === active.id);
+        const overIndex = previous.findIndex((i) => i.value === over?.id);
+        return arrayMove(previous, activeIndex, overIndex);
+      });
+    }
+  };
+
+  const DragItem = (children, ...props) => {
+    console.log(children);
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      setActivatorNodeRef,
+      transform,
+      transition,
+      isDragging,
+    } = useSortable({
+      id: children["id"],
+    });
+
+    const style = {
+      ...props.style,
+      transform: CSS.Transform.toString(
+        transform && {
+          ...transform,
+          scaleY: 1,
+        }
+      ),
+      transition,
+      ...(isDragging
+        ? {
+            position: "relative",
+            zIndex: 9999,
+          }
+        : {}),
+    };
+    return (
+      <div {...props} ref={setNodeRef} style={style} {...attributes}>
+        {React.Children.map(children, (child) => {
+          if (child.key === "sort") {
+            return React.cloneElement(child, {
+              children: (
+                <MenuOutlined
+                  ref={setActivatorNodeRef}
+                  style={{
+                    touchAction: "none",
+                    cursor: "move",
+                  }}
+                  {...listeners}
+                />
+              ),
+            });
+          }
+          return child;
+        })}
+      </div>
+    );
+  };
+
+  function SortableItem(props) {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      setActivatorNodeRef,
+      transition,
+      isDragging,
+    } = useSortable({ id: props.id });
+
+    const style = {
+      ...props.style,
+      transform: CSS.Transform.toString(
+        transform && {
+          ...transform,
+          scaleY: 1,
+        }
+      ),
+      transition,
+      ...(isDragging
+        ? {
+            position: "relative",
+            zIndex: 9999,
+          }
+        : {}),
+    };
+    return (
+      <div className="checkedList" style={style} {...attributes}>
+        <MenuOutlined
+          ref={setNodeRef}
+          {...listeners}
+          style={{ marginRight: "8px" }}
+        />
+        <span style={{ userSelect: "none" }}>{props.label}</span>
+        <CloseOutlined className="close" onClick={() => onCheckFalse(props)} />
+      </div>
+    );
+  }
 
   return (
     <Modal
@@ -77,6 +212,7 @@ function FiledSelect({
       maskClosable={false}
       width={800}
       confirmLoading={loading}
+      destroyOnClose
     >
       <div className="form-factor-content">
         <div>
@@ -90,10 +226,10 @@ function FiledSelect({
                   overflow: "auto",
                 }}
               >
-                {options1.map((item, idx) => (
+                {data1.map((item, idx) => (
                   <Col
                     span={6}
-                    key={item.id + idx}
+                    key={item.id + "-" + idx}
                     style={{ marginBottom: "10px" }}
                   >
                     <Checkbox
@@ -117,10 +253,10 @@ function FiledSelect({
                   overflow: "auto",
                 }}
               >
-                {options2.map((item, idx) => (
+                {data2.map((item, idx) => (
                   <Col
                     span={6}
-                    key={item.id + idx}
+                    key={item.id + "-" + idx}
                     style={{ marginBottom: "10px" }}
                   >
                     <Checkbox
@@ -144,10 +280,10 @@ function FiledSelect({
                   overflow: "auto",
                 }}
               >
-                {data.map((item, idx) => (
+                {data3.map((item, idx) => (
                   <Col
                     span={6}
-                    key={item.id + idx}
+                    key={item.id + "-" + idx}
                     style={{ marginBottom: "10px" }}
                   >
                     <Checkbox
@@ -167,31 +303,31 @@ function FiledSelect({
           <div style={{ marginBottom: "5px" }}>
             <i className="prompt">*</i> 当前选定字段
           </div>
-          <div style={{ maxHeight: "390px", overflowY: "auto" }}>
-            {data.map((item, idx) =>
-              item.checked ? (
-                <div className="checkedList" key={item.value + idx}>
-                  {item.label}
-                  <CloseOutlined onClick={() => onCheckChange(item)} />
-                </div>
-              ) : null
-            )}
-            {options1.map((item, idx) =>
-              item.checked ? (
-                <div className="checkedList" key={item.value + idx}>
-                  {item.label}
-                  <CloseOutlined onClick={() => onCheckChange(item)} />
-                </div>
-              ) : null
-            )}
-            {options2.map((item, idx) =>
-              item.checked ? (
-                <div className="checkedList" key={item.value + idx}>
-                  {item.label}
-                  <CloseOutlined onClick={() => onCheckChange(item)} />
-                </div>
-              ) : null
-            )}
+          <div
+            style={{
+              height: "390px",
+              overflowY: "auto",
+              overflowX: "hidden",
+            }}
+          >
+            <DndContext onDragEnd={onDragEnd}>
+              <SortableContext
+                // rowKey array
+                items={rData.map((i) => i.value)}
+                strategy={verticalListSortingStrategy}
+              >
+                {rData.map((item, idx) => {
+                  return (
+                    <SortableItem
+                      key={item.value}
+                      id={item.value}
+                      {...item}
+                      idx={idx}
+                    />
+                  );
+                })}
+              </SortableContext>
+            </DndContext>
           </div>
         </div>
       </div>

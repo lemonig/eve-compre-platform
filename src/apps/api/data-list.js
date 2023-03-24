@@ -7,6 +7,7 @@ export function queryStation(data) {
     data,
   });
 }
+
 // 单站单因子查询
 export function oneFactorChart(data) {
   return _post({
@@ -36,9 +37,17 @@ export function getFactor(data) {
   });
 }
 // 单站数据导出
-export function exportStation(data) {
-  return _post({
+export function exportStation(data, title,) {
+  return _download({
     url: `/api/data/station/export`,
+    data,
+    title,
+  });
+}
+// 站点关联指标
+export function chartEvaluateIndex(data) {
+  return _post({
+    url: `/api/station/get/chartEvaluateIndex`,
     data,
   });
 }

@@ -28,11 +28,13 @@ import { topicList } from "@Api/set_meta_theme.js";
 import { evaluteList } from "@Api/set_meta_evalute.js";
 import { fieldList } from "@Api/set_meta_field.js";
 import { metadataTypePage } from "@Api/set_meta_data.js";
+const { Option } = Select;
 
 function OpForm({ record, open, closeModal }) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [metaSelect, setMetaSelect] = useState([]);
+  const [computeDataLevel, setComputeDataLevel] = useState([]); //汇聚级别
 
   useEffect(() => {
     Promise.all([
@@ -47,16 +49,24 @@ function OpForm({ record, open, closeModal }) {
       setMetaSelect(res);
       setTimeout(() => {
         if (!!record) {
-          getDetail();
+          getDetail(res);
         }
       });
     });
   }, []);
 
-  const getDetail = async () => {
+  const getDetail = async (res) => {
     let { data } = await stationGet({
       id: record.id,
     });
+    let index = res[5]?.findIndex(
+      (ele) => ele.dictValue === data.dataFrequency
+    );
+    let selectop = res[5]?.map((item, idx) => ({
+      ...item,
+      disabled: idx > index ? false : true,
+    }));
+    setComputeDataLevel(selectop);
     form.setFieldsValue(data);
   };
 
@@ -74,11 +84,12 @@ function OpForm({ record, open, closeModal }) {
 
   const getMetaData3 = async () => {
     let { data } = await evaluteList();
-    let newData = data.map((item) => ({
-      value: item.id,
-      label: item.name + "--" + item.remark,
-    }));
-    return newData;
+    // let newData = data.map((item) => ({
+    //   value: item.id,
+    //   label: item.name + "--" + item.remark,
+    // }));
+    // return newData;
+    return data;
   };
 
   const getMetaData4 = async () => {
@@ -138,6 +149,19 @@ function OpForm({ record, open, closeModal }) {
 
   let inputwidtg = {
     width: "300px",
+  };
+  const onDataFrequencyChange = (e) => {
+    let index = metaSelect[5].findIndex((ele) => ele.dictValue === e);
+    let formVal = form.getFieldValue("computeDataLevel");
+    let selectop = metaSelect[5].map((item, idx) => ({
+      ...item,
+      disabled: idx > index ? false : true,
+    }));
+    setComputeDataLevel(selectop);
+    // console.log(form.getFieldValue("computeDataLevel"));
+    form.setFieldsValue({
+      computeDataLevel: [],
+    });
   };
 
   return (
@@ -222,13 +246,14 @@ function OpForm({ record, open, closeModal }) {
             <Select
               style={inputwidtg}
               className="width-3"
-              options={metaSelect[4]}
+              options={metaSelect[5]}
               placeholder="请选择"
               fieldNames={{
                 label: "dictLabel",
                 value: "dictValue",
               }}
               allowClear
+              onChange={onDataFrequencyChange}
             />
           </Form.Item>
           <Form.Item
@@ -260,7 +285,7 @@ function OpForm({ record, open, closeModal }) {
           <Form.Item label="汇聚级别" name="computeDataLevel">
             <Select
               className="width-3"
-              options={metaSelect[5]}
+              options={computeDataLevel}
               placeholder="请选择"
               fieldNames={{
                 label: "dictLabel",
@@ -276,7 +301,7 @@ function OpForm({ record, open, closeModal }) {
             <Select
               style={inputwidtg}
               className="width-3"
-              options={metaSelect[2]}
+              // options={metaSelect[2]}
               placeholder="请选择"
               // fieldNames={{
               //   label: "name",
@@ -285,7 +310,19 @@ function OpForm({ record, open, closeModal }) {
               allowClear
               mode="multiple"
               maxTagCount="responsive"
-            />
+              optionLabelProp="label"
+            >
+              {metaSelect[2]?.map((item) => (
+                <Option value={item.id} label={item.name} key={item.id}>
+                  <Space>
+                    <span role="img" aria-label={item.name}>
+                      {item.remark}
+                    </span>
+                    {item.name}
+                  </Space>
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item label="站点数据标记" name="stationDataTag">
             <Select

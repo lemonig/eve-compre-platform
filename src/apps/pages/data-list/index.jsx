@@ -4,9 +4,13 @@ import StationTree from "@Shared/stationTree";
 import Lbreadcrumb from "@Components/Lbreadcrumb";
 import { Tabs } from "antd";
 import DataTable from "./components/DataTable";
+import MultParam from "./components/MultParam";
+import SingleParam from "./components/SingleParam";
 
 import { handleMenu } from "@Utils/menu";
 import { useDispatch, useSelector } from "react-redux";
+
+import { getFactor } from "@Api/data-list.js";
 
 function DataList() {
   const [menuSelect, setMenuSelect] = useState({
@@ -20,6 +24,9 @@ function DataList() {
     title: "",
     key: "",
   });
+
+  const [activeKey, setActiveKey] = useState("1");
+  const [facList, setfacList] = useState([]); //因子
 
   useEffect(() => {
     setMenuSelect({
@@ -51,27 +58,56 @@ function DataList() {
   };
 
   const onTabChange = (key) => {
-    console.log(key);
+    setActiveKey(key);
   };
+
   const onStationChange = (e) => {
     setStationSelect(e);
   };
+  useEffect(() => {
+    if (stationSelect.key) {
+      console.log("station - change");
+      const getFactorData = async () => {
+        let { data } = await getFactor({
+          id: stationSelect.key,
+        });
+        data?.forEach((item) => {
+          item.checked = true;
+        });
+        // console.log(data);
+        setfacList(data);
+      };
+      getFactorData();
+    }
+  }, [stationSelect.key]);
 
   const items = [
     {
       key: "1",
       label: `站点数据`,
-      children: <DataTable stationMsg={stationSelect} menuMsg={menuSelect} />,
+      children: (
+        <DataTable
+          stationMsg={stationSelect}
+          menuMsg={menuSelect}
+          facList={facList}
+        />
+      ),
     },
     {
       key: "2",
       label: `单站单参分析`,
-      children: `Content of Tab Pane 2`,
+      children: (
+        <SingleParam
+          stationMsg={stationSelect}
+          menuMsg={menuSelect}
+          facList={facList}
+        />
+      ),
     },
     {
       key: "3",
       label: `单站多参分析`,
-      children: `Content of Tab Pane 3`,
+      children: <MultParam stationMsg={stationSelect} menuMsg={menuSelect} />,
     },
   ];
 
@@ -96,7 +132,16 @@ function DataList() {
             ]}
           />
           <h2 className="satation-name">{stationSelect.title}</h2>
-          <Tabs defaultActiveKey="1" items={items} onChange={onTabChange} />
+          {stationSelect.key ? (
+            <Tabs
+              defaultActiveKey="1"
+              activeKey={activeKey}
+              items={items}
+              onChange={onTabChange}
+              animated={true}
+              destroyInactiveTabPane={true}
+            />
+          ) : null}
         </div>
       </section>
     </>

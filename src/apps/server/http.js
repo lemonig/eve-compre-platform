@@ -25,7 +25,8 @@ axios.interceptors.response.use(
   (response) => {
     store.dispatch(SHIFT_LOADING());
     if (response.data && response.status === 200) {
-      if (response.data.code === 401) {
+      if (Object.prototype.toString.call(response.data === "[object Blob]")) {
+      } else if (response.data.code === 401) {
         window.location.href = window.location.origin + "/loading";
       } else if (response.data.code === 403) {
       } else if (!response.data.success) {
@@ -115,24 +116,27 @@ export const _download = ({ url, data, title }) => {
   let day = nowDate.getDate();
   let month = nowDate.getMonth() + 1;
   let year = nowDate.getFullYear();
-  return axios({
-    method: "post",
-    url: url,
-    data: data,
-    responseType: "blob",
-  }).then((res) => {
-    let result = res.data;
-    var blob = new Blob([result], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  return new Promise((rlv, rej) => {
+    axios({
+      method: "post",
+      url: url,
+      data: data,
+      responseType: "blob",
+    }).then((res) => {
+      let result = res.data;
+      var blob = new Blob([result], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      var objectUrl = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      document.body.appendChild(a);
+      a.setAttribute("style", "display:none");
+      a.setAttribute("href", objectUrl);
+      a.setAttribute("download", `${title}-${year}-${month}-${day}.xls`);
+      a.click();
+      URL.revokeObjectURL(objectUrl);
+      rlv();
     });
-    var objectUrl = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    document.body.appendChild(a);
-    a.setAttribute("style", "display:none");
-    a.setAttribute("href", objectUrl);
-    a.setAttribute("download", `${title}-${year}-${month}-${day}.xls`);
-    a.click();
-    URL.revokeObjectURL(objectUrl);
   });
 };
 export const _downloadPdf = ({ url, data, title }) => {

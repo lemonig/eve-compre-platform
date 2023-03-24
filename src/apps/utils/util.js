@@ -1,6 +1,6 @@
 import React from "react";
 import IconFont from "@Components/IconFont";
-
+import dayjs from "dayjs";
 // 数组转树
 // export function arrayToTree(items) {
 //   const result = []; // 存放结果集
@@ -105,4 +105,22 @@ export function throttle(fun, delay) {
 
 export function inputTrim(e) {
   return e.target.value.replace(/(^\s*)|(\s*$)/g, "");
+}
+
+export function formatePickTime(type, value) {
+  if (type === "mm") {
+    return dayjs(value).format("YYYYMMDDHHmm");
+  } else if (type === "hh") {
+    return dayjs(value).format("YYYYMMDDHH");
+  } else if (type === "d") {
+    return dayjs(value).format("YYYYMMDD");
+  } else if (type === "w") {
+    return dayjs(value).format("YYYYWW");
+  } else if (type === "m") {
+    return dayjs(value).format("YYYYMM");
+  } else if (type === "q") {
+    return dayjs(value).format("YYYY0Q");
+  } else if (type === "y") {
+    return dayjs(value).format("YYYY");
+  }
 }

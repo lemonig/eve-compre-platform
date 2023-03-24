@@ -111,7 +111,9 @@ const Header = ({ message }) => {
         {/* <img width={25} src={biaoti} alt="" /> */}
         {/* <div className="logo"> */}
         {/* <IconFont name="crm" size="24"></IconFont> */}
-        <img src={platform.header_logo} alt="logo" height={32} />
+        {platform.header_logo ? (
+          <img src={platform.header_logo} alt="logo" height={32} />
+        ) : null}
         {/* </div> */}
         <span style={{ fontSize: "16px", marginLeft: "8px" }}>
           {platform.header_name ?? "生态环境数据集成平台"}
