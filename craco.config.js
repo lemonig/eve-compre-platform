@@ -3,7 +3,6 @@ const {
   whenDev,
   whenProd,
   whenTest,
-  ESLINT_MODES,
   POSTCSS_MODES,
 } = require("@craco/craco");
 const webpack = require("webpack");
@@ -31,12 +30,12 @@ module.exports = {
       },
     },
   ],
-
-
+  eslint: {
+    enable: !isPro,
+  },
   webpack: {
     configure: (webpackConfig, { env, paths }) => {
-      console.log("环境：", env, paths);
-
+      // console.log("环境：", env, paths);
       if (isPro(env)) {
         webpackConfig.mode = "production";
         // webpackConfig.devtool = "nosources-source-map";
