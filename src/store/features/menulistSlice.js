@@ -44,7 +44,7 @@ export const menulistSlice = createSlice({
       })
       .addCase(getMenuData.fulfilled, (state, { payload }) => {
         console.log("~ fulfilled");
-        window.location.href = "/";
+        // window.location.href = "/";
         // window.history.push("", "", "/");
         return (state = payload.data);
       })

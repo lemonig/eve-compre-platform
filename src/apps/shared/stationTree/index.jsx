@@ -209,7 +209,7 @@ function StationTree({ query, onChange }) {
   // }, [searchValue, pageData]);
   return (
     <div className={`AllTree_warp ${showTree ? "hasWidth" : ""}`}>
-      <div style={{ display: showTree ? `block` : "none" }}>
+      <div style={{ width: showTree ? `240px` : "0px" }} className="all-tree-wrap">
         <div className="sort">
           {/* 区域2 3 1 */}
           {pageDataTit.map((item, idx) => {

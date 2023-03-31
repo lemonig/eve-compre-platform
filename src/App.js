@@ -8,17 +8,24 @@ import "./App.less";
 import { settingGet, settingUpdate } from "@Api/set_base.js";
 import { SET_PLATFORM } from "@Store/features/platformSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { getMenuData } from "@Store/features/menulistSlice";
 
 function App() {
   let dispatch = useDispatch();
   useEffect(() => {
-    if (localStorage.getItem("token")) getPageData();
+    console.log("App loading...");
+    if (localStorage.getItem("token")) {
+      getSetData();
+      getMenuList();
+    }
   }, []);
 
-  const getPageData = async () => {
+  const getSetData = async () => {
     let { data } = await settingGet();
     dispatch(SET_PLATFORM(data));
-    // setData(data);
+  };
+  const getMenuList = async () => {
+    await dispatch(getMenuData());
   };
 
   return (

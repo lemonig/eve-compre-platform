@@ -20,6 +20,9 @@
   height: 100%;
   width: 100%;
   display: flex;
+  flex: auto;
+  min-width: 0;
+  z-index: 99;
 }
 @media (max-width: 767px) {
   .main-content {
@@ -78,6 +81,11 @@
 //   width: 56px !important;
 //   flex: 0 0 56px !important;
 // }
+:where(
+    .css-dev-only-do-not-override-5jsnmo
+  ).ant-menu-light.ant-menu-root.ant-menu-inline {
+  border-inline-end: none !important;
+}
 
 // Tree
 .staff {

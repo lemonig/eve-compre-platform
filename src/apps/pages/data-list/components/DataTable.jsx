@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Select,
-  Button,
-  Table,
-  Form,
-  Tooltip,
-  PageHeader,
-  Statistic,
-  Modal,
-  message,
-  Space,
-} from "antd";
+import { Select, Button, Table, Form, Tooltip, Row, Col } from "antd";
 import LtimePicker from "@Components/LtimePicker";
 import WaterLevel from "@Components/WaterLevel";
 import { queryStation, searchMeta, exportStation } from "@Api/data-list.js";
@@ -56,6 +45,11 @@ function DataTable({ stationMsg, menuMsg, facList }) {
   const [loading, setLoading] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
   const [data, setData] = useState([]);
+  const [otherdata, setOtherData] = useState({
+    maxCountList: [],
+    minCountList: [],
+    avgCountList: [],
+  });
   const [columns, setColumns] = useState([]);
   const [pageMsg, setPagemsg] = useState({
     pagination: {
@@ -137,7 +131,7 @@ function DataTable({ stationMsg, menuMsg, facList }) {
 
   const getPageData = async () => {
     let values = searchForm.getFieldsValue();
-    console.log(values);
+    // console.log(values);
     if (!values.dataSource || !values.time) {
       return;
     }
@@ -157,7 +151,7 @@ function DataTable({ stationMsg, menuMsg, facList }) {
       },
     });
     setLoading(false);
-
+    setOtherData(additional_data);
     if (pageMsg.total !== additional_data.pagination.total) {
       setPagemsg({
         ...pageMsg,
@@ -174,25 +168,33 @@ function DataTable({ stationMsg, menuMsg, facList }) {
         dataIndex: item.key,
         key: item.key,
         render: (value) => tableRender(value),
+        width: 60,
       };
     });
     let normalCol = [
       {
         title: "序号",
         key: "index",
-        width: 60,
-        render: (_, record, index) =>
-          pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
-          index +
-          1,
+        width: 50,
+        dataIndex: "index",
+        // render: (_, record, idx) =>
+        //   pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        //   idx +
+        //   1,
       },
     ];
     setColumns([...normalCol, ...newCol]);
 
     getdata.forEach((item, idx) => {
       item.key = pageMsg.pagination.current + "-" + idx;
+      item.index =
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        idx +
+        1;
     });
     setData([...getdata]);
+    // console.log([additional_data.limitList, ...getdata]);
+    // setData([additional_data.limitList, ...getdata]);
   };
   // 查询
   const search = () => {
@@ -249,6 +251,14 @@ function DataTable({ stationMsg, menuMsg, facList }) {
     setBtnLoading(false);
   };
 
+  const components = {
+    row: (props) => {
+      const { children, index } = props;
+      const rowData = otherdata?.limitList ? otherdata?.limitList : data[index];
+      return <tr {...props}>{children(rowData)}</tr>;
+    },
+  };
+
   return (
     <>
       <div>
@@ -297,11 +307,73 @@ function DataTable({ stationMsg, menuMsg, facList }) {
           }}
           onChange={handleTableChange}
           size="small"
-
-          // scroll={{
-          //   y: 500,
+          scroll={{
+            x: true,
+            y: 500,
+          }}
+          // components={components}
+          summary={() => (
+            <Table.Summary fixed={"bottom"}>
+              <Table.Summary.Row>
+                <Table.Summary.Cell />
+                {otherdata?.maxCountList &&
+                  otherdata?.maxCountList.map((item, idx) => {
+                    return (
+                      <Table.Summary.Cell index={idx} key={idx}>
+                        {item}
+                      </Table.Summary.Cell>
+                    );
+                  })}
+              </Table.Summary.Row>
+              <Table.Summary.Row>
+                <Table.Summary.Cell />
+                {otherdata?.minCountList.map((item, idx) => {
+                  return (
+                    <Table.Summary.Cell index={idx} key={idx}>
+                      {item}
+                    </Table.Summary.Cell>
+                  );
+                })}
+              </Table.Summary.Row>
+              <Table.Summary.Row>
+                <Table.Summary.Cell />
+                {otherdata?.avgCountList.map((item, idx) => {
+                  return (
+                    <Table.Summary.Cell index={idx} key={idx}>
+                      {item}
+                    </Table.Summary.Cell>
+                  );
+                })}
+              </Table.Summary.Row>
+            </Table.Summary>
+          )}
+          onRow={(record) => {
+            // console.log(record);
+          }}
+          // footer={() => {
+          //   return (
+          //     <tr className="ant-table-row ant-table-row-level-0">
+          //       {otherdata?.minCountList &&
+          //         otherdata?.minCountList.map((item) => {
+          //           return (
+          //             <td className="ant-table-cell" key={item}>
+          //               {item}
+          //             </td>
+          //           );
+          //         })}
+          //     </tr>
+          //   );
           // }}
-        />
+          // rowClassName={(record) => (record.isExternal ? "external-row" : "")}
+        >
+          <Table.Summary>
+            <Table.Summary.Row>
+              <Table.Summary.Cell index={0}>总计：</Table.Summary.Cell>
+              <Table.Summary.Cell index={1}>1</Table.Summary.Cell>
+              <Table.Summary.Cell index={2}>{2}</Table.Summary.Cell>
+            </Table.Summary.Row>
+          </Table.Summary>
+        </Table>
       </div>
       {metaData?.stationField.length && facList.length ? (
         <FiledSelect

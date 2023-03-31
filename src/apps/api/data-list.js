@@ -37,7 +37,7 @@ export function getFactor(data) {
   });
 }
 // 单站数据导出
-export function exportStation(data, title,) {
+export function exportStation(data, title) {
   return _download({
     url: `/api/data/station/export`,
     data,

@@ -1,5 +1,8 @@
 .menu-warp {
   height: 100%;
+  position: relative;
+  // overflow-y: auto;
+  // overflow-x: hidden;
   .logo {
     // text-align: center;
     // height: 32px;
@@ -9,14 +12,59 @@
   .menu {
     height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .collapse-wrap {
+    bottom: 0px;
+    left: 100%;
+    position: absolute;
+    top: 0px;
+    transform: translateZ(0px);
+    width: 24px;
+    z-index: 3;
+    button {
+      opacity: 0;
+      outline: 0px;
+      padding: 0px;
+      position: absolute;
+      top: 30%;
+      transition: background-color 100ms linear 0s, color 100ms linear 0s,
+        opacity 300ms cubic-bezier(0.2, 0, 0, 1) 0s,
+        transform 300ms cubic-bezier(0.2, 0, 0, 1) 0s;
+      transform: translate(-50%);
+      &:hover {
+        background: rgba(76, 154, 255, 1);
+        color: white;
+      }
+    }
+    .divert-line {
+      background: linear-gradient(
+        to left,
+        rgba(0, 0, 0, 0.2) 0px,
+        rgba(0, 0, 0, 0.2) 1px,
+        rgba(0, 0, 0, 0.1) 1px,
+        rgba(0, 0, 0, 0) 100%
+      );
+      bottom: 0px;
+      left: -3px;
+      opacity: 0.5;
+      pointer-events: none;
+      position: absolute;
+      top: 0px;
+      transition-duration: 0.22s;
+      transition-property: left, opacity, width;
+      transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+      width: 3px;
+    }
+  }
+  &:hover {
+    button {
+      opacity: 1;
+    }
+    .main-content {
+      z-index: 1 !important;
+    }
+
+    z-index: 100;
   }
 }
-
-// .menu-warp {
-//   :global(.ant-layout-sider) {
-//     max-width: 56px !important;
-//     min-width: 56px !important;
-//     width: 56px !important;
-//     flex: 0 0 56px !important;
-//   }
-// }

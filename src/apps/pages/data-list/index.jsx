@@ -107,7 +107,7 @@ function DataList() {
     {
       key: "3",
       label: `单站多参分析`,
-      children: <MultParam stationMsg={stationSelect} menuMsg={menuSelect} />,
+      children: <MultParam stationMsg={stationSelect} menuMsg={menuSelect}  facList={facList}/>,
     },
   ];
 

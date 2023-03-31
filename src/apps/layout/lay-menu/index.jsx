@@ -10,9 +10,9 @@ import IconFont from "@Components/IconFont";
 import {
   AppstoreOutlined,
   ContainerOutlined,
-  MenuFoldOutlined,
+  RightOutlined,
   PieChartOutlined,
-  MenuUnfoldOutlined,
+  LeftOutlined,
 } from "@ant-design/icons";
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -68,47 +68,60 @@ function LayMenu({ menuList, onChange, value = [] }) {
   };
 
   return (
-    <div
-      className="menu-warp"
-      style={{
-        background: "rgb(250,251,252)",
-      }}
-    >
-      <Button
-        type="primary"
-        onClick={toggleCollapsed}
+    <>
+      <div
+        className="menu-warp"
         style={{
-          marginBottom: 16,
+          background: "rgb(250,251,252)",
         }}
       >
-        {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-      </Button>
-      <Sider
-        theme="light"
-        style={{ height: "100%", background: "rgb(250,251,252)" }}
-        trigger={null}
-        collapsible
-        collapsed={collapsed}
-        collapsedWidth={0}
-      >
-        <div className="menu">
-          <Menu
-            theme="light"
-            openKeys={openKeys}
-            selectedKeys={selectedKeys}
-            mode="inline"
-            items={menuList}
-            style={{
-              // color: "#fff",
-              background: "rgb(250,251,252)",
-              overflow: "hidden auto",
-            }}
-            onSelect={handleMenuClick}
-            onOpenChange={handleOpen}
-          />
+        <Sider
+          theme="light"
+          style={{
+            height: "100%",
+            background: "rgb(250,251,252)",
+            paddingRight: "16px",
+            boxSizing: "border-box",
+          }}
+          trigger={null}
+          collapsible
+          collapsed={collapsed}
+          collapsedWidth={20}
+          // onCollapse={(value) => setCollapsed(value)}
+        >
+          <div className="menu">
+            <Menu
+              theme="light"
+              openKeys={openKeys}
+              selectedKeys={selectedKeys}
+              mode="inline"
+              items={menuList}
+              style={{
+                // color: "#fff",
+                background: "rgb(250,251,252)",
+                overflow: "hidden auto",
+              }}
+              onSelect={handleMenuClick}
+              onOpenChange={handleOpen}
+            />
+          </div>
+        </Sider>
+        <div className="collapse-wrap">
+          <div className="divert-line"></div>
+          <div>
+            <Button
+              type="default"
+              onClick={toggleCollapsed}
+              style={{}}
+              shape="circle"
+              size="small"
+            >
+              {collapsed ? <RightOutlined /> : <LeftOutlined />}
+            </Button>
+          </div>
         </div>
-      </Sider>
-    </div>
+      </div>
+    </>
   );
 }
 

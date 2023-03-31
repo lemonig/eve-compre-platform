@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Select,
   Button,
@@ -43,6 +43,19 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
   const [timeType, setTimeType] = useState("");
   const [chartdata, setChartdata] = useState(null);
   const [evaluteList, setEvaluteList] = useState([]);
+  const chartRef = useRef(null);
+
+  useEffect(() => {
+    console.log(chartRef);
+    const chart = chartRef.current && chartRef.current.getEchartsInstance();
+    const handleResize = () => {
+      chart && chart.resize();
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [chartRef]);
 
   useEffect(() => {
     if ((menuMsg.query, stationMsg.key)) {
@@ -114,7 +127,8 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
       showFieldList: [values.showFieldList],
       compareList: values.compareList ? [values.compareList] : undefined,
     };
-    let { data } = await oneFactorChart(params);
+    let { data, success, message } = await oneFactorChart(params);
+    console.log(message);
     setLoading(false);
     let res = getOption(data);
     console.log(res);
@@ -125,7 +139,7 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
     getPageData();
   };
 
-  const getOption = ({ legend, series, xAxis, title }) => {
+  const getOption = ({ legend, series, xAxis, title, extraData }) => {
     const colorList = [
       "#1C47BF",
       "#DA4688",
@@ -152,30 +166,28 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
       "#006D75",
       "#0050B3",
     ];
-    let yData = [];
+
     let xData = xAxis[0].data;
 
     const option = {
-      // title: {
-      //   text: "商机数量统计",
-      //   left: "center",
-      // },
       color: colorList,
       grid: {
         left: "3%",
         right: "4%",
-        bottom: "0%",
+        bottom: "3%",
+        top: "20%",
         containLabel: true,
       },
       legend: legend,
       tooltip: {
         trigger: "axis",
-        formatter: function (params) {
+        formatter: function (params, ticket) {
           let html = `<div>${params[0].axisValue}</div>`;
+          let unit = extraData[0].unit;
           params.map((item) => {
             if (item.value || item.value === 0) {
               html += `<div>${item.marker} ${item.seriesName}：${item.value} ${
-                item.data.unit ? item.data.unit : ""
+                unit ?? ""
               }</div>`;
             }
           });
@@ -266,11 +278,11 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
             <LcheckBox
               options={[
                 {
-                  label: "同比",
+                  label: "环比",
                   value: "1",
                 },
                 {
-                  label: "环比",
+                  label: "同比",
                   value: "2",
                 },
                 {
@@ -305,6 +317,8 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
               // lazyUpdate={true}
               theme={"theme_name"}
               onChartReady={onChartReadyCallback}
+              style={{ height: "500px" }}
+              ref={chartRef}
             />
           </Spin>
         </>

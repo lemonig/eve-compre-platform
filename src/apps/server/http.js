@@ -25,12 +25,15 @@ axios.interceptors.response.use(
   (response) => {
     store.dispatch(SHIFT_LOADING());
     if (response.data && response.status === 200) {
-      if (Object.prototype.toString.call(response.data === "[object Blob]")) {
+      if (Object.prototype.toString.call(response.data) === "[object Blob]") {
+        console.log("图片上传中...");
       } else if (response.data.code === 401) {
         window.location.href = window.location.origin + "/loading";
       } else if (response.data.code === 403) {
+        console.log("http serve 403");
       } else if (!response.data.success) {
         message.error(response.data.message);
+      } else {
       }
       return Promise.resolve(response);
     } else {

@@ -1,4 +1,4 @@
-@import url("~@Styles//index.less");
+@import url("~@Styles//theme.less");
 
 .AllTree_warp {
   background: #fff;
@@ -10,21 +10,14 @@
   :where(.css-dev-only-do-not-override-1qulcft).ant-tree .ant-tree-treenode {
     align-items: center !important;
   }
-  // :where(.css-dev-only-do-not-override-1qulcft).ant-tree .ant-tree-switcher {
-
-  // }
-  :where(.css-dev-only-do-not-override-f2pnf4).ant-tree .ant-tree-switcher {
-    width: auto !important;
-    align-self: center !important;
-    line-height: 0;
-  }
 
   :where(.css-dev-only-do-not-override-f2pnf4).ant-tree
     .ant-tree-node-content-wrapper.ant-tree-node-selected {
     background-color: @primary-color;
     color: #fff;
   }
-  :where(.css-f2pnf4).ant-tree .ant-tree-switcher {
+
+  :where(.css-dev-only-do-not-override-5jsnmo).ant-tree .ant-tree-switcher {
     width: auto !important;
     align-self: center !important;
     line-height: 0;
@@ -35,6 +28,22 @@
   //   background-color: @primary-color;
   //   color: #fff;
   // }
+  .all-tree-wrap {
+    width: 240px;
+    // transition: width 1s;
+    overflow-x: hidden;
+    // animation-name: shrink;
+    // animation-duration: 1s;
+    // animation-fill-mode: forwards;
+  }
+  @keyframes shrink {
+    from {
+      width: 240px;
+    }
+    to {
+      width: 0;
+    }
+  }
 }
 
 .AllTree_warp > div {
