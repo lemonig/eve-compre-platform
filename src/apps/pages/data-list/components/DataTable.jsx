@@ -311,7 +311,7 @@ function DataTable({ stationMsg, menuMsg, facList }) {
             x: true,
             y: 500,
           }}
-          // components={components}
+          components={components}
           summary={() => (
             <Table.Summary fixed={"bottom"}>
               <Table.Summary.Row>
