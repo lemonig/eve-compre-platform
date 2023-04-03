@@ -74,6 +74,7 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
       }
     };
     getEvaluteData();
+    // initFormVal();
   }, [stationMsg.key]);
 
   const getMetaData = async () => {
@@ -90,10 +91,25 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
           type: data.computeDataLevel[0].value,
         },
         showFieldList: facList[0].value,
+        compareList: undefined,
       });
+      setCompareVal(null);
       setTimeType(data.computeDataLevel[0].value);
       getPageData();
     }
+  };
+
+  const initFormVal = () => {
+    searchForm.setFieldsValue({
+      dataSource: metaData.dataSource[0].value,
+      time: {
+        startTime: dayjs().subtract(1, "month"),
+        endTime: dayjs(),
+        type: metaData.computeDataLevel[0].value,
+      },
+      showFieldList: facList[0].value,
+      compareList: undefined,
+    });
   };
 
   const getPageData = async () => {
@@ -279,11 +295,11 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
               options={[
                 {
                   label: "环比",
-                  value: "1",
+                  value: "2",
                 },
                 {
                   label: "同比",
-                  value: "2",
+                  value: "1",
                 },
                 {
                   label: "自定义",
@@ -319,6 +335,7 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
               onChartReady={onChartReadyCallback}
               style={{ height: "500px" }}
               ref={chartRef}
+              notMerge={true}
             />
           </Spin>
         </>
@@ -328,3 +345,13 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
 }
 
 export default SingleParam;
+// option （必需，对象）：echarts 选项配置，可以查看https://echarts.apache.org/option.html#title。
+// notMerge （可选，对象）：不合并数据，默认为false
+// lazyUpdate （可选，对象）：延迟更新数据，默认为false
+// style （可选，对象）：在style的echarts股利。object, 默认为 {height: ‘300px’}
+// className （可选，字符串）：在class的echarts股利。您可以通过类名设置图表的 css 样式。
+// theme （可选，字符串）：该themeecharts的。string，应该registerTheme在使用之前
+// loadingOption 可选，对象）：
+// showLoading （可选，布尔值，默认值：false）
+// onEvents （可选，数组（字符串=>函数））
+// opts （可选，对象）

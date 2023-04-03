@@ -26,8 +26,11 @@ function Login() {
     let { message: msg, success, data } = await dbLogin(values);
     if (success) {
       localStorage.setItem("token", data.access_token);
+      await getMenuList();
       await getUserInfo();
-      getMenuList();
+      console.log(typeof getMenuList);
+      // navigate("/", { replace: true });
+      window.location.href = "/"; //FIXME刷新menu,应改成navigate,但有异步
     } else {
       message.error(msg);
     }

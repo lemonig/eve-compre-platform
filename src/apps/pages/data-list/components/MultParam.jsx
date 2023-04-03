@@ -58,8 +58,18 @@ function MultParam({ menuMsg, stationMsg, facList }) {
       });
       if (success) {
         setEvaluteList(data);
+        let filed = [];
+        [...facList, ...data].forEach((item, idx) => {
+          if (idx < 10) {
+            filed.push(item.value);
+          }
+        });
+        searchForm.setFieldsValue({
+          showFieldList: filed,
+        });
       }
     };
+    getMetaData();
     getEvaluteData();
   }, [stationMsg.key]);
 
@@ -68,7 +78,6 @@ function MultParam({ menuMsg, stationMsg, facList }) {
       id: menuMsg.query,
     });
     if (success) {
-      console.log(facList);
       setMetaData(data);
       searchForm.setFieldsValue({
         dataSource: data.dataSource[0].value,
@@ -85,7 +94,6 @@ function MultParam({ menuMsg, stationMsg, facList }) {
 
   const getPageData = async () => {
     let values = searchForm.getFieldsValue();
-    console.log(values);
     if (!values.dataSource || !values.time) {
       return;
     }
@@ -100,7 +108,6 @@ function MultParam({ menuMsg, stationMsg, facList }) {
       timeType: values.time.type,
       dataSource: values.dataSource,
       stationId: stationMsg.key,
-      showFieldList: facList.map((item) => item.value),
       compareList: values.compareList ? [values.compareList] : undefined,
     };
     let { data } = await multiFactorChart(params);
@@ -255,6 +262,16 @@ function MultParam({ menuMsg, stationMsg, facList }) {
             <LtimePicker
               options={metaData?.computeDataLevel}
               onChange={onTimepickerChange}
+            />
+          </Form.Item>
+          <Form.Item label="" name="showFieldList">
+            <Select
+              style={{ width: 120 }}
+              options={[...facList, ...evaluteList]}
+              placeholder="请选择"
+              allowClear
+              mode="multiple"
+              maxTagCount="responsive"
             />
           </Form.Item>
 

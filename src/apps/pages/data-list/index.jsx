@@ -85,7 +85,7 @@ function DataList() {
     {
       key: "1",
       label: `站点数据`,
-      children: (
+      children: stationSelect.key && (
         <DataTable
           stationMsg={stationSelect}
           menuMsg={menuSelect}
@@ -96,18 +96,25 @@ function DataList() {
     {
       key: "2",
       label: `单站单参分析`,
-      children: (
+      children: menuSelect.key && stationSelect.key && (
         <SingleParam
           stationMsg={stationSelect}
           menuMsg={menuSelect}
           facList={facList}
+          // key={stationSelect.key}
         />
       ),
     },
     {
       key: "3",
       label: `单站多参分析`,
-      children: <MultParam stationMsg={stationSelect} menuMsg={menuSelect}  facList={facList}/>,
+      children: menuSelect.key && stationSelect.key && (
+        <MultParam
+          stationMsg={stationSelect}
+          menuMsg={menuSelect}
+          facList={facList}
+        />
+      ),
     },
   ];
 
@@ -132,16 +139,16 @@ function DataList() {
             ]}
           />
           <h2 className="satation-name">{stationSelect.title}</h2>
-          {stationSelect.key ? (
-            <Tabs
-              defaultActiveKey="1"
-              activeKey={activeKey}
-              items={items}
-              onChange={onTabChange}
-              animated={true}
-              destroyInactiveTabPane={true}
-            />
-          ) : null}
+          {/* {stationSelect.key ? ( */}
+          <Tabs
+            defaultActiveKey="1"
+            activeKey={activeKey}
+            items={items}
+            onChange={onTabChange}
+            animated={true}
+            destroyInactiveTabPane={true}
+          />
+          {/* ) : null} */}
         </div>
       </section>
     </>

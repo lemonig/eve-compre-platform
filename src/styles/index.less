@@ -88,34 +88,54 @@
 }
 
 // Tree
-.staff {
-  .ant-tree {
-    font-size: 14px !important;
-  }
-  .ant-tree .ant-tree-treenode {
-    width: 100%;
-    > span {
-      line-height: 40px;
-    }
-    > span:last-child {
-      span {
-        line-height: 40px;
-      }
-    }
-  }
-  .ant-tree.ant-tree-directory .ant-tree-treenode-selected:hover::before,
-  .ant-tree.ant-tree-directory .ant-tree-treenode-selected::before {
-    background-color: #ebecf0;
-    color: #0052cc !important;
-  }
-  .ant-tree.ant-tree-directory .ant-tree-treenode-selected .ant-tree-switcher {
-    color: #0052cc !important;
-  }
-  .ant-tree.ant-tree-directory
-    .ant-tree-treenode
-    .ant-tree-node-content-wrapper.ant-tree-node-selected {
-    color: #0052cc !important;
-  }
+// .staff {
+//   .ant-tree {
+//     font-size: 14px !important;
+//   }
+//   .ant-tree .ant-tree-treenode {
+//     width: 100%;
+//     > span {
+//       line-height: 40px;
+//     }
+//     > span:last-child {
+//       span {
+//         line-height: 40px;
+//       }
+//     }
+//   }
+//   .ant-tree.ant-tree-directory .ant-tree-treenode-selected:hover::before,
+//   .ant-tree.ant-tree-directory .ant-tree-treenode-selected::before {
+//     background-color: #ebecf0;
+//     color: #0052cc !important;
+//   }
+//   .ant-tree.ant-tree-directory .ant-tree-treenode-selected .ant-tree-switcher {
+//     color: #0052cc !important;
+//   }
+//   .ant-tree.ant-tree-directory
+//     .ant-tree-treenode
+//     .ant-tree-node-content-wrapper.ant-tree-node-selected {
+//     color: #0052cc !important;
+//   }
+// }
+:where(.css-dev-only-do-not-override-1qulcft).ant-tree .ant-tree-treenode {
+  align-items: center !important;
+}
+
+:where(.css-dev-only-do-not-override-f2pnf4).ant-tree
+  .ant-tree-node-content-wrapper.ant-tree-node-selected {
+  background-color: @primary-color;
+  color: #fff;
+}
+
+:where(.css-dev-only-do-not-override-5jsnmo).ant-tree .ant-tree-switcher {
+  width: auto !important;
+  align-self: center !important;
+  line-height: 0;
+}
+:where(.css-5jsnmo).ant-tree .ant-tree-switcher {
+  width: auto !important;
+  align-self: center !important;
+  line-height: 0;
 }
 
 //Table
