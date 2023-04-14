@@ -45,7 +45,7 @@ function LayMenu({ menuList, onChange, value = [] }) {
   menuList.map((item) => {
     item.icon = <IconFont name={item.icon} size={16}></IconFont>;
   });
-  console.log("----", menuList);
+  // console.log("----", menuList);
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
   };

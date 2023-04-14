@@ -8,13 +8,37 @@ const disabledDate = (current) => {
 };
 
 const PickerWithType = ({ type, value, onChange }) => {
-  if (type === "mm" || type === "hh" || type === "d")
+  if (type === "d")
     return (
       <DatePicker
         value={dayjs(value)}
         onChange={onChange}
         disabledDate={disabledDate}
         // defaultPickerValue={dayjs("2021-10-6")}
+      />
+    );
+  else if (type === "hh")
+    return (
+      <DatePicker
+        value={value}
+        onChange={onChange}
+        disabledDate={disabledDate}
+        showTime={{
+          format: "HH",
+        }}
+        format="YYYY-MM-DD HH"
+      />
+    );
+  else if (type === "mm")
+    return (
+      <DatePicker
+        value={value}
+        onChange={onChange}
+        disabledDate={disabledDate}
+        showTime={{
+          format: "HH:mm",
+        }}
+        format="YYYY-MM-DD HH:mm"
       />
     );
   else if (type === "w")

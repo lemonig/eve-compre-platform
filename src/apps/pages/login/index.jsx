@@ -26,7 +26,7 @@ function Login() {
     let { message: msg, success, data } = await dbLogin(values);
     if (success) {
       localStorage.setItem("token", data.access_token);
-      await getMenuList();
+      // await getMenuList();
       await getUserInfo();
       console.log(typeof getMenuList);
       // navigate("/", { replace: true });

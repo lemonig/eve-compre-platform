@@ -34,3 +34,11 @@ export function updateOwnerPassword(params) {
     data: params,
   });
 }
+
+// 用户所属站点类型
+export function stationPage(data) {
+  return _post({
+    url: `/api/user/type/station`,
+    data,
+  });
+}

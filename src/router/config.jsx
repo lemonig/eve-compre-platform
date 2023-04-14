@@ -2,13 +2,11 @@ import * as React from "react";
 // import menu from "@Utils/menuData";
 import { Navigate } from "react-router-dom";
 import { RouterAuth } from "./routerAuth"; // 401
-import DataList from "../apps/pages/data-list";
-import SetLayout from "../apps/layout/lay-set";
-import SetBase from "../apps/pages/set-base";
-import Home from "../apps/pages/home";
-import SetMetaTheme from "../apps/pages/set-meta-theme";
+import OperateLayout from "@App/layout/lay-operate";
+import BodyLayout from "@App/layout/lay-body";
+import SetLayout from "@App/layout/lay-set";
 
-const BodyLayout = React.lazy(() => import("@App/layout/lay-body"));
+// const BodyLayout = React.lazy(() => import("@App/layout/lay-body"));
 const NotFound = React.lazy(() => import("@App/pages-status/404")); // 404
 const Noauthory = React.lazy(() => import("@App/pages-status/403")); // 403
 const NoAuth = React.lazy(() => import("@App/pages-status/401"));
@@ -32,11 +30,11 @@ const routerList = [
     index: true,
   },
   {
-    path: "homeReal",
+    path: "list",
     element: lazyLoad("home-real"),
   },
   {
-    path: "homeView",
+    path: "resource",
     element: lazyLoad("home-view"),
   },
   {
@@ -57,9 +55,36 @@ const routerList = [
     path: "dataVideo",
     element: lazyLoad("data-video"),
   },
+  // 数据运营
+  {
+    path: "operation",
+    element: <OperateLayout />,
+    children: [
+      {
+        element: lazyLoad("operate-compare"),
+        index: true,
+      },
+      {
+        path: "date_range",
+        element: lazyLoad("operate-date-report"),
+      },
+      {
+        path: "month_change",
+        element: lazyLoad("operate-month-change"),
+      },
+      {
+        path: "exception_data",
+        element: lazyLoad("operate-except-data"),
+      },
+      {
+        path: "batch_export",
+        element: lazyLoad("operate-batch-export"),
+      },
+    ],
+  },
   {
     path: "setting",
-    element: lazyLoadLay("lay-set"),
+    element: <SetLayout />,
     children: [
       {
         element: lazyLoad("set-base"),

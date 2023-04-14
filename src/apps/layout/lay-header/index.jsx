@@ -23,7 +23,7 @@ const Header = ({ message }) => {
   const [activeMenu, setActiveMenu] = useState({});
   let navigate = useNavigate();
   let resolvedPath = useResolvedPath();
-  console.log("menu---", menu);
+  // console.log("menu---", menu);
   useEffect(() => {
     if (resolvedPath.pathname == "/setting") {
       setActiveMenu("");
@@ -74,19 +74,7 @@ const Header = ({ message }) => {
   const creatMenu = () =>
     menuTree.map((item) => (
       <React.Fragment key={item.id}>
-        {item.children && item.label !== "系统设置" ? (
-          <Dropdown placement="bottom" menu={createCSubMenu(item.children)}>
-            <li
-              className={`li-outer ${
-                activeMenu === item.id ? "activeStyle" : undefined
-              }`}
-            >
-              {/* {item.icon} */}
-              <IconFont name={item.icon} size="16" color="#fff" />
-              <span style={{ marginLeft: "4px" }}>{item.label} </span>
-            </li>
-          </Dropdown>
-        ) : (
+        {item.label === "系统设置" || item.label === "数据运营" ? (
           <NavLink
             to={item.path}
             style={({ isActive }) => (isActive ? activeStyle : undefined)}
@@ -98,6 +86,20 @@ const Header = ({ message }) => {
               <span style={{ marginLeft: "4px" }}>{item.label} </span>
             </li>
           </NavLink>
+        ) : (
+          item.children && (
+            <Dropdown placement="bottom" menu={createCSubMenu(item.children)}>
+              <li
+                className={`li-outer ${
+                  activeMenu === item.id ? "activeStyle" : undefined
+                }`}
+              >
+                {/* {item.icon} */}
+                <IconFont name={item.icon} size="16" color="#fff" />
+                <span style={{ marginLeft: "4px" }}>{item.label} </span>
+              </li>
+            </Dropdown>
+          )
         )}
       </React.Fragment>
     ));

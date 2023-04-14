@@ -1,23 +1,7 @@
-import React, { useState, useEffect } from "react";
-import {
-  Select,
-  Button,
-  Table,
-  Form,
-  Tooltip,
-  PageHeader,
-  Statistic,
-  Modal,
-  message,
-  Space,
-  Spin,
-  Radio,
-  Checkbox,
-} from "antd";
+import React, { useState, useEffect, useRef } from "react";
+import { Select, Button, Form, Spin, Checkbox } from "antd";
 import LtimePicker from "@Components/LtimePicker";
-import LcheckBox from "@Components/LcheckBox";
 import {
-  queryStation,
   searchMeta,
   multiFactorChart,
   chartEvaluateIndex,
@@ -25,7 +9,6 @@ import {
 import dayjs from "dayjs";
 import { formatePickTime } from "@Utils/util";
 import "./index.less";
-import CompareTime from "./CompareTime";
 
 import ReactECharts from "echarts-for-react";
 
@@ -39,14 +22,13 @@ function MultParam({ menuMsg, stationMsg, facList }) {
     stationField: [],
     evaluateIndex: [],
   });
-  const [compareVal, setCompareVal] = useState(null);
-  const [timeType, setTimeType] = useState("");
+
   const [chartdata, setChartdata] = useState(null);
   const [evaluteList, setEvaluteList] = useState([]);
+  const chartRef = useRef(null);
 
   useEffect(() => {
     if ((menuMsg.query, stationMsg.key)) {
-      console.log("menu - change");
       getMetaData();
     }
   }, [menuMsg.query]);
@@ -67,11 +49,24 @@ function MultParam({ menuMsg, stationMsg, facList }) {
         searchForm.setFieldsValue({
           showFieldList: filed,
         });
+        getPageData();
       }
     };
-    getMetaData();
     getEvaluteData();
-  }, [stationMsg.key]);
+    initFormVal();
+  }, [JSON.stringify(facList)]);
+
+  useEffect(() => {
+    console.log(chartRef);
+    const chart = chartRef.current && chartRef.current.getEchartsInstance();
+    const handleResize = () => {
+      chart && chart.resize();
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [chartRef]);
 
   const getMetaData = async () => {
     let { data, success } = await searchMeta({
@@ -87,8 +82,21 @@ function MultParam({ menuMsg, stationMsg, facList }) {
           type: data.computeDataLevel[0].value,
         },
       });
-      setTimeType(data.computeDataLevel[0].value);
       getPageData();
+    }
+  };
+
+  const initFormVal = () => {
+    if (metaData.dataSource.length) {
+      searchForm.setFieldsValue({
+        dataSource: metaData.dataSource[0].value,
+        time: {
+          startTime: dayjs().subtract(1, "month"),
+          endTime: dayjs(),
+          type: metaData.computeDataLevel[0].value,
+        },
+        multiY: false,
+      });
     }
   };
 
@@ -111,16 +119,13 @@ function MultParam({ menuMsg, stationMsg, facList }) {
       compareList: values.compareList ? [values.compareList] : undefined,
     };
     let { data } = await multiFactorChart(params);
+    if (data.series.length) {
+      let res = getOption(data);
+      console.log(res);
+      setChartdata({ ...res });
+    }
+
     setLoading(false);
-    let isMultiY = values.multiY;
-
-    let res = getOption(data);
-    // console.log(res);
-    setChartdata({ ...res });
-  };
-
-  const search = () => {
-    getPageData();
   };
 
   const getOption = ({ extraData, legend, series, xAxis, title, yAxis }) => {
@@ -169,7 +174,6 @@ function MultParam({ menuMsg, stationMsg, facList }) {
         width: "auto",
         left: "8%",
         right: "8%",
-        bottom: "0%",
         top: "20%",
         containLabel: true,
       },
@@ -223,12 +227,6 @@ function MultParam({ menuMsg, stationMsg, facList }) {
 
   const onChartReadyCallback = () => {};
 
-  const onCompareChange = (e) => {
-    setCompareVal(e);
-  };
-  const onTimepickerChange = (e) => {
-    setTimeType(e.type);
-  };
   const chartLegendSelected = (params) => {
     console.log(params);
     chartdata.legend.selected = params.selected;
@@ -247,7 +245,7 @@ function MultParam({ menuMsg, stationMsg, facList }) {
         <Form
           layout="inline"
           form={searchForm}
-          onFinish={search}
+          onFinish={getPageData}
           initialValues={{}}
           colon={false}
         >
@@ -259,10 +257,7 @@ function MultParam({ menuMsg, stationMsg, facList }) {
             />
           </Form.Item>
           <Form.Item label="" name="time">
-            <LtimePicker
-              options={metaData?.computeDataLevel}
-              onChange={onTimepickerChange}
-            />
+            <LtimePicker options={metaData?.computeDataLevel} />
           </Form.Item>
           <Form.Item label="" name="showFieldList">
             <Select
@@ -292,11 +287,15 @@ function MultParam({ menuMsg, stationMsg, facList }) {
           <Spin spinning={loading}>
             <ReactECharts
               option={chartdata}
-              lazyUpdate={true}
+              // lazyUpdate={true}
               theme={"theme_name"}
               onChartReady={onChartReadyCallback}
-              style={{ height: "500px" }}
+              style={{ width: "100%", height: "500px" }}
               onEvents={EventsDict}
+              ref={chartRef}
+              showLoading={loading}
+              // opts={{ renderer: "svg" }}
+              notMerge={true}
             />
           </Spin>
         </>

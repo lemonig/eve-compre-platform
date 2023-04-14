@@ -34,8 +34,8 @@ function FiledSelect({
   const [data2, setData2] = useState([]);
   const [data3, setData3] = useState([]);
   const [rData, setRdata] = useState([]);
+
   useEffect(() => {
-    console.log("compo", options2);
     setData1(JSON.parse(JSON.stringify(options1)));
   }, [options1]);
   useEffect(() => {
@@ -43,13 +43,18 @@ function FiledSelect({
   }, [options2]);
   useEffect(() => {
     setData3(JSON.parse(JSON.stringify(options3)));
-    onOk([
-      ...filterCheck(options3),
-      ...filterCheck(data1),
-      ...filterCheck(data2),
-    ]);
-    setRdata([...options3, ...filterOption(data1), ...filterOption(data2)]);
   }, [options3]);
+
+  useEffect(() => {
+    if (data1.length && data2.length && data3.length) {
+      onOk([
+        ...filterCheck(data1),
+        ...filterCheck(data2),
+        ...filterCheck(data3),
+      ]);
+      setRdata([...filterOption(data1), ...filterOption(data2), ...data3]);
+    }
+  }, [data1, data2, data3]);
 
   // useEffect(() => {
   // }, options3)]);

@@ -46,7 +46,6 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
   const chartRef = useRef(null);
 
   useEffect(() => {
-    console.log(chartRef);
     const chart = chartRef.current && chartRef.current.getEchartsInstance();
     const handleResize = () => {
       chart && chart.resize();
@@ -59,7 +58,6 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
 
   useEffect(() => {
     if ((menuMsg.query, stationMsg.key)) {
-      console.log("menu - change");
       getMetaData();
     }
   }, [menuMsg.query]);
@@ -74,8 +72,8 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
       }
     };
     getEvaluteData();
-    // initFormVal();
-  }, [stationMsg.key]);
+    initFormVal();
+  }, [JSON.stringify(facList)]);
 
   const getMetaData = async () => {
     let { data, success } = await searchMeta({
@@ -93,26 +91,31 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
         showFieldList: facList[0].value,
         compareList: undefined,
       });
-      setCompareVal(null);
       setTimeType(data.computeDataLevel[0].value);
       getPageData();
     }
   };
 
   const initFormVal = () => {
-    searchForm.setFieldsValue({
-      dataSource: metaData.dataSource[0].value,
-      time: {
-        startTime: dayjs().subtract(1, "month"),
-        endTime: dayjs(),
-        type: metaData.computeDataLevel[0].value,
-      },
-      showFieldList: facList[0].value,
-      compareList: undefined,
-    });
+    if (metaData.dataSource.length) {
+      searchForm.setFieldsValue({
+        dataSource: metaData.dataSource[0].value,
+        time: {
+          startTime: dayjs().subtract(1, "month"),
+          endTime: dayjs(),
+          type: metaData.computeDataLevel[0].value,
+        },
+        showFieldList: facList[0].value,
+        compareList: undefined,
+      });
+      setCompareVal(null);
+    }
+    // getPageData(); //站点切换后 因子切换 查询条件置空 刷新
   };
 
   const getPageData = async () => {
+    console.log("xxxx");
+
     let values = searchForm.getFieldsValue();
     console.log(values);
     if (!values.dataSource || !values.time) {
@@ -144,11 +147,9 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
       compareList: values.compareList ? [values.compareList] : undefined,
     };
     let { data, success, message } = await oneFactorChart(params);
-    console.log(message);
-    setLoading(false);
     let res = getOption(data);
-    console.log(res);
     setChartdata({ ...res });
+    setLoading(false);
   };
 
   const search = () => {
@@ -230,8 +231,8 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
           },
           magicType: {
             show: true,
-            type: ["line", "bar", "stack"],
-            title: ["折线图", "柱状图", "堆叠"],
+            type: ["line", "bar"],
+            title: ["折线图", "柱状图"],
           },
         },
       },
@@ -327,17 +328,18 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
           <div className="trendChart_title">
             {chartdata?.series[0].name}变化趋势图
           </div>
-          <Spin spinning={loading}>
-            <ReactECharts
-              option={chartdata}
-              // lazyUpdate={true}
-              theme={"theme_name"}
-              onChartReady={onChartReadyCallback}
-              style={{ height: "500px" }}
-              ref={chartRef}
-              notMerge={true}
-            />
-          </Spin>
+          {/* <Spin spinning={loading}> */}
+          <ReactECharts
+            option={chartdata}
+            // lazyUpdate={true}
+            theme={"theme_name"}
+            onChartReady={onChartReadyCallback}
+            style={{ height: "500px" }}
+            ref={chartRef}
+            notMerge={true}
+            showLoading={loading}
+          />
+          {/* </Spin> */}
         </>
       ) : null}
     </div>

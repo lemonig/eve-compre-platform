@@ -24,21 +24,21 @@ export function stationTreeG(data) {
 // 站点区域树
 export function stationTreeA(data) {
   return _post({
-    url: `/api/station/region/tree`,
+    url: `/api/user/region/tree`,
     data,
   });
 }
 // 站点流域树
 export function stationTreeR(data) {
   return _post({
-    url: `/api/station/river/tree`,
+    url: `/api/user/river/tree`,
     data,
   });
 }
 // 站点流域树
 export function stationTreeAll(data) {
   return _post({
-    url: `/api/station/all/tree`,
+    url: `/api/user/all/tree`,
     data,
   });
 }

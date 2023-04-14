@@ -90,7 +90,12 @@ const tableColumns = [
   },
 ];
 
-function StationSelect({ value = [], onChange, options = [] }) {
+function StationSelect({
+  value = [],
+  onChange,
+  options = [],
+  defaultStationType,
+}) {
   const optionsClone = JSON.parse(JSON.stringify(options));
   const [searchForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -113,7 +118,13 @@ function StationSelect({ value = [], onChange, options = [] }) {
   }, []);
 
   useEffect(() => {
-    setData(options);
+    if (defaultStationType) {
+      searchForm.setFieldValue("stationType", defaultStationType);
+      let res1 = optionsClone.filter((ele) => value.includes(ele.id));
+      setData(res1);
+    } else {
+      setData(options);
+    }
   }, [options]);
 
   useEffect(() => {
@@ -152,9 +163,6 @@ function StationSelect({ value = [], onChange, options = [] }) {
   };
 
   // q区域
-  const onReginChange = (value, selectedOptions) => {
-    console.log(value, selectedOptions);
-  };
   const loadeReginData = async (selectedOptions) => {
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
@@ -174,9 +182,6 @@ function StationSelect({ value = [], onChange, options = [] }) {
   };
 
   // 河流
-  const onRiverChange = (value, selectedOptions) => {
-    console.log(value, selectedOptions);
-  };
   const loadRiverData = async (selectedOptions) => {
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
@@ -243,6 +248,7 @@ function StationSelect({ value = [], onChange, options = [] }) {
                   allowClear
                   style={{ width: "120px" }}
                   onChange={onFormChange}
+                  disabled={!!defaultStationType}
                 />
               </Form.Item>
             </Col>
