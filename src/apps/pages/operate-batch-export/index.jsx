@@ -109,6 +109,9 @@ function BatchExport() {
     });
     if (success) {
       setMetaData(data);
+      form.setFieldsValue({
+        dataSource: data.dataSource[0]?.value ?? "",
+      });
     }
   };
 

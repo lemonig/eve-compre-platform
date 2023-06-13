@@ -80,37 +80,37 @@ function DataTable({ stationMsg, menuMsg, facList }) {
   }, [menuMsg.query]);
 
   //station Change
-  // useEffect(() => {
-  //   if (stationMsg.key) {
-  //     console.log("station - change");
-  //     const getFactorData = async () => {
-  //       let { data } = await getFactor({
-  //         id: stationMsg.key,
-  //       });
-  //       data?.forEach((item) => {
-  //         item.checked = true;
-  //       });
-  //       setfacList(data);
-  //     };
-  //     getFactorData();
-  //   }
-  // }, [stationMsg.key]);
-
-  //factorList/menuMsg Change
   useEffect(() => {
     if (stationMsg.key) {
-      console.log("factorList - change");
-      search();
-    }
-  }, [JSON.stringify(factorList)]);
-
-  //pageMsg change
-  useEffect(() => {
-    if (stationMsg.key) {
-      console.log("pageMsg - change");
+      console.log(
+        "stationMsg pagination factorList  - change",
+        stationMsg,
+        pageMsg.pagination
+      );
+      console.log(factorList);
       getPageData();
     }
-  }, [JSON.stringify(pageMsg)]);
+  }, [
+    stationMsg.key,
+    pageMsg.pagination.current,
+    pageMsg.pagination.pageSize,
+    JSON.stringify(factorList),
+  ]);
+
+  //factorList/menuMsg Change
+  // useEffect(() => {
+  //   if (stationMsg.key) {
+  //     console.log("factorList - change");
+  //     search();
+  //   }
+  // }, [JSON.stringify(factorList)]);
+
+  //pageMsg change
+  // useEffect(() => {
+  //   if (stationMsg.key) {
+  //     getPageData();
+  //   }
+  // }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
 
   const getMetaData = async () => {
     let { data, success } = await searchMeta({
@@ -131,14 +131,13 @@ function DataTable({ stationMsg, menuMsg, facList }) {
 
   const getPageData = async () => {
     let values = searchForm.getFieldsValue();
-    // console.log(values);
     if (!values.dataSource || !values.time) {
       return;
     }
     setLoading(true);
     values.startTime = formatePickTime(values.time.type, values.time.startTime);
     values.endTime = formatePickTime(values.time.type, values.time.endTime);
-    let { additional_data, data: getdata } = await queryStation({
+    let params = {
       page: pageMsg.pagination.current,
       size: pageMsg.pagination.pageSize,
       data: {
@@ -149,7 +148,9 @@ function DataTable({ stationMsg, menuMsg, facList }) {
         stationId: stationMsg.key,
         showFieldList: factorList,
       },
-    });
+    };
+    console.log(params);
+    let { additional_data, data: getdata } = await queryStation(params);
     setLoading(false);
     setOtherData(additional_data);
     if (pageMsg.total !== additional_data.pagination.total) {
@@ -212,8 +213,12 @@ function DataTable({ stationMsg, menuMsg, facList }) {
   };
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
+    console.log(pagination);
     setPagemsg({
-      pagination,
+      ...pageMsg,
+      pagination: {
+        ...pagination,
+      },
       filters,
       ...sorter,
     });

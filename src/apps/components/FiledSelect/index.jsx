@@ -29,12 +29,15 @@ function FiledSelect({
   options2,
   options3,
 }) {
+  console.log(options1);
+  console.log(options2);
+  console.log(options3);
   const [loading, setLoading] = useState(false);
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
   const [data3, setData3] = useState([]);
   const [rData, setRdata] = useState([]);
-
+  // TODOM默认的数据处理，站名名称在option1 中，默认勾选
   useEffect(() => {
     setData1(JSON.parse(JSON.stringify(options1)));
   }, [options1]);
@@ -43,16 +46,21 @@ function FiledSelect({
   }, [options2]);
   useEffect(() => {
     setData3(JSON.parse(JSON.stringify(options3)));
+    // onOk(options3.map((item) => item.value));
   }, [options3]);
 
   useEffect(() => {
+    console.log("init", [...filterCheck(options3)]);
+    onOk([...filterCheck(data1), ...filterCheck(data2), ...filterCheck(data3)]);
+  }, []);
+
+  useEffect(() => {
     if (data1.length && data2.length && data3.length) {
-      onOk([
-        ...filterCheck(data1),
-        ...filterCheck(data2),
-        ...filterCheck(data3),
+      setRdata([
+        ...filterOption(data1),
+        ...filterOption(data2),
+        ...filterOption(data3),
       ]);
-      setRdata([...filterOption(data1), ...filterOption(data2), ...data3]);
     }
   }, [data1, data2, data3]);
 
@@ -113,59 +121,6 @@ function FiledSelect({
         return arrayMove(previous, activeIndex, overIndex);
       });
     }
-  };
-
-  const DragItem = (children, ...props) => {
-    console.log(children);
-    const {
-      attributes,
-      listeners,
-      setNodeRef,
-      setActivatorNodeRef,
-      transform,
-      transition,
-      isDragging,
-    } = useSortable({
-      id: children["id"],
-    });
-
-    const style = {
-      ...props.style,
-      transform: CSS.Transform.toString(
-        transform && {
-          ...transform,
-          scaleY: 1,
-        }
-      ),
-      transition,
-      ...(isDragging
-        ? {
-            position: "relative",
-            zIndex: 9999,
-          }
-        : {}),
-    };
-    return (
-      <div {...props} ref={setNodeRef} style={style} {...attributes}>
-        {React.Children.map(children, (child) => {
-          if (child.key === "sort") {
-            return React.cloneElement(child, {
-              children: (
-                <MenuOutlined
-                  ref={setActivatorNodeRef}
-                  style={{
-                    touchAction: "none",
-                    cursor: "move",
-                  }}
-                  {...listeners}
-                />
-              ),
-            });
-          }
-          return child;
-        })}
-      </div>
-    );
   };
 
   function SortableItem(props) {

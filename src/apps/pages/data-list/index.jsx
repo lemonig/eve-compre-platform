@@ -49,11 +49,13 @@ function DataList() {
   });
 
   const onMenuChange = ({ key, title, query, ptitle }) => {
-    setMenuSelect({
-      title,
-      key: key[0],
-      query,
-      ptitle,
+    setMenuSelect((m) => {
+      return {
+        title,
+        key: key[0],
+        query,
+        ptitle,
+      };
     });
   };
 
@@ -66,7 +68,7 @@ function DataList() {
   };
   useEffect(() => {
     if (stationSelect.key) {
-      console.log("station - change");
+      console.log("station - change -index");
       const getFactorData = async () => {
         let { data } = await getFactor({
           id: stationSelect.key,
