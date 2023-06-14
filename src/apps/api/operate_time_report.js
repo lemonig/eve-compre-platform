@@ -28,3 +28,16 @@ export function batchExportMeta(data) {
     data,
   });
 }
+
+export function dashboardRealtime(data) {
+  return _post({
+    url: `/api/data/dashboard/realtime`,
+    data,
+  });
+}
+export function realtimeMeta(data) {
+  return _post({
+    url: `/api/data/dashboard/realtime/meta`,
+    data,
+  });
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Input, Tree } from "antd";
-import "./index.less";
+import "../stationTree/index.less";
 import { stationTreeAll } from "@Api/util.js";
 import stationIcon from "@/assets/image/stationIcon.png";
 import stationOffIcon from "@/assets/image/stationOffIcon.png";
@@ -22,13 +22,7 @@ const getParentKey = (key, tree) => {
   return parentKey;
 };
 
-const titleIn = {
-  region: "区域",
-  river: "河流",
-  group: "分组",
-};
-
-function StationTree({ query, onChange }) {
+function StationTreeMul({ query, onChange }) {
   const [currentTab, setCurrentTab] = useState("region");
   const [showTree, setShowTree] = useState(true);
   const [treeData1, setTreeData1] = useState([]); //区域
@@ -40,9 +34,11 @@ function StationTree({ query, onChange }) {
   const [autoExpandParent, setAutoExpandParent] = useState(true);
 
   const [pageDataTit, setPageDataTit] = useState([]);
-
+  console.log(query);
   useEffect(() => {
-    getTreeData(query);
+    if (query) {
+      getTreeData(query);
+    }
   }, [query]);
 
   const getTreeData = async (query) => {
@@ -111,10 +107,10 @@ function StationTree({ query, onChange }) {
           flag = false;
 
           setActiveNode([item.key]);
-          onChange({
-            key: item.id || "",
-            title: item.label || "",
-          });
+          // onChange({
+          //   key: item.id || "",
+          //   title: item.label || "",
+          // });
         }
         return {
           label,
@@ -170,17 +166,6 @@ function StationTree({ query, onChange }) {
       }
     }
   };
-  const treeSelect = (selectedKeys, { node }, e) => {
-    if (node.isStation) {
-      setActiveNode([node.key]);
-      onChange({
-        key: node.id || "",
-        title: node.label || "",
-      });
-    } else {
-      e.preventDefault();
-    }
-  };
 
   const onTreeExpand = (newExpandedKeys) => {
     setExpandedKeys(newExpandedKeys);
@@ -207,6 +192,26 @@ function StationTree({ query, onChange }) {
   // useEffect(() => {
   //   let filterTree = loop(pageData[currentTab]);
   // }, [searchValue, pageData]);
+  const filterStation = (arr) => {
+    let res = [];
+    const innerFun = (arr) => {
+      arr.forEach((item) => {
+        if (item.isStation) {
+          res.push(item.id);
+        }
+      });
+    };
+    innerFun(arr);
+    return res;
+  };
+
+  const onCheck = (checkedKeys, info) => {
+    console.log("onCheck", checkedKeys, info);
+    let stationIdArr = filterStation(info.checkedNodes);
+    console.log(stationIdArr);
+    onChange(stationIdArr);
+  };
+
   return (
     <div className={`AllTree_warp ${showTree ? "hasWidth" : ""}`}>
       <div
@@ -236,16 +241,18 @@ function StationTree({ query, onChange }) {
           <div className="station_tree">
             {treeData1.length && currentTab === "region" ? (
               <Tree
-                // checkable
+                blockNode
+                checkable
+                onCheck={onCheck}
                 treeData={treeData1}
                 titleRender={titleRender}
                 showIcon={true}
                 switcherIcon={switcherIconRender}
-                onSelect={treeSelect}
                 selectedKeys={activeNode}
                 onExpand={onTreeExpand}
                 expandedKeys={expandedKeys}
                 defaultExpandAll
+                selectable={false}
                 // autoExpandParent={true}
                 // showLine={{
                 //   showLeafIcon: true,
@@ -256,12 +263,14 @@ function StationTree({ query, onChange }) {
             ) : null}
             {treeData2.length && currentTab === "river" ? (
               <Tree
-                // checkable
+                blockNode
+                checkable
                 treeData={treeData2}
                 titleRender={titleRender}
                 showIcon={true}
                 switcherIcon={switcherIconRender}
-                onSelect={treeSelect}
+                onCheck={onCheck}
+                selectable={false}
                 // selectedKeys={activeNode}
                 // onExpand={onTreeExpand}
                 // expandedKeys={expandedKeys}
@@ -276,12 +285,14 @@ function StationTree({ query, onChange }) {
             ) : null}
             {treeData3.length && currentTab === "group" ? (
               <Tree
-                // checkable
+                blockNode
+                checkable
+                onCheck={onCheck}
                 treeData={treeData3}
                 titleRender={titleRender}
                 showIcon={true}
                 switcherIcon={switcherIconRender}
-                onSelect={treeSelect}
+                selectable={false}
                 // selectedKeys={activeNode}
                 // onExpand={onTreeExpand}
                 // expandedKeys={expandedKeys}
@@ -304,4 +315,4 @@ function StationTree({ query, onChange }) {
   );
 }
 
-export default StationTree;
+export default StationTreeMul;

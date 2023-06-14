@@ -26,7 +26,7 @@ function DataList() {
   });
 
   const [activeKey, setActiveKey] = useState("1");
-  const [facList, setfacList] = useState([]); //因子
+  const [facList, setFacList] = useState([]); //因子
 
   useEffect(() => {
     setMenuSelect({
@@ -49,13 +49,11 @@ function DataList() {
   });
 
   const onMenuChange = ({ key, title, query, ptitle }) => {
-    setMenuSelect((m) => {
-      return {
-        title,
-        key: key[0],
-        query,
-        ptitle,
-      };
+    setMenuSelect({
+      title,
+      key: key[0],
+      query,
+      ptitle,
     });
   };
 
@@ -68,7 +66,7 @@ function DataList() {
   };
   useEffect(() => {
     if (stationSelect.key) {
-      console.log("station - change -index");
+      console.log("station - change -index", stationSelect);
       const getFactorData = async () => {
         let { data } = await getFactor({
           id: stationSelect.key,
@@ -77,7 +75,7 @@ function DataList() {
           item.checked = true;
         });
         // console.log(data);
-        setfacList(data);
+        setFacList(data);
       };
       getFactorData();
     }

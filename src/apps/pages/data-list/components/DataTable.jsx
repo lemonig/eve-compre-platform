@@ -12,31 +12,32 @@ import { formatePickTime } from "@Utils/util";
 function tableRender(value) {
   if (value.divColor) {
     return <WaterLevel level={value.value} color={value.divColor}></WaterLevel>;
-  } else if (value.color) {
-    return (
-      <Tooltip title={"超标"}>
-        <span
-          style={{
-            color: "#F82504",
-            fontWeight: "bold",
-          }}
-        >
-          {value.value}
-        </span>
-      </Tooltip>
-    );
-  } else if (value.tips) {
+  } else {
     return (
       <>
-        <span>{value.value}</span>
-        &nbsp;
-        <Tooltip title={value.tips}>
-          <WarningFilled style={{ color: "#F82504" }} />
-        </Tooltip>
+        {
+          <Tooltip title={value.color ? "超标" : ""}>
+            <span
+              style={
+                value.color
+                  ? {
+                      color: "#F82504",
+                      fontWeight: "bold",
+                    }
+                  : {}
+              }
+            >
+              {value.value}
+            </span>
+          </Tooltip>
+        }
+        {value.tips && (
+          <Tooltip title={value.tips}>
+            <WarningFilled style={{ color: "#F82504" }} />
+          </Tooltip>
+        )}
       </>
     );
-  } else {
-    return value.value;
   }
 }
 
@@ -75,6 +76,7 @@ function DataTable({ stationMsg, menuMsg, facList }) {
   useEffect(() => {
     if ((menuMsg.query, stationMsg.key)) {
       console.log("menu - change");
+      // setFactorList([]);
       getMetaData();
     }
   }, [menuMsg.query]);
@@ -83,27 +85,21 @@ function DataTable({ stationMsg, menuMsg, facList }) {
   useEffect(() => {
     if (stationMsg.key) {
       console.log(
-        "stationMsg pagination factorList  - change",
+        "stationMsg pagination   - change",
         stationMsg,
         pageMsg.pagination
       );
-      console.log(factorList);
       getPageData();
     }
-  }, [
-    stationMsg.key,
-    pageMsg.pagination.current,
-    pageMsg.pagination.pageSize,
-    JSON.stringify(factorList),
-  ]);
+  }, [stationMsg.key, pageMsg.pagination.current, pageMsg.pagination.pageSize]);
 
   //factorList/menuMsg Change
-  // useEffect(() => {
-  //   if (stationMsg.key) {
-  //     console.log("factorList - change");
-  //     search();
-  //   }
-  // }, [JSON.stringify(factorList)]);
+  useEffect(() => {
+    if (stationMsg.key) {
+      console.log("factorList - change");
+      getPageData();
+    }
+  }, [JSON.stringify(factorList)]);
 
   //pageMsg change
   // useEffect(() => {
@@ -233,6 +229,7 @@ function DataTable({ stationMsg, menuMsg, facList }) {
   };
 
   const confirmModal = (data) => {
+    console.log("callback", data);
     setVisable(false);
     setFactorList(data);
   };
@@ -385,6 +382,7 @@ function DataTable({ stationMsg, menuMsg, facList }) {
           options1={metaData?.stationField}
           options2={metaData?.evaluateIndex}
           options3={facList}
+          stationId={stationMsg.key}
           open={visable}
           closeModal={() => setVisable(false)}
           onOk={confirmModal}

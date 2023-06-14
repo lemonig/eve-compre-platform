@@ -29,15 +29,17 @@ function FiledSelect({
   options2,
   options3,
 }) {
-  console.log(options1);
-  console.log(options2);
-  console.log(options3);
+  console.log("stationId==" + stationId);
+  // console.log(options1);
+  // console.log(options2);
+  // console.log(options3);
   const [loading, setLoading] = useState(false);
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
   const [data3, setData3] = useState([]);
   const [rData, setRdata] = useState([]);
-  // TODOM默认的数据处理，站名名称在option1 中，默认勾选
+  const [innerStationId, setInnerStationId] = useState(""); //FIXME用站点id判断 是否刷新
+  //FIXME为解决切换站点类型，options不相应问题
   useEffect(() => {
     setData1(JSON.parse(JSON.stringify(options1)));
   }, [options1]);
@@ -46,13 +48,18 @@ function FiledSelect({
   }, [options2]);
   useEffect(() => {
     setData3(JSON.parse(JSON.stringify(options3)));
-    // onOk(options3.map((item) => item.value));
   }, [options3]);
 
+  // TODOM默认的数据处理，站名名称在option1 中，默认勾选
+  // TODO组件只生效一次
   useEffect(() => {
-    console.log("init", [...filterCheck(options3)]);
-    onOk([...filterCheck(data1), ...filterCheck(data2), ...filterCheck(data3)]);
-  }, []);
+    console.log("init-stationId", stationId);
+    onOk([
+      ...filterCheck(options1),
+      ...filterCheck(options2),
+      ...filterCheck(options3),
+    ]);
+  }, [options3]); //TODO可能要根据站点变化刷新
 
   useEffect(() => {
     if (data1.length && data2.length && data3.length) {
@@ -63,9 +70,6 @@ function FiledSelect({
       ]);
     }
   }, [data1, data2, data3]);
-
-  // useEffect(() => {
-  // }, options3)]);
 
   // 选择
   const onCheckChange = (item) => {

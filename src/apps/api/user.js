@@ -42,3 +42,10 @@ export function stationPage(data) {
     data,
   });
 }
+// 用户所属类型
+export function topicList(data) {
+  return _post({
+    url: `/api/user/type/topic`,
+    data,
+  });
+}

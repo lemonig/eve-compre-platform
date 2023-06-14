@@ -124,3 +124,34 @@ export function formatePickTime(type, value) {
     return dayjs(value).format("YYYY");
   }
 }
+
+// 找出最小数据频次
+export function findMinFrequent(list) {
+  console.log(list);
+  if (!Array.isArray(list)) {
+    return;
+  }
+  if (list.includes("mm")) {
+    return "mm";
+  } else if (list.includes("hh")) {
+    return "hh";
+  } else if (list.includes("d")) {
+    return "d";
+  } else if (list.includes("w")) {
+    return "w";
+  } else if (list.includes("m")) {
+    return "m";
+  } else if (list.includes("q")) {
+    return "q";
+  } else if (list.includes("y")) {
+    return "y";
+  }
+}
+
+export function tableIndex(data) {
+  data.forEach((item, idx) => {
+    // item.key = pageMsg.pagination.current + "-" + idx;
+    item.index = idx + 1;
+  });
+  return data
+}

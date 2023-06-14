@@ -1,89 +1,360 @@
-import React, { useEffect, useState } from "react";
-import LayMenu from "@App/layout/lay-menu";
-import StationTree from "@Shared/stationTree";
+import React, { useEffect, useState, useMemo } from "react";
+import { Layout, Select, Space, Radio, Checkbox, Table, Tooltip } from "antd";
+import { SettingOutlined, WarningFilled } from "@ant-design/icons";
 
+import { findMinFrequent, tableIndex } from "@Utils/util";
+
+import LayMenu from "@App/layout/lay-menu";
+import TimeCount from "./components/TimeCount";
 import { handleMenu } from "@Utils/menu";
+import StationTreeMul from "@Shared/stationTreeMul";
+import FiledSelect from "@Components/FiledSelect";
+import WaterLevel from "@Components/WaterLevel";
+
 import { useDispatch, useSelector } from "react-redux";
 
 import { getFactor } from "@Api/data-list.js";
+// import { topicList } from "@Api/set_meta_theme.js";
+import { realtimeMeta, dashboardRealtime } from "@Api/operate_time_report.js";
+// import { stationPage as stationMetaPage } from "@Api/set_meta_station.js";
+import { stationPage as stationMetaPage, topicList } from "@Api/user.js";
+
+import ChartModel from "./components/ChartModel";
+import DayModel from "./components/DayModel";
+
+let inputwidtg = {
+  width: "300px",
+};
 
 function HomeReal() {
-  const [menuSelect, setMenuSelect] = useState({
-    title: "",
-    key: "",
-    query: "",
-    ptitle: "",
-  });
-
-  const [stationSelect, setStationSelect] = useState({
-    title: "",
-    key: "",
-  });
+  const [stationSelect, setStationSelect] = useState([]);
+  const [loading, setLoading] = useState(false);
+  //表格
+  const [columns, setColumns] = useState([]);
+  const [data, setData] = useState([]);
 
   const [activeKey, setActiveKey] = useState("1");
-  const [facList, setfacList] = useState([]); //因子
+  const [factList, setFactList] = useState({
+    stationField: [],
+    evaluateIndex: [],
+    factor: [],
+  }); //因子
+
+  const [themeList, setThemeList] = useState([]); //业务主题
+  const [themeId, setThemeId] = useState("");
+  const [stationTypeList, setStationTypeList] = useState([]); //站点类型
+  const [stationTypeItem, setStationTypeItem] = useState(); //站点类型
+  const [stationTypeId, setStationTypeId] = useState("");
+  const [visable, setVisable] = useState(false); //因子选择
+  const [timeType, setTimeType] = useState(); //时间类型
+
+  const [factorList, setFactorList] = useState([]); //字段选择回调
+
+  const [isDayModalOpen, setIsDayModalOpen] = useState(false);
+  const [isChartModalOpen, setIsChartModalOpen] = useState(false);
+
+  const [tableRow, setTableRow] = useState();
+  const [tableCell, setTableCell] = useState();
 
   useEffect(() => {
-    setMenuSelect({
-      key: dataMenu.children[0].children[0].id,
-      title: dataMenu.children[0].children[0].title,
-      query: dataMenu.children[0].children[0].query,
-      ptitle: dataMenu.children[0].title,
-    });
+    initPage();
   }, []);
 
-  const menu = useSelector((state) => state.menu);
-  const menuTree = menu ? handleMenu(menu) : [];
+  useEffect(() => {
+    if (stationTypeId && factorList.length) {
+      getPageData();
+    }
+  }, [stationTypeId, factorList, stationSelect, timeType]);
 
-  let dataMenu = menuTree
-    .find((ele) => ele.label === "数据查询")
-    .children.find((ele) => ele.label === "监测数据");
-
-  dataMenu.children.forEach((element) => {
-    element.type = "group";
-  });
-
-  const onMenuChange = ({ key, title, query, ptitle }) => {
-    setMenuSelect({
-      title,
-      key: key[0],
-      query,
-      ptitle,
-    });
+  const getTopicListAsync = async () => {
+    let { data } = await topicList();
+    return data;
   };
 
-  const onTabChange = (key) => {
-    setActiveKey(key);
+  const getStationTypeAsync = async (id) => {
+    let { data } = await stationMetaPage({ topicType: id });
+    return data;
+  };
+  const getRealtimeMetaAsync = async (id) => {
+    let { data } = await realtimeMeta({ stationType: id });
+    data.factor?.forEach((ele) => (ele.checked = true));
+    return data;
+  };
+
+  const getPageData = async () => {
+    setLoading(true);
+    let params = {
+      stationType: stationTypeId,
+      stationIdList: stationSelect,
+      showFieldList: factorList,
+      timeType: timeType,
+    };
+    let { additional_data, data: getdata } = await dashboardRealtime(params);
+    setLoading(false);
+    let newCol = additional_data.columnList.map((item) => ({
+      title: item.label,
+      dataIndex: item.key,
+      key: item.key,
+      render: (value, record) => tableRender(value, record),
+      width: 60,
+    }));
+    let normalCol = {
+      title: "序号",
+      key: "index",
+      width: 50,
+      dataIndex: "index",
+      // render: (_, record, idx) =>
+      //   pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+      //   idx +
+      //   1,
+    };
+
+    newCol.unshift(normalCol);
+    setColumns(newCol);
+    setData(tableIndex(getdata));
+  };
+
+  const refreshPage = () => {
+    getPageData();
+  };
+
+  const initPage = async () => {
+    let res = await getTopicListAsync();
+    setThemeList(res);
+    setThemeId(res[0].id);
+    let res1 = await getStationTypeAsync(res[0].id);
+    setStationTypeId(res1[0].id);
+    setStationTypeList(res1);
+    setStationTypeItem(res1[0]);
+    // 数据频次
+    let timeTypeDefault = findMinFrequent(res1[0].allComputeDataLevelList);
+    setTimeType(timeTypeDefault);
+    let res2 = await getRealtimeMetaAsync(res1[0].id);
+    setFactList(res2);
   };
 
   const onStationChange = (e) => {
     setStationSelect(e);
   };
-  useEffect(() => {
-    if (stationSelect.key) {
-      console.log("station - change");
-      const getFactorData = async () => {
-        let { data } = await getFactor({
-          id: stationSelect.key,
-        });
-        data?.forEach((item) => {
-          item.checked = true;
-        });
-        // console.log(data);
-        setfacList(data);
-      };
-      getFactorData();
+
+  const onRadioChange = (e) => {
+    setTimeType(e.target.value);
+  };
+
+  const confirmModal = (data) => {
+    console.log("callback", data);
+    setVisable(false);
+    setFactorList(data);
+  };
+
+  //change 业务主题
+  const handleTTChange = async (value) => {
+    setThemeId(value);
+    let res1 = await getStationTypeAsync(value);
+    setStationTypeId(res1[0].id);
+    setStationTypeList(res1);
+    setStationTypeItem(res1[0]);
+    let timeTypeDefault = findMinFrequent(res1[0].allComputeDataLevelList);
+    setTimeType(timeTypeDefault);
+    let res2 = await getRealtimeMetaAsync(res1[0].id);
+    setFactList(res2);
+  };
+  //change 站点类型
+  const handleSTChange = (value, option) => {
+    console.log(`selected ${option}`);
+    setStationTypeId(value);
+    setStationTypeItem(option);
+  };
+
+  const closeModal = () => {
+    setIsDayModalOpen(false);
+    setIsChartModalOpen(false);
+  };
+
+  const memoStationTree = useMemo(
+    () => <StationTreeMul query={stationTypeId} onChange={onStationChange} />,
+    [stationTypeId]
+  );
+  const memoFiledSelect = useMemo(() => {
+    return (
+      !!factList.factor.length && (
+        <FiledSelect
+          options1={factList?.stationField}
+          options2={factList?.evaluateIndex}
+          options3={factList?.factor}
+          open={visable}
+          closeModal={() => setVisable(false)}
+          onOk={confirmModal}
+        />
+      )
+    );
+  }, [stationTypeId, visable, factList]);
+
+  const showFactorModel = (value, record) => {
+    console.log(value);
+    console.log(record);
+    setTableRow(record.name);
+    setTableCell(value);
+    setIsChartModalOpen(true);
+  };
+  const showDayModel = (value, record) => {
+    console.log(value);
+    console.log(record);
+    setTableRow(record.name);
+    setTableCell(value);
+    setIsDayModalOpen(true);
+  };
+
+  function tableRender(value, record) {
+    if (value.divColor) {
+      return (
+        <WaterLevel level={value.value} color={value.divColor}></WaterLevel>
+      );
+    } else if (value.key === "datatime") {
+      return (
+        <>{<a onClick={() => showDayModel(value, record)}>{value.value}</a>}</>
+      );
+    } else {
+      return (
+        <>
+          {
+            <Tooltip title={value.color ? "超标" : ""}>
+              <span
+                onClick={() => showFactorModel(value, record)}
+                style={
+                  value.color
+                    ? {
+                        color: "#F82504",
+                        fontWeight: "bold",
+                        cursor:
+                          typeof value.value === "number" ? "pointer" : "",
+                      }
+                    : {
+                        cursor:
+                          typeof value.value === "number" ? "pointer" : "",
+                      }
+                }
+              >
+                {value.value}
+              </span>
+            </Tooltip>
+          }
+          {value.tips && (
+            <Tooltip title={value.tips}>
+              <WarningFilled style={{ color: "#F82504" }} />
+            </Tooltip>
+          )}
+        </>
+      );
     }
-  }, [stationSelect.key]);
+  }
 
   return (
     <>
       <section className="main-content">
-        {!!menuSelect.query ? (
-          <StationTree query={menuSelect.query} onChange={onStationChange} />
-        ) : null}
-        <div className="content-wrap"></div>
+        {/* {!!stationTypeId ? memoStationTree : null} */}
+        {memoStationTree}
+        <div className="content-wrap">
+          <div className="search">
+            <Space>
+              业务主题：
+              <Select
+                className="width-3"
+                placeholder="请选择"
+                fieldNames={{
+                  label: "name",
+                  value: "id",
+                }}
+                value={themeId}
+                options={themeList}
+                style={inputwidtg}
+                onChange={handleTTChange}
+              />
+              站点类型：
+              <Select
+                className="width-3"
+                placeholder="请选择"
+                fieldNames={{
+                  label: "name",
+                  value: "id",
+                }}
+                options={stationTypeList}
+                style={inputwidtg}
+                value={stationTypeId}
+                onChange={handleSTChange}
+              />
+            </Space>
+          </div>
+          <div className="search">
+            共37个测站，在线34个，离线3个
+            <Space>
+              {stationTypeItem &&
+                stationTypeItem.allComputeDataLevelList.includes("mm") &&
+                stationTypeItem.allComputeDataLevelList.includes("hh") && (
+                  <Radio.Group
+                    onChange={onRadioChange}
+                    defaultValue="mm"
+                    optionType="button"
+                    buttonStyle="solid"
+                    value={timeType}
+                  >
+                    <Radio.Button value="mm">分钟</Radio.Button>
+                    <Radio.Button value="hh">小时</Radio.Button>
+                  </Radio.Group>
+                )}
+              <TimeCount callback={refreshPage} />
+              <SettingOutlined
+                onClick={() => setVisable(true)}
+                style={{ fontSize: "18px" }}
+              />
+            </Space>
+          </div>
+          <Table
+            columns={columns}
+            dataSource={data}
+            loading={loading}
+            rowKey={(record) => record.key}
+            size="small"
+            pagination={{
+              pageSize: 20,
+            }}
+            scroll={{
+              x: true,
+              y: 500,
+            }}
+          ></Table>
+        </div>
       </section>
+      {memoFiledSelect}
+      {/* {!!factList.factor.length && (
+        <FiledSelect
+          options1={factList?.stationField}
+          options2={factList?.evaluateIndex}
+          options3={factList?.factor}
+          open={visable}
+          closeModal={() => setVisable(false)}
+          onOk={confirmModal}
+        />
+      )} */}
+      {/* 弹出 */}
+      {isDayModalOpen && (
+        <DayModel
+          open={isDayModalOpen}
+          closeModal={closeModal}
+          station={tableRow}
+          factor={factorList}
+          timeType={timeType}
+        />
+      )}
+      {isChartModalOpen && (
+        <ChartModel
+          open={isChartModalOpen}
+          closeModal={closeModal}
+          station={tableRow}
+          factor={tableCell}
+          timeType={timeType}
+        />
+      )}
     </>
   );
 }
