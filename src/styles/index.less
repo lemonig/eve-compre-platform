@@ -98,17 +98,26 @@
 //   background-color: @primary-color;
 //   color: #fff;
 // }
-
-:where(.css-dev-only-do-not-override-5jsnmo).ant-tree {
-  span {
-    white-space: nowrap;
-  }
+//下同
+:where(.css-5jsnmo).ant-tree .ant-tree-switcher {
+  width: auto !important;
+  align-self: center !important;
+  line-height: 0;
 }
 
 :where(.css-dev-only-do-not-override-5jsnmo).ant-tree .ant-tree-switcher {
   width: auto !important;
   align-self: center !important;
   line-height: 0;
+}
+// 下同
+:where(.css-5jsnmo).ant-tree .ant-tree-checkbox {
+  width: auto !important;
+  align-self: center !important;
+  line-height: 0;
+  margin-inline-end: 0;
+  margin-inline-start: 2px;
+  margin-block-start: 0;
 }
 
 :where(.css-dev-only-do-not-override-5jsnmo).ant-tree .ant-tree-checkbox {
@@ -118,6 +127,12 @@
   margin-inline-end: 0;
   margin-inline-start: 2px;
   margin-block-start: 0;
+}
+
+:where(.css-dev-only-do-not-override-5jsnmo).ant-tree {
+  span {
+    white-space: nowrap;
+  }
 }
 
 //Table

@@ -1,7 +1,20 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Layout, Select, Space, Radio, Checkbox, Table, Tooltip } from "antd";
-import { SettingOutlined, WarningFilled } from "@ant-design/icons";
-
+import {
+  Layout,
+  Select,
+  Space,
+  Radio,
+  Checkbox,
+  Table,
+  Tooltip,
+  Button,
+} from "antd";
+import {
+  SettingOutlined,
+  WarningFilled,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+} from "@ant-design/icons";
 import { findMinFrequent, tableIndex } from "@Utils/util";
 
 import LayMenu from "@App/layout/lay-menu";
@@ -23,7 +36,7 @@ import ChartModel from "./components/ChartModel";
 import DayModel from "./components/DayModel";
 
 let inputwidtg = {
-  width: "300px",
+  width: "120px",
 };
 
 function HomeReal() {
@@ -32,6 +45,7 @@ function HomeReal() {
   //表格
   const [columns, setColumns] = useState([]);
   const [data, setData] = useState([]);
+  const [otherData, setOtherData] = useState({});
 
   const [activeKey, setActiveKey] = useState("1");
   const [factList, setFactList] = useState({
@@ -44,6 +58,8 @@ function HomeReal() {
   const [themeId, setThemeId] = useState("");
   const [stationTypeList, setStationTypeList] = useState([]); //站点类型
   const [stationTypeItem, setStationTypeItem] = useState(); //站点类型
+  const [stationTypeIndex, setStationTypeIndex] = useState(0); //站点类型
+
   const [stationTypeId, setStationTypeId] = useState("");
   const [visable, setVisable] = useState(false); //因子选择
   const [timeType, setTimeType] = useState(); //时间类型
@@ -81,6 +97,28 @@ function HomeReal() {
     return data;
   };
 
+  // const sortSelf = (item) => {
+  //   console.log(item);
+  //   if (typeof item.value === "number" || typeof item.value === "boolean") {
+  //     return (a, b) => a[item.key].value - b[item.key].value;
+  //   } else if (typeof item.value === "string") {
+  //     return (a, b) => a[item.key].value.localeCompare(b[item.key].value);
+  //   } else {
+  //     return false;
+  //   }
+  // };
+  const sortSelf = (item) => {
+    if (item.isDigital) {
+      return (a, b) => a[item.key].value - b[item.key].value;
+    } else if (item.key === "name") {
+      return (a, b) => a[item.key].value.localeCompare(b[item.key].value);
+    } else if (item.key === "datatime") {
+      return (a, b) =>
+        new Date(a[item.key].value) - new Date(b[item.key].value);
+    } else {
+      return (a, b) => a[item.key].value - b[item.key].value;
+    }
+  };
   const getPageData = async () => {
     setLoading(true);
     let params = {
@@ -91,12 +129,19 @@ function HomeReal() {
     };
     let { additional_data, data: getdata } = await dashboardRealtime(params);
     setLoading(false);
+    setOtherData(additional_data.countData);
     let newCol = additional_data.columnList.map((item) => ({
       title: item.label,
       dataIndex: item.key,
       key: item.key,
       render: (value, record) => tableRender(value, record),
       width: 60,
+      ellipsis: true,
+      align: "center",
+      sorter: {
+        compare: sortSelf(item),
+      },
+      // sorter: sortSelf(item),
     }));
     let normalCol = {
       title: "序号",
@@ -193,6 +238,9 @@ function HomeReal() {
   const showFactorModel = (value, record) => {
     console.log(value);
     console.log(record);
+    if (typeof value.value !== "number") {
+      return;
+    }
     setTableRow(record.name);
     setTableCell(value);
     setIsChartModalOpen(true);
@@ -205,6 +253,18 @@ function HomeReal() {
     setIsDayModalOpen(true);
   };
 
+  const handleNextStationType = () => {
+    console.log(stationTypeIndex);
+    console.log(stationTypeList);
+    if (stationTypeIndex < stationTypeList.length) {
+      setStationTypeIndex((i) => i + 1);
+      let idx = stationTypeIndex + 1;
+      console.log(stationTypeList[idx].id);
+      setStationTypeId(stationTypeList[idx].id);
+      setStationTypeItem(stationTypeList[idx]);
+    }
+  };
+
   function tableRender(value, record) {
     if (value.divColor) {
       return (
@@ -214,6 +274,24 @@ function HomeReal() {
       return (
         <>{<a onClick={() => showDayModel(value, record)}>{value.value}</a>}</>
       );
+    } else if (value.key === "isOnline") {
+      if (value.value) {
+        return (
+          <>
+            <CheckCircleOutlined style={{ color: "#4CAF50" }} />
+            &nbsp;在线
+          </>
+        );
+      } else {
+        return (
+          <>
+            <CloseCircleOutlined />
+            &nbsp;离线
+          </>
+        );
+      }
+    } else if (typeof value.value !== "number") {
+      return <span>{value.value}</span>;
     } else {
       return (
         <>
@@ -283,10 +361,15 @@ function HomeReal() {
                 value={stationTypeId}
                 onChange={handleSTChange}
               />
+              <Button type="primary" onClick={refreshPage}>
+                刷新
+              </Button>
+              <Button onClick={handleNextStationType}>下一个</Button>
             </Space>
           </div>
           <div className="search">
-            共37个测站，在线34个，离线3个
+            共{otherData.total}个测站，在线{otherData.online}个，离线
+            {otherData.offline}个
             <Space>
               {stationTypeItem &&
                 stationTypeItem.allComputeDataLevelList.includes("mm") &&
@@ -320,7 +403,7 @@ function HomeReal() {
             }}
             scroll={{
               x: true,
-              y: 500,
+              y: 650,
             }}
           ></Table>
         </div>

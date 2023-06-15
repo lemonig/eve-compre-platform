@@ -134,7 +134,7 @@ function ChartModel({ open, closeModal, station, factor, timeType }) {
           },
           saveAsImage: {
             title: "保存为图片",
-            name: `${station.name}-${title.text}`,
+            name: `${station.value}-${title.text}`,
           },
           dataView: {
             show: true,

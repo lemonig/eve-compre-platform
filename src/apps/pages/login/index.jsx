@@ -26,11 +26,14 @@ function Login() {
     let { message: msg, success, data } = await dbLogin(values);
     if (success) {
       localStorage.setItem("token", data.access_token);
-      // await getMenuList();
-      await getUserInfo();
-      console.log(typeof getMenuList);
-      // navigate("/", { replace: true });
-      window.location.href = "/"; //FIXME刷新menu,应改成navigate,但有异步
+      let res1 = await getMenuList();
+      let res = await getUserInfo();
+      console.log(res);
+      console.log(res1);
+      if ("id" in res && res1.length > 0) {
+        // navigate("/", { replace: true });
+        window.location.href = "/"; //FIXME刷新menu,应改成navigate,但有异步
+      }
     } else {
       message.error(msg);
     }
@@ -41,13 +44,16 @@ function Login() {
     if (success) {
       dispatch(SET_USER(data));
       localStorage.setItem("user", JSON.stringify(data));
+      return data;
     } else {
       message.error(msg);
     }
   };
 
   const getMenuList = async () => {
-    await dispatch(getMenuData());
+    let res = await dispatch(getMenuData());
+    console.log(res);
+    return res.payload;
     // localStorage.setItem("menuList", JSON.stringify(menu));
     // let menuTree = handleMenu(menu);
     // localStorage.setItem("menuTree", JSON.stringify(menuTree));

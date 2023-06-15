@@ -25,13 +25,14 @@ const lazyLoadLay = (moduleName) => {
 };
 
 const routerList = [
+  // {
+  //   element: lazyLoad("home"),
+  // },
   {
-    element: lazyLoad("home"),
-    index: true,
-  },
-  {
-    path: "list",
+    // path: "list",
     element: lazyLoad("home-real"),
+    index: true,
+
   },
   {
     path: "resource",

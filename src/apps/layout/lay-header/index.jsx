@@ -23,7 +23,7 @@ const Header = ({ message }) => {
   const [activeMenu, setActiveMenu] = useState({});
   let navigate = useNavigate();
   let resolvedPath = useResolvedPath();
-  // console.log("menu---", menu);
+  console.log("menu---", menu);
   console.log(resolvedPath);
   useEffect(() => {
     if (resolvedPath.pathname == "/setting") {

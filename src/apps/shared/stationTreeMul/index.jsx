@@ -24,7 +24,7 @@ const getParentKey = (key, tree) => {
 
 function StationTreeMul({ query, onChange }) {
   const [currentTab, setCurrentTab] = useState("region");
-  const [showTree, setShowTree] = useState(true);
+  const [showTree, setShowTree] = useState(false);
   const [treeData1, setTreeData1] = useState([]); //区域
   const [treeData2, setTreeData2] = useState([]); //河流
   const [treeData3, setTreeData3] = useState([]); //分组
@@ -32,6 +32,8 @@ function StationTreeMul({ query, onChange }) {
   const [expandedKeys, setExpandedKeys] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [autoExpandParent, setAutoExpandParent] = useState(true);
+
+  const [checkKey1, setCheckKey1] = useState([]);
 
   const [pageDataTit, setPageDataTit] = useState([]);
   console.log(query);
@@ -58,10 +60,11 @@ function StationTreeMul({ query, onChange }) {
     // }
     if (data.region) {
       setTreeData1(loop(data.region)); //初始化
+      setCheckKey1(initCheck(data.region));
       setExpandedKeys([
-        data.region[0].key,
-        data.region[0].children[0].key,
-        data.region[0].children[0].children[0].key,
+        data.region[0].id,
+        data.region[0].children[0].id,
+        data.region[0].children[0].children[0].id,
       ]); //FIXME第一条数据一定有的基础上。
 
       title.push({
@@ -87,10 +90,30 @@ function StationTreeMul({ query, onChange }) {
     setCurrentTab(title[0].name);
     setPageDataTit(title);
   };
+
+  function initCheck(arr) {
+    let res = [];
+    const innerFun = (arr) => {
+      arr.forEach((item) => {
+        // if (!item.children.length) {
+        //   return;
+        // }
+
+        if (item.isStation) {
+          res.push(item.id);
+        } else if (item.children.length) {
+          innerFun(item.children);
+        }
+      });
+    };
+    innerFun(arr);
+    return res;
+  }
+
   useEffect(() => {});
   // 树循环
   let flag = true; //第一次递归
-  const loop = (data) => {
+  function loop(data) {
     if (!data) {
       return null;
     }
@@ -106,30 +129,30 @@ function StationTreeMul({ query, onChange }) {
 
           flag = false;
 
-          setActiveNode([item.key]);
+          // setActiveNode([item.key]);
           // onChange({
           //   key: item.id || "",
           //   title: item.label || "",
           // });
         }
         return {
-          label,
-          key: item.key,
           ...item,
+          label,
+          key: item.id,
           children: loop(item.children),
         };
       }
       return {
-        label,
         ...item,
-        key: item.key,
+        label,
+        key: item.id,
       };
     });
     // newTree = newTree.filter((ele) => {
     //   return Object.prototype.toString.call(ele) === "[object Object]";
     // });
     return newTree;
-  };
+  }
 
   const titleRender = (nodeData) => {
     return (
@@ -208,7 +231,7 @@ function StationTreeMul({ query, onChange }) {
   const onCheck = (checkedKeys, info) => {
     console.log("onCheck", checkedKeys, info);
     let stationIdArr = filterStation(info.checkedNodes);
-    console.log(stationIdArr);
+    setCheckKey1(checkedKeys);
     onChange(stationIdArr);
   };
 
@@ -248,11 +271,12 @@ function StationTreeMul({ query, onChange }) {
                 titleRender={titleRender}
                 showIcon={true}
                 switcherIcon={switcherIconRender}
-                selectedKeys={activeNode}
+                // selectedKeys={activeNode}
                 onExpand={onTreeExpand}
                 expandedKeys={expandedKeys}
                 defaultExpandAll
                 selectable={false}
+                checkedKeys={checkKey1}
                 // autoExpandParent={true}
                 // showLine={{
                 //   showLeafIcon: true,
@@ -293,6 +317,7 @@ function StationTreeMul({ query, onChange }) {
                 showIcon={true}
                 switcherIcon={switcherIconRender}
                 selectable={false}
+                defaultExpandAll
                 // selectedKeys={activeNode}
                 // onExpand={onTreeExpand}
                 // expandedKeys={expandedKeys}
