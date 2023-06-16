@@ -23,12 +23,13 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   (response) => {
+    console.log(response);
     store.dispatch(SHIFT_LOADING());
     if (response.data && response.status === 200) {
       if (Object.prototype.toString.call(response.data) === "[object Blob]") {
         console.log("图片上传中...");
       } else if (response.data.code === 401) {
-        window.location.href = window.location.origin + "/loading";
+        // window.location.href = window.location.origin + "/loading";
       } else if (response.data.code === 403) {
         console.log("http serve 403");
       } else if (!response.data.success) {
@@ -49,7 +50,8 @@ axios.interceptors.response.use(
         case 401:
           message.error("401");
           localStorage.removeItem("token");
-          window.location.href = window.location.origin + "/loading";
+          window.location.href = window.location.origin + "/login";
+          // window.location.href = window.location.origin + "/loading";
           break;
         case 403:
           message.error("403");

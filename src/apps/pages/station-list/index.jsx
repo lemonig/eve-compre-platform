@@ -296,16 +296,16 @@ function StationList() {
     },
     {
       title: "运行状态",
-      dataIndex: "status",
+      dataIndex: "statusName",
       key: "status",
-      render: (value, record) => (!!Number(value) ? "启用" : "停用"),
+      // render: (value, record) => (!!Number(value) ? "启用" : "停用"),
       filters: filterData[2][1],
     },
     {
       title: "监测手段",
-      dataIndex: "monitoringMeans",
+      dataIndex: "monitoringMeansName",
       key: "monitoringMeans",
-      render: (value, record) => (!!Number(value) ? "自动" : "手工"),
+      // render: (value, record) => (!!Number(value) ? "自动" : "手工"),
       filters: filterData[2][2],
     },
 
