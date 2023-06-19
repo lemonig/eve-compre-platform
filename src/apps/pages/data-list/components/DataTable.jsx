@@ -125,6 +125,18 @@ function DataTable({ stationMsg, menuMsg, facList }) {
     }
   };
 
+  let normalCol = [
+    {
+      title: "序号",
+      key: "index",
+      width: 50,
+      fixed: true,
+      render: (_, record, idx) =>
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        idx +
+        1,
+    },
+  ];
   const getPageData = async () => {
     let values = searchForm.getFieldsValue();
     if (!values.dataSource || !values.time) {
@@ -165,22 +177,17 @@ function DataTable({ stationMsg, menuMsg, facList }) {
         dataIndex: item.key,
         key: item.key,
         render: (value) => tableRender(value),
-        width: 60,
+        width: 100,
+        fixed:
+          item.key === "datatime" ||
+          item.key === "station_type" ||
+          item.key === "name"
+            ? true
+            : false,
       };
     });
-    let normalCol = [
-      {
-        title: "序号",
-        key: "index",
-        width: 50,
-        dataIndex: "index",
-        // render: (_, record, idx) =>
-        //   pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
-        //   idx +
-        //   1,
-      },
-    ];
-    setColumns([...normalCol, ...newCol]);
+
+    setColumns(newCol);
 
     getdata.forEach((item, idx) => {
       item.key = pageMsg.pagination.current + "-" + idx;
@@ -299,7 +306,7 @@ function DataTable({ stationMsg, menuMsg, facList }) {
           />
         </div>
         <Table
-          columns={columns}
+          columns={[...normalCol, ...columns]}
           dataSource={data}
           loading={loading}
           rowKey={(record) => record.key}
@@ -310,7 +317,7 @@ function DataTable({ stationMsg, menuMsg, facList }) {
           onChange={handleTableChange}
           size="small"
           scroll={{
-            x: true,
+            x: "max-content",
             y: 500,
           }}
           components={components}
@@ -379,7 +386,7 @@ function DataTable({ stationMsg, menuMsg, facList }) {
       </div>
       {metaData?.stationField.length && facList.length ? (
         <FiledSelect
-        title={[ '站点属性','评价因子','监测因子'] }
+          title={["站点属性", "评价因子", "监测因子"]}
           options1={metaData?.stationField}
           options2={metaData?.evaluateIndex}
           options3={facList}

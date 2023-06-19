@@ -142,6 +142,7 @@ function HomeReal() {
       title: "序号",
       key: "index",
       width: 50,
+      fixed: true,
       render: (_, record, index) =>
         pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
         index +
@@ -164,13 +165,14 @@ function HomeReal() {
       dataIndex: item.key,
       key: item.key,
       render: (value, record) => tableRender(value, record, item),
-      width: 60,
+      width: 100,
       ellipsis: true,
       align: "center",
       sorter: {
         compare: sortSelf(item),
       },
       // sorter: sortSelf(item),
+      fixed: item.key === "datatime" || item.key === "name" ? true : false,
     }));
 
     setColumns(newCol);
@@ -449,7 +451,7 @@ function HomeReal() {
             pagination={pageMsg.pagination}
             onChange={handleTableChange}
             scroll={{
-              x: true,
+              x: "max-content",
               y: 650,
             }}
           ></Table>
