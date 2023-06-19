@@ -56,9 +56,7 @@ function FactorTemplate() {
   const getPageData = async () => {
     setLoading(true);
     let values = searchForm.getFieldsValue();
-    let { additional_data, data } = await templateList({
-      data: values,
-    });
+    let { additional_data, data } = await templateList(values);
     setData(data);
     setLoading(false);
   };

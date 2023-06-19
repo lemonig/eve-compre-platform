@@ -52,9 +52,7 @@ function FactorGroup() {
   const getPageData = async () => {
     setLoading(true);
     let values = searchForm.getFieldsValue();
-    let { additional_data, data } = await groupList({
-      data: values,
-    });
+    let { additional_data, data } = await groupList(values);
     setData(data);
     setLoading(false);
   };

@@ -273,7 +273,11 @@ function OpForm({ record, open, closeModal }) {
                   name="orderNum"
                   getValueFromEvent={inputTrim}
                 >
-                  <Input style={inputwidtg} placeholder="请输入" />
+                  <Input
+                    style={inputwidtg}
+                    placeholder="请输入"
+                    type="number"
+                  />
                 </Form.Item>
               </Col>
               <Col span={12}>

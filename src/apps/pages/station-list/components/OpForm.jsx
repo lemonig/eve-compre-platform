@@ -219,7 +219,7 @@ function OpForm({ record, open, closeModal }) {
         message.success(msg);
         closeModal(true);
       } else {
-        message.error(msg);
+        // message.error(msg);
       }
     } else {
       let { success, message: msg } = await stationAdd(values);
@@ -227,7 +227,7 @@ function OpForm({ record, open, closeModal }) {
         message.success(msg);
         closeModal(true);
       } else {
-        message.error(msg);
+        // message.error(msg);
       }
     }
     // 添加
@@ -889,7 +889,7 @@ function OpForm({ record, open, closeModal }) {
                   },
                 ]}
               >
-                <Input className="width-3" placeholder="请输入" />
+                <Input style={inputwidtg} placeholder="请输入" type="number" />
               </Form.Item>
             </Col>
             <Col span={12} style={filterElement("remark")}>
