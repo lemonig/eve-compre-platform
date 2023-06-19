@@ -28,6 +28,12 @@ function FactorGroup() {
     config: false,
   });
   const [operate, setOperate] = useState(null); //正在操作id
+  const [pageMsg, setPagemsg] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
 
   const [data, setData] = useState([]);
 
@@ -103,7 +109,11 @@ function FactorGroup() {
       title: "序号",
       key: "index",
       width: 60,
-      render: (_, record, index) => index + 1,
+
+      render: (_, record, index) =>
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        index +
+        1,
     },
     {
       title: "分组名称",
@@ -143,7 +153,14 @@ function FactorGroup() {
     });
     if (flag) getPageData();
   };
-
+  const handleTableChange = (pagination, filters, sorter) => {
+    // if filters not changed, don't update pagination.current
+    setPagemsg({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
   return (
     <>
       <div className="content-wrap">
@@ -174,6 +191,8 @@ function FactorGroup() {
           </Form>
         </div>
         <Table
+          pagination={pageMsg.pagination}
+          onChange={handleTableChange}
           columns={columns}
           dataSource={data}
           loading={loading}

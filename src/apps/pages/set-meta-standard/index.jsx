@@ -26,6 +26,12 @@ function SetMetaStandard() {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [operate, setOperate] = useState(null); //正在操作id
+  const [pageMsg, setPagemsg] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
 
   const [data, setData] = useState([]);
 
@@ -82,7 +88,10 @@ function SetMetaStandard() {
       title: "序号",
       key: "index",
       width: 60,
-      render: (_, record, index) => index + 1,
+      render: (_, record, index) =>
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        index +
+        1,
     },
 
     {
@@ -131,7 +140,14 @@ function SetMetaStandard() {
   const onChange = (date, dateString) => {
     console.log(date, dateString);
   };
-
+  const handleTableChange = (pagination, filters, sorter) => {
+    // if filters not changed, don't update pagination.current
+    setPagemsg({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
   return (
     <div className="content-wrap">
       <Lbreadcrumb data={["系统设置", "元数据管理", "评价标准"]} />
@@ -155,6 +171,8 @@ function SetMetaStandard() {
         dataSource={data}
         loading={loading}
         rowKey={(record) => record.id}
+        pagination={pageMsg.pagination}
+        onChange={handleTableChange}
       />
       {/* 弹出表单 */}
       {isModalOpen && (

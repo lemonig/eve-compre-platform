@@ -24,6 +24,12 @@ function SetMetaField() {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [operate, setOperate] = useState(null); //正在操作id
+  const [pageMsg, setPagemsg] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
 
   const [data, setData] = useState([]);
 
@@ -92,7 +98,11 @@ function SetMetaField() {
       title: "序号",
       key: "index",
       width: 60,
-      render: (_, record, index) => index + 1,
+
+      render: (_, record, index) =>
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        index +
+        1,
     },
     {
       title: "字段分组",
@@ -148,6 +158,16 @@ function SetMetaField() {
     setIsModalOpen(false);
     if (flag) getPageData();
   };
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    // if filters not changed, don't update pagination.current
+    setPagemsg({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
   return (
     <div className="content-wrap">
       <Lbreadcrumb data={["系统设置", "元数据管理", "站点字段"]} />
@@ -175,6 +195,8 @@ function SetMetaField() {
         dataSource={data}
         loading={loading}
         rowKey={(record) => record.id}
+        pagination={pageMsg.pagination}
+        onChange={handleTableChange}
       />
       {/* 弹出表单 */}
       {isModalOpen && (

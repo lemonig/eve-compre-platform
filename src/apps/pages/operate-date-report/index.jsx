@@ -85,6 +85,7 @@ const DynamicTableHeader = ({ columns }) => {
 function OperateDateReport() {
   const [searchForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [btnloading, setBtnLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState({
     form: false,
   });
@@ -408,7 +409,7 @@ function OperateDateReport() {
                   <Button type="primary" htmlType="submit">
                     查询
                   </Button>
-                  <Button loading={loading}>导出</Button>
+                  <Button loading={btnloading}>导出</Button>
                 </Space>
               </Form.Item>
               <Form.Item>
