@@ -436,6 +436,7 @@ function OperateDateReport() {
       {/* 弹出表单 */}
       {metaData?.stationField.length ? (
         <FiledSelect
+          title={["站点属性", "评价因子", "监测因子"]}
           options1={metaData?.stationField}
           options2={metaData?.evaluateIndex}
           options3={metaData.factor}

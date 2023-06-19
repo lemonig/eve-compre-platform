@@ -21,15 +21,14 @@ function filterOption(data) {
 function FiledSelect({
   value = [],
   onChange,
-  stationId,
   open,
   closeModal,
-  onOk,
+  onOk, //回调
   options1,
   options2,
   options3,
+  title = [], //标题
 }) {
-  console.log("stationId==" + stationId);
   // console.log(options1);
   // console.log(options2);
   // console.log(options3);
@@ -38,7 +37,6 @@ function FiledSelect({
   const [data2, setData2] = useState([]);
   const [data3, setData3] = useState([]);
   const [rData, setRdata] = useState([]);
-  const [innerStationId, setInnerStationId] = useState(""); //FIXME用站点id判断 是否刷新
   //FIXME为解决切换站点类型，options不相应问题
   useEffect(() => {
     setData1(JSON.parse(JSON.stringify(options1)));
@@ -53,7 +51,6 @@ function FiledSelect({
   // TODOM默认的数据处理，站名名称在option1 中，默认勾选
   // TODO组件只生效一次
   useEffect(() => {
-    console.log("init-stationId", stationId);
     onOk([
       ...filterCheck(options1),
       ...filterCheck(options2),
@@ -181,7 +178,7 @@ function FiledSelect({
       <div className="form-factor-content">
         <div>
           <fieldset>
-            <legend>站点属性</legend>
+            <legend>{title[0]}</legend>
             <div style={{ width: "100%" }}>
               <Row
                 style={{
@@ -208,7 +205,7 @@ function FiledSelect({
             </div>
           </fieldset>
           <fieldset>
-            <legend>评价因子</legend>
+            <legend>{title[1]}</legend>
             <div style={{ width: "100%" }}>
               <Row
                 style={{
@@ -235,7 +232,7 @@ function FiledSelect({
             </div>
           </fieldset>
           <fieldset>
-            <legend>监测因子</legend>
+            <legend>{title[2]}</legend>
             <div style={{ width: "100%" }}>
               <Row
                 style={{
