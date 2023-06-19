@@ -32,7 +32,6 @@ const routerList = [
     // path: "list",
     element: lazyLoad("home-real"),
     index: true,
-
   },
   {
     path: "resource",
@@ -81,6 +80,23 @@ const routerList = [
         path: "batch_export",
         element: lazyLoad("operate-batch-export"),
       },
+      // 报警
+      // {
+      //   path: "alarm_record", //报警记录
+      //   element: lazyLoad("alarm-record"),
+      // },
+      // {
+      //   path: "alarm_send", //消息记录
+      //   element: lazyLoad("alarm-msg-record"),
+      // },
+      // {
+      //   path: "alarm_statis", //报警统计
+      //   element: lazyLoad("alarm-statis"),
+      // },
+      // {
+      //   path: "alarm_send_statis", //消息统计
+      //   element: lazyLoad("alarm-msg-statis"),
+      // },
     ],
   },
   {
@@ -94,6 +110,10 @@ const routerList = [
       {
         path: "user",
         element: lazyLoad("set-user"),
+      },
+      {
+        path: "alarm",
+        element: lazyLoad("set-alarm"),
       },
       // 站点
       { path: "station", element: lazyLoad("station-list") },

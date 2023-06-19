@@ -15,10 +15,11 @@ export function reportTimeMeta(data) {
   });
 }
 // 批量导出
-export function batchExport(data) {
-  return _post({
+export function batchExport(data, title) {
+  return _download({
     url: `/api/data/report/batchExport`,
     data,
+    title,
   });
 }
 // 批量导出因子
