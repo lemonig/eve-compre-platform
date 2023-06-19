@@ -182,11 +182,9 @@ function MultParam({ menuMsg, stationMsg, facList }) {
         trigger: "axis",
         formatter: function (params) {
           let html = `<div>${params[0].axisValue}</div>`;
-          params.forEach((item) => {
-            if (typeof item.value === "number") {
-              html += `<div>${item.marker} ${item.seriesName}：${item.value} ${
-                item.data.unit ? item.data.unit : ""
-              }</div>`;
+          params.map((item) => {
+            if (item.value || item.value === 0) {
+              html += `<div>${item.marker} ${item.seriesName}：${item.value} ${item.data.unit}</div>`;
             }
           });
           return html;
