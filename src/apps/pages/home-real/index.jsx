@@ -136,6 +136,18 @@ function HomeReal() {
       return (a, b) => a[item.key].value - b[item.key].value;
     }
   };
+
+  let normalCol = [
+    {
+      title: "序号",
+      key: "index",
+      width: 50,
+      render: (_, record, index) =>
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        index +
+        1,
+    },
+  ];
   const getPageData = async () => {
     setLoading(true);
     let params = {
@@ -160,17 +172,7 @@ function HomeReal() {
       },
       // sorter: sortSelf(item),
     }));
-    let normalCol = {
-      title: "序号",
-      key: "index",
-      width: 50,
-      render: (_, record, index) =>
-        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
-        index +
-        1,
-    };
 
-    newCol.unshift(normalCol);
     setColumns(newCol);
     setData(tableIndex(getdata));
   };
@@ -365,6 +367,7 @@ function HomeReal() {
 
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
+    console.log(pagination);
     setPagemsg({
       pagination,
       filters,
@@ -438,7 +441,7 @@ function HomeReal() {
             </Space>
           </div>
           <Table
-            columns={columns}
+            columns={[...normalCol, ...columns]}
             dataSource={data}
             loading={loading}
             rowKey={(record) => record.key}
