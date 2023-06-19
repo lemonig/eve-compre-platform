@@ -6,7 +6,6 @@ import IconFont from "@Components/IconFont";
 const initialState = localStorage.getItem("menuList")
   ? JSON.parse(localStorage.getItem("menuList"))
   : [];
-
 const getRouteMenu = async () => {
   let { message: msg, success, data } = await menuList();
   data.map((item) => {
@@ -43,10 +42,9 @@ export const menulistSlice = createSlice({
         console.log("🚀 ~ 进行中！");
       })
       .addCase(getMenuData.fulfilled, (state, { payload }) => {
-        console.log("~ fulfilled");
         // window.location.href = "/";
         // window.history.push("", "", "/");
-        return (state = payload.data);
+        return (state = payload);
       })
       .addCase(getMenuData.rejected, (state, err) => {
         console.log(" ~ rejected", err);

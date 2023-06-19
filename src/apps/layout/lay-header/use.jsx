@@ -63,7 +63,8 @@ function User() {
     await logout();
     localStorage.clear();
     sessionStorage.clear();
-    navigate("/login");
+    // navigate("/login");
+    window.location.href = "/login";
   };
 
   const items = [

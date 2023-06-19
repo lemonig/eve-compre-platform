@@ -379,6 +379,7 @@ function DataTable({ stationMsg, menuMsg, facList }) {
       </div>
       {metaData?.stationField.length && facList.length ? (
         <FiledSelect
+        title={[ '站点属性','评价因子','监测因子'] }
           options1={metaData?.stationField}
           options2={metaData?.evaluateIndex}
           options3={facList}

@@ -128,6 +128,7 @@ export const _download = ({ url, data, title }) => {
       data: data,
       responseType: "blob",
     }).then((res) => {
+      console.log(res);
       let result = res.data;
       var blob = new Blob([result], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
