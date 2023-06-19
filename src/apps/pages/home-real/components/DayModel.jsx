@@ -6,7 +6,8 @@ import { formatePickTime } from "@Utils/util";
 import WaterLevel from "@Components/WaterLevel";
 import { SettingOutlined, WarningFilled } from "@ant-design/icons";
 
-function DayModel({ open, closeModal, station, factor, timeType }) {
+function DayModel({ open, closeModal, station, factor, timeType, time }) {
+  console.log(time);
   const handleOk = async () => {};
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -32,8 +33,8 @@ function DayModel({ open, closeModal, station, factor, timeType }) {
       page: 1,
       size: 99999,
       data: {
-        beginTime: formatePickTime(timeType, dayjs().subtract(30, "days")),
-        endTime: formatePickTime(timeType, dayjs()),
+        beginTime: formatePickTime(timeType, dayjs(time).subtract(30, "days")),
+        endTime: formatePickTime(timeType, dayjs(time)),
         timeType: timeType,
         dataSource: "1",
         stationId: station.id,
@@ -94,7 +95,6 @@ function DayModel({ open, closeModal, station, factor, timeType }) {
           summary={() => (
             <Table.Summary fixed={"bottom"}>
               <Table.Summary.Row>
-                <Table.Summary.Cell />
                 {otherdata?.maxCountList &&
                   otherdata?.maxCountList.map((item, idx) => {
                     return (
@@ -105,7 +105,6 @@ function DayModel({ open, closeModal, station, factor, timeType }) {
                   })}
               </Table.Summary.Row>
               <Table.Summary.Row>
-                <Table.Summary.Cell />
                 {otherdata?.minCountList.map((item, idx) => {
                   return (
                     <Table.Summary.Cell index={idx} key={idx}>
@@ -115,7 +114,6 @@ function DayModel({ open, closeModal, station, factor, timeType }) {
                 })}
               </Table.Summary.Row>
               <Table.Summary.Row>
-                <Table.Summary.Cell />
                 {otherdata?.avgCountList.map((item, idx) => {
                   return (
                     <Table.Summary.Cell index={idx} key={idx}>
@@ -126,24 +124,7 @@ function DayModel({ open, closeModal, station, factor, timeType }) {
               </Table.Summary.Row>
             </Table.Summary>
           )}
-          onRow={(record) => {
-            // console.log(record);
-          }}
-          // footer={() => {
-          //   return (
-          //     <tr className="ant-table-row ant-table-row-level-0">
-          //       {otherdata?.minCountList &&
-          //         otherdata?.minCountList.map((item) => {
-          //           return (
-          //             <td className="ant-table-cell" key={item}>
-          //               {item}
-          //             </td>
-          //           );
-          //         })}
-          //     </tr>
-          //   );
-          // }}
-          // rowClassName={(record) => (record.isExternal ? "external-row" : "")}
+          onRow={(record) => {}}
         >
           <Table.Summary>
             <Table.Summary.Row>

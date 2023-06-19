@@ -1,11 +1,15 @@
 import React from "react";
 
-function WaterLevel({ level, color }) {
+function WaterLevel({ level, color, onClick, style }) {
   return (
     <>
-      <div className="level_warp" style={{ backgroundColor: `${color}` }}>
+      <span
+        className="level_warp"
+        style={{ backgroundColor: `${color}`, ...style }}
+        onClick={onClick}
+      >
         {level}
-      </div>
+      </span>
       <style jsx="true">
         {`
           .level_warp {
@@ -13,6 +17,7 @@ function WaterLevel({ level, color }) {
             width: 64px;
             text-align: center;
             line-height: 24px;
+            display: inline-block;
           }
         `}
       </style>

@@ -325,7 +325,11 @@ function OpForm({ record, open, closeModal }) {
           >
             <Select className="width-3" placeholder="请选择" style={inputwidtg}>
               {metaSelect[7]?.map((item) => (
-                <Option value={item.id} key={item.id} title={item.remark}>
+                <Option
+                  value={item.dictValue}
+                  key={item.dictValue}
+                  title={item.remark}
+                >
                   <Space>
                     {item.dictLabel}-
                     <span role="img" aria-label={item.name}>
@@ -348,7 +352,11 @@ function OpForm({ record, open, closeModal }) {
           >
             <Select className="width-3" placeholder="请选择" style={inputwidtg}>
               {metaSelect[8]?.map((item) => (
-                <Option value={item.id} key={item.id} title={item.remark}>
+                <Option
+                  value={item.dictValue}
+                  key={item.dictValue}
+                  title={item.remark}
+                >
                   <Space>
                     {item.dictLabel}-
                     <span role="img" aria-label={item.dictLabel}>

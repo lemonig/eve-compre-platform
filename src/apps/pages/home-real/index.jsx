@@ -73,6 +73,13 @@ function HomeReal() {
   const [tableRow, setTableRow] = useState();
   const [tableCell, setTableCell] = useState();
 
+  const [pageMsg, setPagemsg] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 20,
+    },
+  });
+
   useEffect(() => {
     initPage();
   }, []);
@@ -144,7 +151,7 @@ function HomeReal() {
       title: item.label,
       dataIndex: item.key,
       key: item.key,
-      render: (value, record) => tableRender(value, record),
+      render: (value, record) => tableRender(value, record, item),
       width: 60,
       ellipsis: true,
       align: "center",
@@ -157,7 +164,10 @@ function HomeReal() {
       title: "序号",
       key: "index",
       width: 50,
-      render: (_, record, idx) => idx + 1,
+      render: (_, record, index) =>
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        index +
+        1,
     };
 
     newCol.unshift(normalCol);
@@ -250,10 +260,10 @@ function HomeReal() {
     );
   }, [stationTypeId, visable, factList]);
 
-  const showFactorModel = (value, record) => {
+  const showFactorModel = (value, record, colum) => {
     console.log(value);
     console.log(record);
-    if (typeof value.value !== "number") {
+    if (!colum.isDigital) {
       return;
     }
     setTableRow(record.name);
@@ -267,7 +277,7 @@ function HomeReal() {
     setTableCell(value);
     setIsDayModalOpen(true);
   };
-
+  // 下一个
   const handleNextStationType = async () => {
     if (stationTypeIndex < stationTypeList.length) {
       setStationTypeIndex((i) => i + 1);
@@ -284,10 +294,17 @@ function HomeReal() {
     }
   };
 
-  function tableRender(value, record) {
+  function tableRender(value, record, colum) {
     if (value.divColor) {
       return (
-        <WaterLevel level={value.value} color={value.divColor}></WaterLevel>
+        <WaterLevel
+          onClick={() => showFactorModel(value, record, colum)}
+          level={value.value}
+          color={value.divColor}
+          style={{
+            cursor: colum.isDigital ? "pointer" : "",
+          }}
+        ></WaterLevel>
       );
     } else if (value.key === "datatime") {
       return (
@@ -317,7 +334,7 @@ function HomeReal() {
           {
             <Tooltip title={value.color ? "超标" : ""}>
               <span
-                onClick={() => showFactorModel(value, record)}
+                onClick={() => showFactorModel(value, record, colum)}
                 style={
                   value.color
                     ? {
@@ -345,6 +362,15 @@ function HomeReal() {
       );
     }
   }
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    // if filters not changed, don't update pagination.current
+    setPagemsg({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
 
   return (
     <>
@@ -417,9 +443,8 @@ function HomeReal() {
             loading={loading}
             rowKey={(record) => record.key}
             size="small"
-            pagination={{
-              pageSize: 20,
-            }}
+            pagination={pageMsg.pagination}
+            onChange={handleTableChange}
             scroll={{
               x: true,
               y: 650,
@@ -446,6 +471,7 @@ function HomeReal() {
           station={tableRow}
           factor={factorList}
           timeType={timeType}
+          time={tableCell.value}
         />
       )}
       {isChartModalOpen && (
