@@ -38,6 +38,7 @@ import DayModel from "./components/DayModel";
 let inputwidtg = {
   width: "120px",
 };
+const { Column } = Table;
 
 function HomeReal() {
   const [stationSelect, setStationSelect] = useState([]);
@@ -59,8 +60,8 @@ function HomeReal() {
   const [stationTypeList, setStationTypeList] = useState([]); //站点类型
   const [stationTypeItem, setStationTypeItem] = useState(); //站点类型
   const [stationTypeIndex, setStationTypeIndex] = useState(0); //站点类型
-
   const [stationTypeId, setStationTypeId] = useState("");
+
   const [visable, setVisable] = useState(false); //因子选择
   const [timeType, setTimeType] = useState(); //时间类型
 
@@ -80,7 +81,13 @@ function HomeReal() {
     if (stationTypeId && factorList.length) {
       getPageData();
     }
-  }, [stationTypeId, factorList, stationSelect, timeType]);
+  }, [stationTypeId, stationSelect, timeType, JSON.stringify(factorList)]);
+
+  useEffect(() => {
+    if (stationTypeId) {
+      getRealtimeMetaAsync(stationTypeId);
+    }
+  }, [stationSelect]);
 
   const getTopicListAsync = async () => {
     let { data } = await topicList();
@@ -92,7 +99,10 @@ function HomeReal() {
     return data;
   };
   const getRealtimeMetaAsync = async (id) => {
-    let { data } = await realtimeMeta({ stationType: id });
+    let { data } = await realtimeMeta({
+      stationType: id,
+      stationIdList: stationSelect,
+    });
     data.factor?.forEach((ele) => (ele.checked = true));
     return data;
   };
@@ -147,11 +157,7 @@ function HomeReal() {
       title: "序号",
       key: "index",
       width: 50,
-      dataIndex: "index",
-      // render: (_, record, idx) =>
-      //   pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
-      //   idx +
-      //   1,
+      render: (_, record, idx) => idx + 1,
     };
 
     newCol.unshift(normalCol);
@@ -203,12 +209,20 @@ function HomeReal() {
     setTimeType(timeTypeDefault);
     let res2 = await getRealtimeMetaAsync(res1[0].id);
     setFactList(res2);
+    setStationTypeIndex(0); //做空
   };
   //change 站点类型
-  const handleSTChange = (value, option) => {
+  const handleSTChange = async (value, option) => {
     console.log(`selected ${option}`);
     setStationTypeId(value);
     setStationTypeItem(option);
+
+    let timeTypeDefault = findMinFrequent(option.allComputeDataLevelList);
+    setTimeType(timeTypeDefault);
+    let res2 = await getRealtimeMetaAsync(value);
+    setFactList(res2);
+
+    setStationTypeIndex(0); //做空
   };
 
   const closeModal = () => {
@@ -224,6 +238,7 @@ function HomeReal() {
     return (
       !!factList.factor.length && (
         <FiledSelect
+          title={["站点属性", "评价因子", "监测因子"]}
           options1={factList?.stationField}
           options2={factList?.evaluateIndex}
           options3={factList?.factor}
@@ -253,15 +268,19 @@ function HomeReal() {
     setIsDayModalOpen(true);
   };
 
-  const handleNextStationType = () => {
-    console.log(stationTypeIndex);
-    console.log(stationTypeList);
+  const handleNextStationType = async () => {
     if (stationTypeIndex < stationTypeList.length) {
       setStationTypeIndex((i) => i + 1);
       let idx = stationTypeIndex + 1;
-      console.log(stationTypeList[idx].id);
       setStationTypeId(stationTypeList[idx].id);
       setStationTypeItem(stationTypeList[idx]);
+
+      let timeTypeDefault = findMinFrequent(
+        stationTypeList[idx].allComputeDataLevelList
+      );
+      setTimeType(timeTypeDefault);
+      let res2 = await getRealtimeMetaAsync(stationTypeList[idx].id);
+      setFactList(res2);
     }
   };
 

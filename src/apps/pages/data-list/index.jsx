@@ -43,7 +43,6 @@ function DataList() {
   let dataMenu = menuTree
     .find((ele) => ele.label === "数据查询")
     .children.find((ele) => ele.label === "监测数据");
-
   dataMenu.children.forEach((element) => {
     element.type = "group";
   });
@@ -66,7 +65,6 @@ function DataList() {
   };
   useEffect(() => {
     if (stationSelect.key) {
-      console.log("station - change -index", stationSelect);
       const getFactorData = async () => {
         let { data } = await getFactor({
           id: stationSelect.key,
