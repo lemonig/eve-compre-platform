@@ -414,7 +414,9 @@ function HomeReal() {
               <Button type="primary" onClick={refreshPage}>
                 刷新
               </Button>
-              <Button onClick={handleNextStationType}>下一个</Button>
+              {stationTypeIndex < stationTypeList.length - 1 && (
+                <Button onClick={handleNextStationType}>下一个</Button>
+              )}
             </Space>
           </div>
           <div className="search">
