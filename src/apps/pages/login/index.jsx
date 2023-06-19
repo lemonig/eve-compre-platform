@@ -31,8 +31,8 @@ function Login() {
       console.log(res);
       console.log(res1);
       if ("id" in res && res1.length > 0) {
-        // navigate("/", { replace: true });
-        window.location.href = "/"; //FIXME刷新menu,应改成navigate,但有异步
+        navigate("/", { replace: true });
+        // window.location.href = "/"; //FIXME刷新menu,应改成navigate,但有异步
       }
     } else {
       message.error(msg);
