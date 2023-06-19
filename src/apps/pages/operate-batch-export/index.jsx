@@ -137,29 +137,42 @@ function BatchExport() {
   };
 
   const onFinish = async () => {
-    setLoading(true);
     let values = form.getFieldsValue();
+    if (!stationId) {
+      message.warning("请选择站点");
+      return;
+    }
+    if (!values.showFieldList2?.length) {
+      message.warning("请选择评价指标");
+      return;
+    }
+    if (!values.showFieldList3?.length) {
+      message.warning("请选择监测因子");
+      return;
+    }
+    if (!values.timeTypeList) {
+      message.warning("请选择统计方法");
+      return;
+    }
+    setLoading(true);
     let params = {
       beginTime: dayjs(values.beginTime).format("YYYYMMDD"),
       endTime: dayjs(values.endTime).format("YYYYMMDD"),
       showFieldList: [
-        ...values.showFieldList1,
-        ...values.showFieldList2,
-        ...values.showFieldList3,
-      ],
+        ...[values.showFieldList1 ?? ""],
+        ...[values.showFieldList2 ?? ""],
+        ...[values.showFieldList3 ?? ""],
+      ]
+        .filter(Boolean)
+        .flat(),
       stationIdList: stationId,
       stationType: values.stationType,
       dataSource: values.dataSource,
       timeTypeList: values.timeTypeList,
     };
     console.log(values);
-
-    let { success, message: msg } = await batchExport(params);
-    if (success) {
-      message.success(msg);
-    } else {
-      message.error(msg);
-    }
+    let res = stationTypeList.find((ele) => ele.id === values.stationType);
+    await batchExport(params, `统计报表-${res.name}`);
     setLoading(false);
   };
 
@@ -230,7 +243,7 @@ function BatchExport() {
           <Row align="middle ">
             <Col style={{}}>
               <Form.Item label="监测时间" name="beginTime">
-                <DatePicker />
+                <DatePicker allowClear={false} />
               </Form.Item>
             </Col>
             <Col style={{ margin: "0 8px" }}>
@@ -238,7 +251,7 @@ function BatchExport() {
             </Col>
             <Col span={8} style={{}}>
               <Form.Item name="endTime">
-                <DatePicker />
+                <DatePicker allowClear={false} />
               </Form.Item>
             </Col>
           </Row>
