@@ -45,6 +45,8 @@ function OpForm({ record, open, closeModal }) {
       getMetaData5(),
       getMetaData6(),
       getMetaData7(),
+      getMetaData8(),
+      getMetaData9(),
     ]).then((res) => {
       setMetaSelect(res);
       setTimeout(() => {
@@ -118,6 +120,20 @@ function OpForm({ record, open, closeModal }) {
     }));
 
     return newData;
+  };
+
+  const getMetaData8 = async () => {
+    let { data } = await metaList({
+      dictType: "avg_algorithm",
+    });
+    return data;
+  };
+
+  const getMetaData9 = async () => {
+    let { data } = await metaList({
+      dictType: "day_avg_hour_range",
+    });
+    return data;
   };
 
   const onFinish = async () => {
@@ -297,6 +313,53 @@ function OpForm({ record, open, closeModal }) {
               maxTagCount="responsive"
             />
           </Form.Item>
+          <Form.Item
+            label="均值算法"
+            name="avgAlgorithm"
+            rules={[
+              {
+                required: true,
+                message: "请选择",
+              },
+            ]}
+          >
+            <Select className="width-3" placeholder="请选择" style={inputwidtg}>
+              {metaSelect[7]?.map((item) => (
+                <Option value={item.id} key={item.id} title={item.remark}>
+                  <Space>
+                    {item.dictLabel}-
+                    <span role="img" aria-label={item.name}>
+                      {item.remark}
+                    </span>
+                  </Space>
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label="小时值、日均值统计时段"
+            name="dayAvgHourRange"
+            rules={[
+              {
+                required: true,
+                message: "请选择",
+              },
+            ]}
+          >
+            <Select className="width-3" placeholder="请选择" style={inputwidtg}>
+              {metaSelect[8]?.map((item) => (
+                <Option value={item.id} key={item.id} title={item.remark}>
+                  <Space>
+                    {item.dictLabel}-
+                    <span role="img" aria-label={item.dictLabel}>
+                      {item.remark}
+                    </span>
+                  </Space>
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+
           <Form.Item label="评价指标" name="evaluationIndex">
             <Select
               style={inputwidtg}
