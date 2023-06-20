@@ -43,9 +43,12 @@ function DataList() {
   let dataMenu = menuTree
     .find((ele) => ele.label === "数据查询")
     .children.find((ele) => ele.label === "监测数据");
-  dataMenu.children.forEach((element) => {
-    element.type = "group";
-  });
+  console.log(dataMenu);
+  dataMenu &&
+    dataMenu?.children &&
+    dataMenu?.children.forEach((element) => {
+      element.type = "group";
+    });
 
   const onMenuChange = ({ key, title, query, ptitle }) => {
     setMenuSelect({

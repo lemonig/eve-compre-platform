@@ -330,7 +330,7 @@ function HomeReal() {
           </>
         );
       }
-    } else if (typeof value.value !== "number") {
+    } else if (!colum.isDigital) {
       return <span>{value.value}</span>;
     } else {
       return (
@@ -344,12 +344,10 @@ function HomeReal() {
                     ? {
                         color: "#F82504",
                         fontWeight: "bold",
-                        cursor:
-                          typeof value.value === "number" ? "pointer" : "",
+                        cursor: colum.isDigital ? "pointer" : "",
                       }
                     : {
-                        cursor:
-                          typeof value.value === "number" ? "pointer" : "",
+                        cursor: colum.isDigital ? "pointer" : "",
                       }
                 }
               >
