@@ -33,7 +33,7 @@ function DayModel({ open, closeModal, station, factor, timeType, time }) {
       page: 1,
       size: 99999,
       data: {
-        beginTime: formatePickTime(timeType, dayjs(time).subtract(30, "days")),
+        beginTime: formatePickTime(timeType, dayjs(time).subtract(7, "days")),
         endTime: formatePickTime(timeType, dayjs(time)),
         timeType: timeType,
         dataSource: "1",
@@ -48,11 +48,17 @@ function DayModel({ open, closeModal, station, factor, timeType, time }) {
 
     let newCol = additional_data.columnList.map((item) => {
       return {
-        title: item.label,
+        title: (
+          <p>
+            <p>{item.label}</p>
+            <p>{item.unit}</p>
+          </p>
+        ),
         dataIndex: item.key,
         key: item.key,
         render: (value) => tableRender(value),
         width: 60,
+        align: "center",
       };
     });
 
@@ -173,3 +179,4 @@ function tableRender(value, record) {
     );
   }
 }
+function titleRender() {}
