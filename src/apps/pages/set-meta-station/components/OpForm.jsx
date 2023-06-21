@@ -246,9 +246,9 @@ function OpForm({ record, open, closeModal }) {
           >
             <Input placeholder="请输入" className="width-3" />
           </Form.Item>
-          <Form.Item label="数据表" name="tableName">
+          {/* <Form.Item label="数据表" name="tableName">
             <Input placeholder="请输入" className="width-3" />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             label="数据频次"
             name="dataFrequency"

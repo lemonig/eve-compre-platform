@@ -92,16 +92,16 @@ function SetMetaStaion() {
       dataIndex: "name",
       key: "name  ",
     },
-    {
-      title: "英文名",
-      dataIndex: "enName",
-      key: "enName  ",
-    },
-    {
-      title: "编码",
-      dataIndex: "code",
-      key: "code",
-    },
+    // {
+    //   title: "英文名",
+    //   dataIndex: "enName",
+    //   key: "enName  ",
+    // },
+    // {
+    //   title: "编码",
+    //   dataIndex: "code",
+    //   key: "code",
+    // },
     {
       title: "数据表",
       dataIndex: "tableName",
@@ -112,12 +112,12 @@ function SetMetaStaion() {
       dataIndex: "dataFrequency",
       key: "dataFrequency",
     },
-    {
-      title: "是否汇聚数据",
-      dataIndex: "needComputeData",
-      key: "needComputeData",
-      render: (value, record) => (value ? "是" : "否"),
-    },
+    // {
+    //   title: "是否汇聚数据",
+    //   dataIndex: "needComputeData",
+    //   key: "needComputeData",
+    //   render: (value, record) => (value ? "是" : "否"),
+    // },
     {
       title: "汇聚级别",
       dataIndex: "computeDataLevel",
@@ -128,11 +128,11 @@ function SetMetaStaion() {
       dataIndex: "evaluationIndex",
       key: "evaluationIndex",
     },
-    {
-      title: "站点属性字段",
-      dataIndex: "stationFieldNum",
-      key: "stationFieldNum",
-    },
+    // {
+    //   title: "站点属性字段",
+    //   dataIndex: "stationFieldNum",
+    //   key: "stationFieldNum",
+    // },
 
     {
       title: "是否启用",
