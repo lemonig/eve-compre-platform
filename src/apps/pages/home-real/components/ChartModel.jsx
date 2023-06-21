@@ -53,7 +53,16 @@ const colorList = [
   "#0050B3",
 ];
 
-function ChartModel({ open, closeModal, station, factor, timeType }) {
+function ChartModel({
+  open,
+  closeModal,
+  station = {
+    name: {},
+    time: {},
+  },
+  factor,
+  timeType,
+}) {
   const handleOk = async () => {};
   const [loading, setLoading] = useState(false);
   const [chartdata, setChartdata] = useState(null);
@@ -82,11 +91,14 @@ function ChartModel({ open, closeModal, station, factor, timeType }) {
     setLoading(true);
 
     let params = {
-      beginTime: formatePickTime(timeType, dayjs().subtract(30, "days")),
-      endTime: formatePickTime(timeType, dayjs()),
+      beginTime: formatePickTime(
+        timeType,
+        dayjs(station.time.value).subtract(30, "days")
+      ),
+      endTime: formatePickTime(timeType, dayjs(station.time.value)),
       timeType: timeType,
       dataSource: "1",
-      stationId: station.id,
+      stationId: station.name.id,
       showFieldList: [factor.id],
     };
     let { data, success, message } = await oneFactorChart(params);
@@ -134,7 +146,7 @@ function ChartModel({ open, closeModal, station, factor, timeType }) {
           },
           saveAsImage: {
             title: "保存为图片",
-            name: `${station.value}-${title.text}`,
+            name: `${station.name.value}-${title.text}`,
           },
           dataView: {
             show: true,
@@ -168,7 +180,7 @@ function ChartModel({ open, closeModal, station, factor, timeType }) {
   return (
     <div>
       <Modal
-        title={station.value + "-" + factor.key}
+        title={station.name.value + "-" + factor.key}
         open={open}
         onOk={handleOk}
         onCancel={() => closeModal(false)}

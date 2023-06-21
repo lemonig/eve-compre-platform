@@ -75,7 +75,6 @@ function DataTable({ stationMsg, menuMsg, facList }) {
   //menu Change
   useEffect(() => {
     if ((menuMsg.query, stationMsg.key)) {
-      console.log("menu - change");
       // setFactorList([]);
       getMetaData();
     }
@@ -84,11 +83,6 @@ function DataTable({ stationMsg, menuMsg, facList }) {
   //station Change
   useEffect(() => {
     if (stationMsg.key) {
-      console.log(
-        "stationMsg pagination   - change",
-        stationMsg,
-        pageMsg.pagination
-      );
       getPageData();
     }
   }, [stationMsg.key, pageMsg.pagination.current, pageMsg.pagination.pageSize]);
@@ -96,7 +90,6 @@ function DataTable({ stationMsg, menuMsg, facList }) {
   //factorList/menuMsg Change
   useEffect(() => {
     if (stationMsg.key) {
-      console.log("factorList - change");
       getPageData();
     }
   }, [JSON.stringify(factorList)]);

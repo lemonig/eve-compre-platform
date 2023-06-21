@@ -161,7 +161,12 @@ function HomeReal() {
     setLoading(false);
     setOtherData(additional_data.countData);
     let newCol = additional_data.columnList.map((item) => ({
-      title: item.label,
+      title: (
+        <p>
+          <p>{item.label}</p>
+          <p>{item.unit}</p>
+        </p>
+      ),
       dataIndex: item.key,
       key: item.key,
       render: (value, record) => tableRender(value, record, item),
@@ -270,7 +275,10 @@ function HomeReal() {
     if (!colum.isDigital) {
       return;
     }
-    setTableRow(record.name);
+    setTableRow({
+      name: record.name,
+      time: record.datatime,
+    });
     setTableCell(value);
     setIsChartModalOpen(true);
   };

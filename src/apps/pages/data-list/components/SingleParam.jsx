@@ -73,7 +73,13 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
     };
     getEvaluteData();
     initFormVal();
-  }, [JSON.stringify(facList)]);
+  }, [JSON.stringify(facList), stationMsg.key]);
+
+  useEffect(() => {
+    if (stationMsg.key) {
+      getPageData();
+    }
+  }, [stationMsg.key]);
 
   const getMetaData = async () => {
     let { data, success } = await searchMeta({
@@ -92,8 +98,8 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
         compareList: undefined,
       });
       setTimeType(data.computeDataLevel[0].value);
-      getPageData();
     }
+    getPageData();
   };
 
   const initFormVal = () => {
@@ -199,6 +205,7 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
       tooltip: {
         trigger: "axis",
         formatter: function (params, ticket) {
+          console.log(params);
           let html = `<div>${params[0].axisValue}</div>`;
           let unit = extraData[0].unit;
           params.map((item) => {

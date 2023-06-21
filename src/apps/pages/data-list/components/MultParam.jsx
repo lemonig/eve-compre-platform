@@ -34,6 +34,12 @@ function MultParam({ menuMsg, stationMsg, facList }) {
   }, [menuMsg.query]);
 
   useEffect(() => {
+    if (stationMsg.key) {
+      getPageData();
+    }
+  }, [stationMsg.key]);
+
+  useEffect(() => {
     const getEvaluteData = async () => {
       let { data, success } = await chartEvaluateIndex({
         id: stationMsg.key,
@@ -54,7 +60,7 @@ function MultParam({ menuMsg, stationMsg, facList }) {
     };
     getEvaluteData();
     initFormVal();
-  }, [JSON.stringify(facList)]);
+  }, [JSON.stringify(facList), stationMsg.key]);
 
   useEffect(() => {
     console.log(chartRef);

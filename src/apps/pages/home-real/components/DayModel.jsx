@@ -17,6 +17,12 @@ function DayModel({ open, closeModal, station, factor, timeType, time }) {
     avgCountList: [],
   });
   const [columns, setColumns] = useState([]);
+  const [pageMsg, setPagemsg] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 20,
+    },
+  });
 
   useEffect(() => {
     console.log(station);
@@ -30,8 +36,8 @@ function DayModel({ open, closeModal, station, factor, timeType, time }) {
     setLoading(true);
 
     let params = {
-      page: 1,
-      size: 99999,
+      page: pageMsg.pagination.current,
+      size: pageMsg.pagination.pageSize,
       data: {
         beginTime: formatePickTime(timeType, dayjs(time).subtract(7, "days")),
         endTime: formatePickTime(timeType, dayjs(time)),
@@ -46,6 +52,16 @@ function DayModel({ open, closeModal, station, factor, timeType, time }) {
     setLoading(false);
     setOtherData(additional_data);
 
+    if (pageMsg.total !== additional_data.pagination.total) {
+      setPagemsg({
+        ...pageMsg,
+        pagination: {
+          ...pageMsg.pagination,
+          total: additional_data.pagination.total,
+        },
+      });
+    }
+
     let newCol = additional_data.columnList.map((item) => {
       return {
         title: (
@@ -58,7 +74,7 @@ function DayModel({ open, closeModal, station, factor, timeType, time }) {
         key: item.key,
         render: (value) => tableRender(value),
         width: 60,
-        align: "center",
+        // align: "center",
       };
     });
 
@@ -75,6 +91,16 @@ function DayModel({ open, closeModal, station, factor, timeType, time }) {
     },
   };
 
+  const handleTableChange = (pagination, filters, sorter) => {
+    // if filters not changed, don't update pagination.current
+    console.log(pagination);
+    setPagemsg({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
   return (
     <div>
       <Modal
@@ -82,6 +108,9 @@ function DayModel({ open, closeModal, station, factor, timeType, time }) {
         open={open}
         onOk={handleOk}
         onCancel={() => closeModal(false)}
+        rowKey={(record) => record.key}
+        pagination={pageMsg.pagination}
+        onChange={handleTableChange}
         maskClosable={false}
         confirmLoading={loading}
         footer={null}
@@ -104,7 +133,11 @@ function DayModel({ open, closeModal, station, factor, timeType, time }) {
                 {otherdata?.maxCountList &&
                   otherdata?.maxCountList.map((item, idx) => {
                     return (
-                      <Table.Summary.Cell index={idx} key={idx}>
+                      <Table.Summary.Cell
+                        style={{ textAlign: "center" }}
+                        index={idx}
+                        key={idx}
+                      >
                         {item}
                       </Table.Summary.Cell>
                     );
@@ -131,15 +164,7 @@ function DayModel({ open, closeModal, station, factor, timeType, time }) {
             </Table.Summary>
           )}
           onRow={(record) => {}}
-        >
-          <Table.Summary>
-            <Table.Summary.Row>
-              <Table.Summary.Cell index={0}>总计：</Table.Summary.Cell>
-              <Table.Summary.Cell index={1}>1</Table.Summary.Cell>
-              <Table.Summary.Cell index={2}>{2}</Table.Summary.Cell>
-            </Table.Summary.Row>
-          </Table.Summary>
-        </Table>
+        ></Table>
       </Modal>
     </div>
   );
