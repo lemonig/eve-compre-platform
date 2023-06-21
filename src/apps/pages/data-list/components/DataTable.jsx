@@ -90,7 +90,7 @@ function DataTable({ stationMsg, menuMsg, facList }) {
   //factorList/menuMsg Change
   useEffect(() => {
     if (stationMsg.key) {
-      getPageData();
+      getMetaData();
     }
   }, [JSON.stringify(factorList)]);
 
@@ -116,6 +116,7 @@ function DataTable({ stationMsg, menuMsg, facList }) {
         },
       });
     }
+    getPageData();
   };
 
   let normalCol = [
