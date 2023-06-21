@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import LayMenu from "@App/layout/lay-menu";
 import StationTree from "@Shared/stationTree";
 import Lbreadcrumb from "@Components/Lbreadcrumb";
-import { Tabs } from "antd";
+import { Tabs, Empty } from "antd";
 import DataTable from "./components/DataTable";
 import MultParam from "./components/MultParam";
 import SingleParam from "./components/SingleParam";
@@ -29,12 +29,14 @@ function DataList() {
   const [facList, setFacList] = useState([]); //因子
 
   useEffect(() => {
-    setMenuSelect({
-      key: dataMenu.children[0].children[0].id,
-      title: dataMenu.children[0].children[0].title,
-      query: dataMenu.children[0].children[0].query,
-      ptitle: dataMenu.children[0].title,
-    });
+    if (dataMenu.children && dataMenu.children.length) {
+      setMenuSelect({
+        key: dataMenu.children[0].children[0].id,
+        title: dataMenu.children[0].children[0].title,
+        query: dataMenu.children[0].children[0].query,
+        ptitle: dataMenu.children[0].title,
+      });
+    }
   }, []);
 
   const menu = useSelector((state) => state.menu);
@@ -121,37 +123,46 @@ function DataList() {
 
   return (
     <>
-      <LayMenu
-        menuList={dataMenu.children}
-        onChange={onMenuChange}
-        value={[dataMenu.children[0].children[0].id]}
-      />
-      <section className="main-content">
-        {!!menuSelect.query ? (
-          <StationTree query={menuSelect.query} onChange={onStationChange} />
-        ) : null}
-        <div className="content-wrap">
-          <Lbreadcrumb
-            data={[
-              "数据查询",
-              "监测数据",
-              `${menuSelect.ptitle}`,
-              `${menuSelect.title}`,
-            ]}
+      {"children" in dataMenu ? (
+        <>
+          <LayMenu
+            menuList={dataMenu.children}
+            onChange={onMenuChange}
+            value={[dataMenu.children[0].children[0].id]}
           />
-          <h2 className="satation-name">{stationSelect.title}</h2>
-          {menuSelect.key && stationSelect.key && facList.length ? (
-            <Tabs
-              defaultActiveKey="1"
-              activeKey={activeKey}
-              items={items}
-              onChange={onTabChange}
-              animated={true}
-              destroyInactiveTabPane={true}
-            />
-          ) : null}
-        </div>
-      </section>
+          <section className="main-content">
+            {!!menuSelect.query ? (
+              <StationTree
+                query={menuSelect.query}
+                onChange={onStationChange}
+              />
+            ) : null}
+            <div className="content-wrap">
+              <Lbreadcrumb
+                data={[
+                  "数据查询",
+                  "监测数据",
+                  `${menuSelect.ptitle}`,
+                  `${menuSelect.title}`,
+                ]}
+              />
+              <h2 className="satation-name">{stationSelect.title}</h2>
+              {menuSelect.key && stationSelect.key && facList.length ? (
+                <Tabs
+                  defaultActiveKey="1"
+                  activeKey={activeKey}
+                  items={items}
+                  onChange={onTabChange}
+                  animated={true}
+                  destroyInactiveTabPane={true}
+                />
+              ) : null}
+            </div>
+          </section>
+        </>
+      ) : (
+        <Empty style={{ width: "100%", alignSelf: "center" }} />
+      )}
     </>
   );
 }

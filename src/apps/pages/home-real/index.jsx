@@ -56,7 +56,7 @@ function HomeReal() {
   }); //因子
 
   const [themeList, setThemeList] = useState([]); //业务主题
-  const [themeId, setThemeId] = useState("0");
+  const [themeId, setThemeId] = useState();
   const [stationTypeList, setStationTypeList] = useState([]); //站点类型
   const [stationTypeItem, setStationTypeItem] = useState(); //站点类型
   const [stationTypeIndex, setStationTypeIndex] = useState(0); //站点类型
@@ -190,9 +190,21 @@ function HomeReal() {
 
   const initPage = async () => {
     let res = await getTopicListAsync();
-    setThemeList(res);
+    if (!res.length) {
+      return;
+    }
+    setThemeList([
+      {
+        name: "全部",
+        id: 0,
+      },
+      ...res,
+    ]);
     setThemeId(0);
     let res1 = await getStationTypeAsync(0);
+    if (!res1.length) {
+      return;
+    }
     setStationTypeId(res1[0].id);
     setStationTypeList(res1);
     setStationTypeItem(res1[0]);
@@ -400,13 +412,7 @@ function HomeReal() {
                   value: "id",
                 }}
                 value={themeId}
-                options={[
-                  {
-                    name: "全部",
-                    id: 0,
-                  },
-                  ...themeList,
-                ]}
+                options={themeList}
                 style={inputwidtg}
                 onChange={handleTTChange}
               />
