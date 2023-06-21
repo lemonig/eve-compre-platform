@@ -166,11 +166,18 @@ function DataTable({ stationMsg, menuMsg, facList }) {
 
     let newCol = additional_data.columnList.map((item) => {
       return {
-        title: item.label,
+        title: (
+          <p>
+            <p>{item.label}</p>
+            <p>{item.unit}</p>
+          </p>
+        ),
         dataIndex: item.key,
         key: item.key,
         render: (value) => tableRender(value),
         width: 100,
+        ellipsis: true,
+        align: "center",
         fixed:
           item.key === "datatime" ||
           item.key === "station_type" ||
