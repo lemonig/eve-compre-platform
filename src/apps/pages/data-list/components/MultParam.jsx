@@ -12,58 +12,13 @@ import "./index.less";
 
 import ReactECharts from "echarts-for-react";
 
-function MultParam({ menuMsg, stationMsg, facList }) {
+function MultParam({ menuMsg, stationMsg, metaData, evaluteList }) {
   const [searchForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
-
-  const [metaData, setMetaData] = useState({
-    computeDataLevel: [],
-    dataSource: [],
-    stationField: [],
-    evaluateIndex: [],
-  });
-
   const [chartdata, setChartdata] = useState(null);
-  const [evaluteList, setEvaluteList] = useState([]);
   const chartRef = useRef(null);
 
   useEffect(() => {
-    if ((menuMsg.query, stationMsg.key)) {
-      getMetaData();
-    }
-  }, [menuMsg.query]);
-
-  useEffect(() => {
-    if (stationMsg.key) {
-      getPageData();
-    }
-  }, [stationMsg.key]);
-
-  useEffect(() => {
-    const getEvaluteData = async () => {
-      let { data, success } = await chartEvaluateIndex({
-        id: stationMsg.key,
-      });
-      if (success) {
-        setEvaluteList(data);
-        let filed = [];
-        [...facList, ...data].forEach((item, idx) => {
-          if (idx < 10) {
-            filed.push(item.value);
-          }
-        });
-        searchForm.setFieldsValue({
-          showFieldList: filed,
-        });
-        getPageData();
-      }
-    };
-    getEvaluteData();
-    initFormVal();
-  }, [JSON.stringify(facList), stationMsg.key]);
-
-  useEffect(() => {
-    console.log(chartRef);
     const chart = chartRef.current && chartRef.current.getEchartsInstance();
     const handleResize = () => {
       chart && chart.resize();
@@ -74,23 +29,20 @@ function MultParam({ menuMsg, stationMsg, facList }) {
     };
   }, [chartRef]);
 
-  const getMetaData = async () => {
-    let { data, success } = await searchMeta({
-      id: menuMsg.query,
-    });
-    if (success) {
-      setMetaData(data);
-      searchForm.setFieldsValue({
-        dataSource: data.dataSource[0].value,
-        time: {
-          startTime: dayjs().subtract(1, "month"),
-          endTime: dayjs(),
-          type: data.computeDataLevel[0].value,
-        },
+  useEffect(() => {
+    if (evaluteList.length) {
+      let filed = [];
+      evaluteList.forEach((item, idx) => {
+        if (idx < 10) {
+          filed.push(item.value);
+        }
       });
-      getPageData();
+      searchForm.setFieldsValue({
+        showFieldList: filed,
+      });
+      initFormVal();
     }
-  };
+  }, [evaluteList]);
 
   const initFormVal = () => {
     if (metaData.dataSource.length) {
@@ -104,6 +56,7 @@ function MultParam({ menuMsg, stationMsg, facList }) {
         multiY: false,
       });
     }
+    getPageData(); //站点切换后 因子切换 查询条件置空 刷新
   };
 
   const getPageData = async () => {
@@ -127,7 +80,6 @@ function MultParam({ menuMsg, stationMsg, facList }) {
     let { data } = await multiFactorChart(params);
     if (data.series.length) {
       let res = getOption(data);
-      console.log(res);
       setChartdata({ ...res });
     }
 
@@ -232,7 +184,6 @@ function MultParam({ menuMsg, stationMsg, facList }) {
   const onChartReadyCallback = () => {};
 
   const chartLegendSelected = (params) => {
-    console.log(params);
     chartdata.legend.selected = params.selected;
     let values = searchForm.getFieldsValue();
     if (!values.multiY)
@@ -266,7 +217,7 @@ function MultParam({ menuMsg, stationMsg, facList }) {
           <Form.Item label="" name="showFieldList">
             <Select
               style={{ width: 120 }}
-              options={[...facList, ...evaluteList]}
+              options={[...evaluteList]}
               placeholder="请选择"
               allowClear
               mode="multiple"

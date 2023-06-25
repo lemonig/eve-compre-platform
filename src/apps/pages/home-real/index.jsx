@@ -145,7 +145,7 @@ function HomeReal() {
   const getPageData = async ({
     initFactor = factorList,
     initTime = timeType,
-  }) => {
+  } = {}) => {
     setLoading(true);
     let params = {
       stationType: stationTypeId,

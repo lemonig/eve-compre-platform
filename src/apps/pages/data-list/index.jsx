@@ -10,7 +10,7 @@ import SingleParam from "./components/SingleParam";
 import { handleMenu } from "@Utils/menu";
 import { useDispatch, useSelector } from "react-redux";
 
-import { getFactor } from "@Api/data-list.js";
+import { getFactor, searchMeta, chartEvaluateIndex } from "@Api/data-list.js";
 
 function DataList() {
   const [menuSelect, setMenuSelect] = useState({
@@ -27,6 +27,13 @@ function DataList() {
 
   const [activeKey, setActiveKey] = useState("1");
   const [facList, setFacList] = useState([]); //因子
+  const [metaData, setMetaData] = useState({
+    computeDataLevel: [],
+    dataSource: [],
+    stationField: [],
+    evaluateIndex: [],
+  });
+  const [evaluteList, setEvaluteList] = useState([]);
 
   useEffect(() => {
     if (dataMenu.children && dataMenu.children.length) {
@@ -45,7 +52,6 @@ function DataList() {
   let dataMenu = menuTree
     .find((ele) => ele.label === "数据查询")
     .children.find((ele) => ele.label === "监测数据");
-  console.log(dataMenu);
   dataMenu &&
     dataMenu?.children &&
     dataMenu?.children.forEach((element) => {
@@ -68,56 +74,92 @@ function DataList() {
   const onStationChange = (e) => {
     setStationSelect(e);
   };
+  // 站点改变
   useEffect(() => {
     if (stationSelect.key) {
-      const getFactorData = async () => {
-        let { data } = await getFactor({
-          id: stationSelect.key,
-        });
-        data?.forEach((item) => {
-          item.checked = true;
-        });
-        // console.log(data);
-        setFacList(data);
-      };
       getFactorData();
+      getMetaData();
+      getEvaluteData();
     }
   }, [stationSelect.key]);
 
+  const getFactorData = async () => {
+    let { data } = await getFactor({
+      id: stationSelect.key,
+    });
+    data?.forEach((item) => {
+      item.checked = true;
+    });
+    setFacList(data);
+  };
+
+  const getMetaData = async () => {
+    let { data, success } = await searchMeta({
+      id: menuSelect.query,
+    });
+    if (success) {
+      setMetaData(data);
+    }
+  };
+  const getEvaluteData = async () => {
+    let { data, success } = await chartEvaluateIndex({
+      id: stationSelect.key,
+    });
+    if (success) {
+      setEvaluteList(data);
+    }
+  };
   const items = [
     {
       key: "1",
       label: `站点数据`,
-      children: stationSelect.key && (
-        <DataTable
-          stationMsg={stationSelect}
-          menuMsg={menuSelect}
-          facList={facList}
-        />
-      ),
+      children: menuSelect.key &&
+        stationSelect.key &&
+        facList.length &&
+        metaData.dataSource.length &&
+        activeKey == 1 && (
+          <DataTable
+            stationMsg={stationSelect}
+            menuMsg={menuSelect}
+            facList={facList}
+            metaData={metaData}
+          />
+        ),
     },
     {
       key: "2",
       label: `单站单参分析`,
-      children: (
-        <SingleParam
-          stationMsg={stationSelect}
-          menuMsg={menuSelect}
-          facList={facList}
-          // key={stationSelect.key}
-        />
-      ),
+      children: menuSelect.key &&
+        stationSelect.key &&
+        facList.length &&
+        metaData.dataSource.length &&
+        activeKey == 2 && (
+          <SingleParam
+            stationMsg={stationSelect}
+            menuMsg={menuSelect}
+            facList={facList}
+            metaData={metaData}
+            evaluteList={evaluteList}
+            // key={stationSelect.key}
+          />
+        ),
     },
     {
       key: "3",
       label: `单站多参分析`,
-      children: (
-        <MultParam
-          stationMsg={stationSelect}
-          menuMsg={menuSelect}
-          facList={facList}
-        />
-      ),
+      children: menuSelect.key &&
+        stationSelect.key &&
+        facList.length &&
+        metaData.dataSource.length &&
+        activeKey == 3 && (
+          <MultParam
+            stationMsg={stationSelect}
+            menuMsg={menuSelect}
+            facList={facList}
+            metaData={metaData}
+            evaluteList={evaluteList}
+          />
+        ),
     },
   ];
 
@@ -147,16 +189,14 @@ function DataList() {
                 ]}
               />
               <h2 className="satation-name">{stationSelect.title}</h2>
-              {menuSelect.key && stationSelect.key && facList.length ? (
-                <Tabs
-                  defaultActiveKey="1"
-                  activeKey={activeKey}
-                  items={items}
-                  onChange={onTabChange}
-                  animated={true}
-                  destroyInactiveTabPane={true}
-                />
-              ) : null}
+              <Tabs
+                defaultActiveKey="1"
+                activeKey={activeKey}
+                items={items}
+                onChange={onTabChange}
+                animated={true}
+                destroyInactiveTabPane={true}
+              />
             </div>
           </section>
         </>

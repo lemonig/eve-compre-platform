@@ -29,20 +29,13 @@ import CompareTime from "./CompareTime";
 
 import ReactECharts from "echarts-for-react";
 
-function SingleParam({ menuMsg, stationMsg, facList }) {
+function SingleParam({ menuMsg, stationMsg, metaData, evaluteList }) {
   const [searchForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
-  const [metaData, setMetaData] = useState({
-    computeDataLevel: [],
-    dataSource: [],
-    stationField: [],
-    evaluateIndex: [],
-  });
   const [compareVal, setCompareVal] = useState(null);
   const [timeType, setTimeType] = useState("");
   const [chartdata, setChartdata] = useState(null);
-  const [evaluteList, setEvaluteList] = useState([]);
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -57,50 +50,10 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
   }, [chartRef]);
 
   useEffect(() => {
-    if ((menuMsg.query, stationMsg.key)) {
-      getMetaData();
+    if (evaluteList.length) {
+      initFormVal();
     }
-  }, [menuMsg.query]);
-
-  useEffect(() => {
-    const getEvaluteData = async () => {
-      let { data, success } = await chartEvaluateIndex({
-        id: stationMsg.key,
-      });
-      if (success) {
-        setEvaluteList(data);
-      }
-    };
-    getEvaluteData();
-    initFormVal();
-  }, [JSON.stringify(facList), stationMsg.key]);
-
-  useEffect(() => {
-    if (stationMsg.key) {
-      getPageData();
-    }
-  }, [stationMsg.key]);
-
-  const getMetaData = async () => {
-    let { data, success } = await searchMeta({
-      id: menuMsg.query,
-    });
-    if (success) {
-      setMetaData(data);
-      searchForm.setFieldsValue({
-        dataSource: data.dataSource[0].value,
-        time: {
-          startTime: dayjs().subtract(1, "month"),
-          endTime: dayjs(),
-          type: data.computeDataLevel[0].value,
-        },
-        showFieldList: facList[0].value,
-        compareList: undefined,
-      });
-      setTimeType(data.computeDataLevel[0].value);
-    }
-    getPageData();
-  };
+  }, [evaluteList]);
 
   const initFormVal = () => {
     if (metaData.dataSource.length) {
@@ -111,19 +64,16 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
           endTime: dayjs(),
           type: metaData.computeDataLevel[0].value,
         },
-        showFieldList: facList[0].value,
+        showFieldList: evaluteList[0].value,
         compareList: undefined,
       });
       setCompareVal(null);
     }
-    // getPageData(); //站点切换后 因子切换 查询条件置空 刷新
+    getPageData(); //站点切换后 因子切换 查询条件置空 刷新
   };
 
   const getPageData = async () => {
-    console.log("xxxx");
-
     let values = searchForm.getFieldsValue();
-    console.log(values);
     if (!values.dataSource || !values.time) {
       return;
     }
@@ -205,7 +155,6 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
       tooltip: {
         trigger: "axis",
         formatter: function (params, ticket) {
-          console.log(params);
           let html = `<div>${params[0].axisValue}</div>`;
           let unit = extraData[0].unit;
           params.map((item) => {
@@ -276,7 +225,15 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
           layout="inline"
           form={searchForm}
           onFinish={search}
-          initialValues={{}}
+          initialValues={{
+            dataSource: metaData.dataSource[0].value,
+            time: {
+              startTime: dayjs().subtract(1, "month"),
+              endTime: dayjs(),
+              type: metaData.computeDataLevel[0].value,
+            },
+            showFieldList: evaluteList[0].value,
+          }}
         >
           <Form.Item label="" name="dataSource">
             <Select
@@ -294,7 +251,7 @@ function SingleParam({ menuMsg, stationMsg, facList }) {
           <Form.Item label="" name="showFieldList">
             <Select
               style={{ width: 120 }}
-              options={[...facList, ...evaluteList]}
+              options={[...evaluteList]}
               placeholder="请选择"
             />
           </Form.Item>

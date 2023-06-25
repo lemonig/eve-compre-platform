@@ -221,7 +221,16 @@ function OpForm({ record, open, closeModal }) {
           >
             <Input placeholder="请输入" className="width-3" />
           </Form.Item>
-          <Form.Item label="业务主题" name="topicType">
+          <Form.Item
+            label="业务主题"
+            name="topicType"
+            rules={[
+              {
+                required: true,
+                message: "请选择",
+              },
+            ]}
+          >
             <Select
               className="width-3"
               style={inputwidtg}

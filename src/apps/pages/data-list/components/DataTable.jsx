@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Select, Button, Table, Form, Tooltip, Row, Col } from "antd";
 import LtimePicker from "@Components/LtimePicker";
 import WaterLevel from "@Components/WaterLevel";
@@ -41,7 +41,7 @@ function tableRender(value) {
   }
 }
 
-function DataTable({ stationMsg, menuMsg, facList }) {
+function DataTable({ stationMsg, menuMsg, facList, metaData }) {
   const [searchForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
@@ -58,66 +58,54 @@ function DataTable({ stationMsg, menuMsg, facList }) {
       pageSize: 20,
     },
   });
-  const [metaData, setMetaData] = useState({
-    computeDataLevel: [],
-    dataSource: [],
-    stationField: [],
-    evaluateIndex: [],
-  });
+
   const [visable, setVisable] = useState(false); //因子选择
   const [factorList, setFactorList] = useState([]); //字段选择回调
   // const [facList, setfacList] = useState([]); //因子
+  // searchForm.setFieldsValue({
+  //   dataSource: metaData.dataSource[0].value,
+  //   time: {
+  //     startTime: dayjs().subtract(1, "month"),
+  //     endTime: dayjs(),
+  //     type: metaData.computeDataLevel[0].value,
+  //   },
+  // });
 
   useEffect(() => {
     console.log("init");
   }, []);
 
-  //menu Change
-  useEffect(() => {
-    if ((menuMsg.query, stationMsg.key)) {
-      // setFactorList([]);
-      getMetaData();
-    }
-  }, [menuMsg.query]);
-
   //station Change
   useEffect(() => {
-    if (stationMsg.key) {
+    console.log("pageMsg change");
+    if (stationMsg.key && factorList.length) {
       getPageData();
     }
-  }, [stationMsg.key, pageMsg.pagination.current, pageMsg.pagination.pageSize]);
+  }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
 
   //factorList/menuMsg Change
-  useEffect(() => {
-    if (stationMsg.key) {
-      getMetaData();
-    }
-  }, [JSON.stringify(factorList)]);
-
-  //pageMsg change
   // useEffect(() => {
   //   if (stationMsg.key) {
-  //     getPageData();
+  //     getMetaData();
   //   }
-  // }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
+  // }, [JSON.stringify(factorList)]);
 
-  const getMetaData = async () => {
-    let { data, success } = await searchMeta({
-      id: menuMsg.query,
-    });
-    if (success) {
-      setMetaData(data);
-      searchForm.setFieldsValue({
-        dataSource: data.dataSource[0].value,
-        time: {
-          startTime: dayjs().subtract(1, "month"),
-          endTime: dayjs(),
-          type: data.computeDataLevel[0].value,
-        },
-      });
-    }
-    getPageData();
-  };
+  // const getMetaData = async () => {
+  //   let { data, success } = await searchMeta({
+  //     id: menuMsg.query,
+  //   });
+  //   if (success) {
+  //     setMetaData(data);
+  //     searchForm.setFieldsValue({
+  //       dataSource: data.dataSource[0].value,
+  //       time: {
+  //         startTime: dayjs().subtract(1, "month"),
+  //         endTime: dayjs(),
+  //         type: data.computeDataLevel[0].value,
+  //       },
+  //     });
+  //   }
+  // };
 
   let normalCol = [
     {
@@ -131,24 +119,33 @@ function DataTable({ stationMsg, menuMsg, facList }) {
         1,
     },
   ];
-  const getPageData = async () => {
+  const getPageData = async ({ initFactor = factorList } = {}) => {
     let values = searchForm.getFieldsValue();
-    if (!values.dataSource || !values.time) {
+    let valueCopy = JSON.parse(JSON.stringify(values));
+
+    if (!valueCopy.dataSource || !valueCopy.time) {
       return;
     }
+    console.log(valueCopy);
     setLoading(true);
-    values.startTime = formatePickTime(values.time.type, values.time.startTime);
-    values.endTime = formatePickTime(values.time.type, values.time.endTime);
+    valueCopy.startTime = formatePickTime(
+      valueCopy.time.type,
+      valueCopy.time.startTime
+    );
+    valueCopy.endTime = formatePickTime(
+      valueCopy.time.type,
+      valueCopy.time.endTime
+    );
     let params = {
       page: pageMsg.pagination.current,
       size: pageMsg.pagination.pageSize,
       data: {
-        beginTime: values.startTime,
-        endTime: values.endTime,
-        timeType: values.time.type,
-        dataSource: values.dataSource,
+        beginTime: valueCopy.startTime,
+        endTime: valueCopy.endTime,
+        timeType: valueCopy.time.type,
+        dataSource: valueCopy.dataSource,
         stationId: stationMsg.key,
-        showFieldList: factorList,
+        showFieldList: initFactor,
       },
     };
     console.log(params);
@@ -178,7 +175,7 @@ function DataTable({ stationMsg, menuMsg, facList }) {
         render: (value) => tableRender(value),
         width: 100,
         ellipsis: true,
-        align: "center",
+        // align: "center",
         fixed:
           item.key === "datatime" ||
           item.key === "station_type" ||
@@ -189,7 +186,6 @@ function DataTable({ stationMsg, menuMsg, facList }) {
     });
 
     setColumns(newCol);
-
     getdata.forEach((item, idx) => {
       item.key = pageMsg.pagination.current + "-" + idx;
       item.index =
@@ -198,8 +194,6 @@ function DataTable({ stationMsg, menuMsg, facList }) {
         1;
     });
     setData([...getdata]);
-    // console.log([additional_data.limitList, ...getdata]);
-    // setData([additional_data.limitList, ...getdata]);
   };
   // 查询
   const search = () => {
@@ -217,7 +211,6 @@ function DataTable({ stationMsg, menuMsg, facList }) {
   };
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
-    console.log(pagination);
     setPagemsg({
       ...pageMsg,
       pagination: {
@@ -240,6 +233,7 @@ function DataTable({ stationMsg, menuMsg, facList }) {
     console.log("callback", data);
     setVisable(false);
     setFactorList(data);
+    getPageData({ initFactor: data });
   };
 
   //导出
@@ -269,6 +263,24 @@ function DataTable({ stationMsg, menuMsg, facList }) {
     },
   };
 
+  const memoFiledSelect = useMemo(() => {
+    return (
+      metaData?.stationField.length &&
+      facList.length && (
+        <FiledSelect
+          title={["站点属性", "评价因子", "监测因子"]}
+          options1={metaData?.stationField}
+          options2={metaData?.evaluateIndex}
+          options3={facList}
+          stationId={stationMsg.key}
+          open={visable}
+          closeModal={() => setVisable(false)}
+          onOk={confirmModal}
+        />
+      )
+    );
+  }, [visable, facList, metaData]);
+
   return (
     <>
       <div>
@@ -277,7 +289,14 @@ function DataTable({ stationMsg, menuMsg, facList }) {
             layout="inline"
             form={searchForm}
             onFinish={search}
-            initialValues={{}}
+            initialValues={{
+              dataSource: metaData.dataSource[0].value,
+              time: {
+                startTime: dayjs().subtract(1, "month"),
+                endTime: dayjs(),
+                type: metaData.computeDataLevel[0].value,
+              },
+            }}
           >
             <Form.Item label="" name="dataSource">
               <Select
@@ -325,31 +344,35 @@ function DataTable({ stationMsg, menuMsg, facList }) {
           summary={() => (
             <Table.Summary fixed={"bottom"}>
               <Table.Summary.Row>
-                <Table.Summary.Cell />
+                <Table.Summary.Cell index={0} />
                 {otherdata?.maxCountList &&
                   otherdata?.maxCountList.map((item, idx) => {
                     return (
-                      <Table.Summary.Cell index={idx} key={idx}>
+                      <Table.Summary.Cell
+                        index={idx + 1}
+                        key={idx}
+                        style={{ textAlign: "center" }}
+                      >
                         {item}
                       </Table.Summary.Cell>
                     );
                   })}
               </Table.Summary.Row>
               <Table.Summary.Row>
-                <Table.Summary.Cell />
+                <Table.Summary.Cell index={0} />
                 {otherdata?.minCountList.map((item, idx) => {
                   return (
-                    <Table.Summary.Cell index={idx} key={idx}>
+                    <Table.Summary.Cell index={idx + 1} key={idx}>
                       {item}
                     </Table.Summary.Cell>
                   );
                 })}
               </Table.Summary.Row>
               <Table.Summary.Row>
-                <Table.Summary.Cell />
+                <Table.Summary.Cell index={0} />
                 {otherdata?.avgCountList.map((item, idx) => {
                   return (
-                    <Table.Summary.Cell index={idx} key={idx}>
+                    <Table.Summary.Cell index={idx + 1} key={idx}>
                       {item}
                     </Table.Summary.Cell>
                   );
@@ -360,43 +383,17 @@ function DataTable({ stationMsg, menuMsg, facList }) {
           onRow={(record) => {
             // console.log(record);
           }}
-          // footer={() => {
-          //   return (
-          //     <tr className="ant-table-row ant-table-row-level-0">
-          //       {otherdata?.minCountList &&
-          //         otherdata?.minCountList.map((item) => {
-          //           return (
-          //             <td className="ant-table-cell" key={item}>
-          //               {item}
-          //             </td>
-          //           );
-          //         })}
-          //     </tr>
-          //   );
-          // }}
-          // rowClassName={(record) => (record.isExternal ? "external-row" : "")}
         >
-          <Table.Summary>
+          {/* <Table.Summary>
             <Table.Summary.Row>
               <Table.Summary.Cell index={0}>总计：</Table.Summary.Cell>
               <Table.Summary.Cell index={1}>1</Table.Summary.Cell>
               <Table.Summary.Cell index={2}>{2}</Table.Summary.Cell>
             </Table.Summary.Row>
-          </Table.Summary>
+          </Table.Summary> */}
         </Table>
       </div>
-      {metaData?.stationField.length && facList.length ? (
-        <FiledSelect
-          title={["站点属性", "评价因子", "监测因子"]}
-          options1={metaData?.stationField}
-          options2={metaData?.evaluateIndex}
-          options3={facList}
-          stationId={stationMsg.key}
-          open={visable}
-          closeModal={() => setVisable(false)}
-          onOk={confirmModal}
-        />
-      ) : null}
+      {memoFiledSelect}
     </>
   );
 }
