@@ -48,19 +48,12 @@ function StationTreeMul({ query, onChange }) {
     let { data } = await stationTreeAll({
       stationType: query,
     });
-    // setTreeData(data);
     let title = [];
-    // for (let i in data) {
-    //   if (!!data[i]) {
-    //     title.push({
-    //       label: titleIn[i],
-    //       name: i,
-    //     });
-    //   }
-    // }
     if (data.region) {
       setTreeData1(loop(data.region)); //初始化
-      setCheckKey1(initCheck(data.region));
+      let initCheckList = initCheck(data.region);
+      setCheckKey1(initCheckList);
+      onChange(initCheckList);
       setExpandedKeys([
         data.region[0].id,
         data.region[0].children[0].id,
@@ -95,10 +88,6 @@ function StationTreeMul({ query, onChange }) {
     let res = [];
     const innerFun = (arr) => {
       arr.forEach((item) => {
-        // if (!item.children.length) {
-        //   return;
-        // }
-
         if (item.isStation) {
           res.push(item.id);
         } else if (item.children.length) {
@@ -110,7 +99,6 @@ function StationTreeMul({ query, onChange }) {
     return res;
   }
 
-  useEffect(() => {});
   // 树循环
   let flag = true; //第一次递归
   function loop(data) {
@@ -126,14 +114,7 @@ function StationTreeMul({ query, onChange }) {
       if (item.children) {
         if (idx === 0 && item.isStation && flag) {
           //默认选中
-
           flag = false;
-
-          // setActiveNode([item.key]);
-          // onChange({
-          //   key: item.id || "",
-          //   title: item.label || "",
-          // });
         }
         return {
           ...item,
@@ -148,9 +129,6 @@ function StationTreeMul({ query, onChange }) {
         key: item.id,
       };
     });
-    // newTree = newTree.filter((ele) => {
-    //   return Object.prototype.toString.call(ele) === "[object Object]";
-    // });
     return newTree;
   }
 
@@ -229,7 +207,6 @@ function StationTreeMul({ query, onChange }) {
   };
 
   const onCheck = (checkedKeys, info) => {
-    console.log("onCheck", checkedKeys, info);
     let stationIdArr = filterStation(info.checkedNodes);
     setCheckKey1(checkedKeys);
     onChange(stationIdArr);

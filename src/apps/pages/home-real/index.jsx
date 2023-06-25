@@ -85,14 +85,13 @@ function HomeReal() {
   }, []);
 
   useEffect(() => {
-    if (stationTypeId && factorList.length) {
-      getPageData();
-    }
-  }, [stationTypeId, stationSelect, timeType, JSON.stringify(factorList)]);
-
-  useEffect(() => {
-    if (stationTypeId) {
-      getRealtimeMetaAsync(stationTypeId);
+    // 1 先请求树 -> 因子
+    // 2.树更新 -> 更新表格
+    //3.切换因子 -> updat,e
+    if (stationSelect.length) {
+      getRealtimeMetaAsync(stationTypeId).then((res) => {
+        setFactList(res);
+      });
     }
   }, [stationSelect]);
 
@@ -105,7 +104,11 @@ function HomeReal() {
     let { data } = await stationMetaPage({ topicType: id });
     return data;
   };
+  //相关数据
   const getRealtimeMetaAsync = async (id) => {
+    if (!stationSelect.length) {
+      return;
+    }
     let { data } = await realtimeMeta({
       stationType: id,
       stationIdList: stationSelect,
@@ -114,16 +117,6 @@ function HomeReal() {
     return data;
   };
 
-  // const sortSelf = (item) => {
-  //   console.log(item);
-  //   if (typeof item.value === "number" || typeof item.value === "boolean") {
-  //     return (a, b) => a[item.key].value - b[item.key].value;
-  //   } else if (typeof item.value === "string") {
-  //     return (a, b) => a[item.key].value.localeCompare(b[item.key].value);
-  //   } else {
-  //     return false;
-  //   }
-  // };
   const sortSelf = (item) => {
     if (item.isDigital) {
       return (a, b) => a[item.key].value - b[item.key].value;
@@ -149,13 +142,16 @@ function HomeReal() {
         1,
     },
   ];
-  const getPageData = async () => {
+  const getPageData = async ({
+    initFactor = factorList,
+    initTime = timeType,
+  }) => {
     setLoading(true);
     let params = {
       stationType: stationTypeId,
       stationIdList: stationSelect,
-      showFieldList: factorList,
-      timeType: timeType,
+      showFieldList: initFactor,
+      timeType: initTime,
     };
     let { additional_data, data: getdata } = await dashboardRealtime(params);
     setLoading(false);
@@ -211,8 +207,6 @@ function HomeReal() {
     // 数据频次
     let timeTypeDefault = findMinFrequent(res1[0].allComputeDataLevelList);
     setTimeType(timeTypeDefault);
-    let res2 = await getRealtimeMetaAsync(res1[0].id);
-    setFactList(res2);
   };
 
   const onStationChange = (e) => {
@@ -221,12 +215,13 @@ function HomeReal() {
 
   const onRadioChange = (e) => {
     setTimeType(e.target.value);
+    getPageData({ initTime: e.target.value });
   };
 
   const confirmModal = (data) => {
-    console.log("callback", data);
     setVisable(false);
     setFactorList(data);
+    getPageData({ initFactor: data });
   };
 
   //change 业务主题
@@ -238,21 +233,17 @@ function HomeReal() {
     setStationTypeItem(res1[0]);
     let timeTypeDefault = findMinFrequent(res1[0].allComputeDataLevelList);
     setTimeType(timeTypeDefault);
-    let res2 = await getRealtimeMetaAsync(res1[0].id);
-    setFactList(res2);
+    //不改变
     setStationTypeIndex(0); //做空
   };
   //change 站点类型
   const handleSTChange = async (value, option) => {
-    console.log(`selected ${option}`);
     setStationTypeId(value);
     setStationTypeItem(option);
 
     let timeTypeDefault = findMinFrequent(option.allComputeDataLevelList);
     setTimeType(timeTypeDefault);
-    let res2 = await getRealtimeMetaAsync(value);
-    setFactList(res2);
-
+    //不改变
     setStationTypeIndex(0); //做空
   };
 
@@ -282,8 +273,6 @@ function HomeReal() {
   }, [stationTypeId, visable, factList]);
 
   const showFactorModel = (value, record, colum) => {
-    console.log(value);
-    console.log(record);
     if (!colum.isDigital) {
       return;
     }
@@ -295,8 +284,6 @@ function HomeReal() {
     setIsChartModalOpen(true);
   };
   const showDayModel = (value, record) => {
-    console.log(value);
-    console.log(record);
     setTableRow(record.name);
     setTableCell(value);
     setIsDayModalOpen(true);
@@ -313,8 +300,6 @@ function HomeReal() {
         stationTypeList[idx].allComputeDataLevelList
       );
       setTimeType(timeTypeDefault);
-      let res2 = await getRealtimeMetaAsync(stationTypeList[idx].id);
-      setFactList(res2);
     }
   };
 
@@ -387,7 +372,6 @@ function HomeReal() {
 
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
-    console.log(pagination);
     setPagemsg({
       pagination,
       filters,
@@ -478,16 +462,6 @@ function HomeReal() {
         </div>
       </section>
       {memoFiledSelect}
-      {/* {!!factList.factor.length && (
-        <FiledSelect
-          options1={factList?.stationField}
-          options2={factList?.evaluateIndex}
-          options3={factList?.factor}
-          open={visable}
-          closeModal={() => setVisable(false)}
-          onOk={confirmModal}
-        />
-      )} */}
       {/* 弹出 */}
       {isDayModalOpen && (
         <DayModel

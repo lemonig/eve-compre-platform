@@ -61,9 +61,6 @@ function FiledSelect({
 
   useEffect(() => {
     console.log("----------------");
-    console.log(data1);
-    console.log(data2);
-    console.log(data3);
     if (data1.length && data2.length && data3.length) {
       console.log(
         ...filterOption(data1),
