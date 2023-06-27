@@ -93,7 +93,7 @@ function ChartModel({
     let params = {
       beginTime: formatePickTime(
         timeType,
-        dayjs(station.time.value).subtract(30, "days")
+        dayjs(station.time.value).subtract(7, "days")
       ),
       endTime: formatePickTime(timeType, dayjs(station.time.value)),
       timeType: timeType,

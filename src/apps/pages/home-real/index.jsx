@@ -160,7 +160,7 @@ function HomeReal() {
       title: (
         <p>
           <p>{item.label}</p>
-          <p>{item.unit}</p>
+          <p>{item.unit ? `(${item.unit})` : ""}</p>
         </p>
       ),
       dataIndex: item.key,
