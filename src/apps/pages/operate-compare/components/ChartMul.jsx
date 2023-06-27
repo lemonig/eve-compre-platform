@@ -1,12 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactECharts from "echarts-for-react";
 import dayjs from "dayjs";
-import mark from "@/assets/image/mark.png";
-
-const xData = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]; // 两个echarts公用的x轴的数据
-const y1Data = [8888, 9999, 7777, 10000, 3334, 7878, 6543]; // 小件货物
-const y2Data = [56, 64, 32, 58, 64, 76, 81]; // 网点负荷
-const y3Data = [88, 99, 77, 100, 21, 66, 95]; // 大件货物
 
 function ChartMul({ data, loading, originData, compType, colorList }) {
   const chartRef = useRef(null);
@@ -95,10 +89,6 @@ function ChartMul({ data, loading, originData, compType, colorList }) {
         data: [],
       });
     });
-    series.forEach((item, idx) => {
-      item.yAxisIndex = idx;
-      item.color = colorList[idx];
-    });
     data.forEach((item) => {
       xData.push(item.name);
       series.forEach((jtem) => {
@@ -121,6 +111,7 @@ function ChartMul({ data, loading, originData, compType, colorList }) {
     let yAxisData = [];
     series.map((item, index) => {
       //单独处理Yindex
+      item.color = colorList[index];
       item.yAxisIndex = index;
       item.color = colorList[index];
       let obj = {

@@ -114,10 +114,13 @@ function ChartPile({ data, loading, originData, compType, colorList }) {
       item.yAxisIndex = idx;
       item.hoverAnimation = true;
       grid.push({
-        left: "14.5%",
-        right: "12%",
-        top: `${idx * Number.parseInt(100 / arr.length) + 1}%`,
-        height: `${Number.parseInt(100 / arr.length)}%`,
+        left: "10%",
+        right: "10%",
+        top: `${
+          idx * Math.ceil((100 - (arr.length - 1) * 2) / arr.length) +
+          (idx == 0 ? 0.7 : 2)
+        }%`,
+        height: `${Math.floor((100 - (arr.length - 1) * 5) / arr.length)}%`,
       });
       xAxis.push({
         gridIndex: idx,
@@ -229,7 +232,7 @@ function ChartPile({ data, loading, originData, compType, colorList }) {
         option={chartOption}
         lazyUpdate={true}
         theme={"theme_name"}
-        style={{ height: `${chartOption.series.length * 150}px` }}
+        style={{ height: `${50 + chartOption.series.length * 150}px` }}
         ref={chartRef}
         notMerge={true}
         showLoading={loading}
