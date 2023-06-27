@@ -46,7 +46,6 @@ const getFormCasData = (data = []) => {
 };
 
 function tableRender(value) {
-  console.log(value);
   if (!value) {
     return;
   }
@@ -138,7 +137,6 @@ function OperateCompare() {
 
   const getMetaData = async (val) => {
     let values = searchForm.getFieldsValue();
-    console.log(values);
     let param = {
       stationIdList: val,
     };
@@ -182,13 +180,10 @@ function OperateCompare() {
       .filter(Boolean)
       .flat();
     values.stationIdList = stationId;
-    console.log(values);
-
     let { additional_data, data, success } = await dataCompare(values);
     if (success) {
       setData(data);
       let nData = handleData(data, compType);
-      console.log(nData);
       setNowData(nData);
       let newCol = additional_data.columnList.map((item) => ({
         title: (
@@ -247,11 +242,9 @@ function OperateCompare() {
   const onRadioChange = (e) => {
     setCompType(e.target.value);
     let nData = handleData(data, e.target.value);
-    console.log(nData);
     setNowData(nData);
   };
   const handleChange = (value) => {
-    console.log(`selected ${value}`);
     setChartModal(value);
   };
   return (
@@ -319,7 +312,6 @@ function OperateCompare() {
                   <Button type="primary" htmlType="submit">
                     查询
                   </Button>
-                  <Button loading={btnloading}>导出</Button>
                 </Space>
               </Form.Item>
             </Form>
