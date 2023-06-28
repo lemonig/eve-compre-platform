@@ -62,11 +62,10 @@ const toolbox = {
       type: ["line", "bar"],
       title: ["折线图", "柱状图"],
     },
-  },
-  saveAsImage: {
-    name: `数据对比-${dayjs(new Date()).format("YYYYMMDD")}`,
-    backgroundColor: "#040e20",
-    title: "保存",
+    saveAsImage: {
+      name: `数据对比-${dayjs(new Date()).format("YYYYMMDD")}`,
+      title: "保存",
+    },
   },
 };
 

@@ -1,44 +1,25 @@
 import React, { useState, useEffect } from "react";
-import {
-  Input,
-  Select,
-  Button,
-  Space,
-  Table,
-  Tag,
-  Modal,
-  Form,
-  message,
-  Tooltip,
-  Switch,
-  Cascader,
-  Checkbox,
-  Radio,
-} from "antd";
+import { Select, Button, Space, Table, Form, Tooltip, Radio } from "antd";
 // com
 import Lbreadcrumb from "@Components/Lbreadcrumb";
-import IconFont from "@Components/IconFont";
-import dayjs from "dayjs";
 import LtimePicker from "@Components/LtimePicker";
-import {
-  SettingOutlined,
-  WarningFilled,
-  InfoCircleOutlined,
-} from "@ant-design/icons";
-import FiledSelect from "@Components/FiledSelect";
+import { WarningFilled } from "@ant-design/icons";
 import WaterLevel from "@Components/WaterLevel";
 // api
-import { reportTime, reportTimeMeta } from "@Api/operate_time_report.js";
 import { stationPage as stationMetaPage } from "@Api/user.js";
 import { regionList } from "@Api/set_region.js";
-import { compareMeta, dataCompare } from "@Api/operate_compare.js";
+import {
+  compareMeta,
+  dataCompare,
+  compareExport,
+} from "@Api/operate_compare.js";
 import { searchMeta } from "@Api/data-list.js";
 // util
 import { formatePickTime } from "@Utils/util";
 import StationForm from "./components/StationForm";
 import Graph from "./components/Graph";
-const { Option } = Select;
 
+let columnCopy = [];
 const getFormCasData = (data = []) => {
   return data?.map((item) => {
     return item[item.length - 1];
@@ -108,15 +89,12 @@ function OperateCompare() {
     factor: [],
   });
   const [columns, setColumns] = useState([]);
+  const [additionData, setAdditionData] = useState([]);
   const [stationType, setStationType] = useState();
   const [data, setData] = useState([]); //全部数据
   const [nowdata, setNowData] = useState([]); //当前数据
-  const [visable, setVisable] = useState(false); //因子选择
-  const [factorList, setFactorList] = useState([]); //字段选择回调
   const [currentPage, setCurrentPage] = useState(1);
   const [stationId, setStationId] = useState([]); //站点
-
-  const [evaluteList, setEvaluteList] = useState([]);
   const [compType, setCompType] = useState("sequence"); //时间类型
   const [chartModal, setChartModal] = useState("2");
 
@@ -185,20 +163,23 @@ function OperateCompare() {
       setData(data);
       let nData = handleData(data, compType);
       setNowData(nData);
-      let newCol = additional_data.columnList.map((item) => ({
-        title: (
-          <p>
-            <p>{item.label}</p>
-            <p>{item.unit ? `(${item.unit})` : ""}</p>
-          </p>
-        ),
-        dataIndex: item.key,
-        key: item.key,
-        // render: (value) => tableRender(value),
-        width: 60,
-      }));
+      let newCol = additional_data.columnList.map((item) => {
+        return {
+          title: (
+            <p>
+              <p>{item.label}</p>
+              <p>{item.unit ? `(${item.unit})` : ""}</p>
+            </p>
+          ),
+          dataIndex: item.key,
+          key: item.key,
+          // render: (value) => tableRender(value),
+          width: 60,
+        };
+      });
 
-      setColumns(newCol);
+      setColumns([...normalCol, ...newCol]);
+      setAdditionData([...normalCol, ...newCol]);
     }
     setLoading(false);
   };
@@ -225,27 +206,51 @@ function OperateCompare() {
     setCurrentPage(pagination.current);
   };
 
-  const confirmModal = (data) => {
-    setVisable(false);
-    setFactorList(data);
-  };
   const stationFormCancel = () => {
     setIsModalOpen(false);
   };
 
   const stationFormOk = (val) => {
+    clartPage();
     setStationId(val);
     setIsModalOpen(false);
     getMetaData(val);
+  };
+  // 清空页面
+  const clartPage = () => {
+    searchForm.resetFields();
+    setData([]);
+    setNowData([]);
   };
 
   const onRadioChange = (e) => {
     setCompType(e.target.value);
     let nData = handleData(data, e.target.value);
     setNowData(nData);
+    if (e.target.value === "avg") {
+      let filterCol = columns.filter((ele) => ele.key !== "datatime");
+      setColumns(filterCol);
+    } else {
+      setColumns(additionData);
+    }
   };
   const handleChange = (value) => {
     setChartModal(value);
+  };
+
+  //导出
+  const download = async () => {
+    setBtnLoading(true);
+    let values = searchForm.getFieldsValue();
+    values.beginTime = formatePickTime(values.time.type, values.time.startTime);
+    values.endTime = formatePickTime(values.time.type, values.time.endTime);
+    values.timeType = values.time.type;
+    values.showFieldList = [...values.factor, ...[values.evaluate ?? ""]]
+      .filter(Boolean)
+      .flat();
+    values.stationIdList = stationId;
+    await compareExport(values, `数据对比`);
+    setBtnLoading(false);
   };
   return (
     <div className="content-wrap">
@@ -267,15 +272,6 @@ function OperateCompare() {
                   <a onClick={() => setIsModalOpen(true)}>选择站点</a>
                 </Form.Item>
               </Form.Item>
-
-              {/* <Form.Item label="" name="showFieldList">
-                <Select
-                  style={{ width: 120 }}
-                  options={[...facList, ...evaluteList]}
-                  placeholder="请选择"
-                />
-              </Form.Item> */}
-
               <Form.Item label="因子" name="factor">
                 <Select
                   style={{ width: 120 }}
@@ -362,14 +358,22 @@ function OperateCompare() {
         )}
 
         {columns.length > 0 && (
-          <Table
-            columns={[...normalCol, ...columns]}
-            dataSource={nowdata}
-            loading={loading}
-            rowKey={(record) => record.idx}
-            onChange={handleTableChange}
-            pagination={{ pageSize }}
-          ></Table>
+          <>
+            <div className="search">
+              <div></div>
+              <Button onClick={download} loading={btnloading}>
+                导出
+              </Button>
+            </div>
+            <Table
+              columns={columns}
+              dataSource={nowdata}
+              loading={loading}
+              rowKey={(record) => record.idx}
+              onChange={handleTableChange}
+              pagination={{ pageSize }}
+            ></Table>
+          </>
         )}
       </>
 
