@@ -14,7 +14,7 @@ export function compareMeta(data) {
   });
 }
 export function compareExport(data) {
-  return _post({
+  return _download({
     url: `/api/data/report/compare/export`,
     data,
   });
