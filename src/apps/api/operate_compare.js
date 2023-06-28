@@ -13,3 +13,9 @@ export function compareMeta(data) {
     data,
   });
 }
+export function compareExport(data) {
+  return _post({
+    url: `/api/data/report/compare/export`,
+    data,
+  });
+}

@@ -42,10 +42,40 @@ export function stationPage(data) {
     data,
   });
 }
-// 用户所属类型
+
+// 用户站点关联信息
+export function userRelation(data) {
+  return _post({
+    url: `/api/user/station/relation`,
+    data,
+  });
+}
+
+// 用户相关站点主题
 export function topicList(data) {
   return _post({
     url: `/api/user/type/topic`,
+    data,
+  });
+}
+// 用户相关站点20
+export function userStation(data) {
+  return _post({
+    url: `/api/user/station`,
+    data,
+  });
+}
+// 用户相关河流
+export function userRiver(data) {
+  return _post({
+    url: `/api/user/river`,
+    data,
+  });
+}
+// 用户相关区域
+export function userRegion(data) {
+  return _post({
+    url: `/api/user/region`,
     data,
   });
 }

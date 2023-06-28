@@ -15,12 +15,21 @@ import {
 import Lbreadcrumb from "@Components/Lbreadcrumb";
 import IconFont from "@Components/IconFont";
 import OpForm from "./components/OpForm";
-import { fieldUpdate, fieldList, fieldDelete } from "@Api/set_meta_field.js";
 import { ExclamationCircleOutlined, SettingOutlined } from "@ant-design/icons";
+//interface
+import { fieldUpdate, fieldList, fieldDelete } from "@Api/set_meta_field.js";
+import {
+  addGroup,
+  updateGroup,
+  getGroup,
+  deleteGroup,
+  statusGroup,
+  pageGroup,
+} from "@Api/set_alarm_rule.js";
+//page
 import AlarmGroup from "./page/AlarmGroup";
 import AlarmStation from "./page/AlarmStation";
 import StationPage from "./page/StationPage";
-const { Option } = Select;
 
 function SetAlarm() {
   const [searchForm] = Form.useForm();
@@ -46,8 +55,7 @@ function SetAlarm() {
 
   const getPageData = async () => {
     setLoading(true);
-    let values = searchForm.getFieldsValue();
-    let { data } = await fieldList(values);
+    let { data } = await pageGroup();
     setData(data);
     setLoading(false);
   };
