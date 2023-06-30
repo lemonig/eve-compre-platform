@@ -56,3 +56,17 @@ export function getContent(data) {
     data,
   });
 }
+
+export function getAlarmComparisonOperator(data) {
+  return _post({
+    url: `/api/rule/content/alarmComparisonOperator`,
+    data,
+  });
+}
+
+export function getAlarmDataType(data) {
+  return _post({
+    url: `/api/rule/content/alarmDataType`,
+    data,
+  });
+}

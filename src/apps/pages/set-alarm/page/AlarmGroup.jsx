@@ -5,33 +5,20 @@ import {
   Space,
   Form,
   Input,
-  Upload,
   message,
   Radio,
   Checkbox,
   Select,
   Transfer,
 } from "antd";
-import { PlusOutlined, LoadingOutlined } from "@ant-design/icons";
-import { settingGet, settingUpdate } from "@Api/set_base.js";
 import PageHead from "@Components/PageHead";
 import GroupCreate from "../components/GroupCreate";
 
-const onFinishFailed = (errorInfo) => {
-  console.log("Failed:", errorInfo);
-};
+import { addGroup, updateGroup, getGroup } from "@Api/set_alarm_rule.js";
 
-const mockData = Array.from({
-  length: 20,
-}).map((_, i) => ({
-  key: i.toString(),
-  title: `content${i + 1}`,
-  description: `description of content${i + 1}`,
-}));
-const initialTargetKeys = mockData
-  .filter((item) => Number(item.key) > 10)
-  .map((item) => item.key);
+import { pageGroup as stationPageGroup } from "@Api/set_alarm_station.js";
 
+// 月份选项
 const creatMonth = () => {
   let res = [];
   for (let i = 1; i < 12; i++) {
@@ -45,79 +32,68 @@ const creatMonth = () => {
 
 function AlarmGroup({ record, open, closePage }) {
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState();
   const [form] = Form.useForm();
-  const [targetKeys, setTargetKeys] = useState(initialTargetKeys);
+  const [targetKeys, setTargetKeys] = useState([]);
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [stationGroup, setStationGroup] = useState([]); //站点组
+
   useEffect(() => {
-    getPageData();
+    if (record) {
+      getRuleDetail(record);
+    }
+    getStationGroup();
   }, []);
-  const getPageData = async () => {
-    let { data } = await settingGet();
+
+  // 获取详情
+  const getRuleDetail = async (record) => {
+    let { data } = await getGroup({
+      id: record.id,
+    });
     form.setFieldsValue(data);
-    setImageUrl(data.header_logo);
+    setTargetKeys(data.stationGroupIds);
   };
 
-  const onFinish = async (values) => {
-    console.log("Success:", values);
-    values.header_logo = imageUrl;
-    let { success, message: msg } = await settingUpdate(values);
-    if (success) {
-      message.success(msg);
-    } else {
-      message.error(msg);
-    }
+  //获取站点组
+  const getStationGroup = async () => {
+    let { data } = await stationPageGroup();
+    let nData = data.map((item) => ({
+      ...item,
+      key: item.id,
+    }));
+    setStationGroup(nData);
   };
 
-  const uploadButton = (
-    <div>
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div
-        style={{
-          marginTop: 8,
-        }}
-      >
-        上传
-      </div>
-    </div>
-  );
-
-  const handleChange = (info) => {
-    if (info.file.status === "uploading") {
-      setLoading(true);
-      return;
-    }
-    if (info.file.status === "done") {
-      // Get this url from response in real world.
-      if (info.file.response.data.url) {
-        setLoading(false);
-        setImageUrl(info.file.response.data.url);
+  const onFinish = async () => {
+    // await form.validateFields();
+    const values = form.getFieldsValue();
+    let params = JSON.parse(JSON.stringify(values));
+    params.enableSmsNotification = params.enableSmsNotification ? 1 : 0;
+    params.enableWxNotification = params.enableWxNotification ? 1 : 0;
+    params.exceededContact = params.exceededContact ? 1 : 0;
+    params.operationContact = params.operationContact ? 1 : 0;
+    setLoading(true);
+    // 编辑
+    if (record?.id) {
+      params.id = record.id;
+      let { success, message: msg } = await updateGroup(params);
+      if (success) {
+        message.success(msg);
       }
-    } else if (info.file.status === "error") {
-      message.error(`${info.file.name} 上传失败`);
+    } else {
+      let { success, message: msg } = await addGroup(params);
+      if (success) {
+        message.success(msg);
+      }
     }
-  };
-
-  const deleteLogo = () => {
-    setImageUrl("");
+    // 添加
+    setLoading(false);
+    closePage(true);
   };
 
   // 穿梭
-  const onChange = (nextTargetKeys, direction, moveKeys) => {
-    console.log("targetKeys:", nextTargetKeys);
-    console.log("direction:", direction);
-    console.log("moveKeys:", moveKeys);
+  const onTransferChange = (nextTargetKeys, direction, moveKeys) => {
     setTargetKeys(nextTargetKeys);
-  };
-  const onSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
-    console.log("sourceSelectedKeys:", sourceSelectedKeys);
-    console.log("targetSelectedKeys:", targetSelectedKeys);
-    setSelectedKeys([...sourceSelectedKeys, ...targetSelectedKeys]);
-  };
-  const onScroll = (direction, e) => {
-    console.log("direction:", direction);
-    console.log("target:", e.target);
   };
 
   const addStationGroup = () => {
@@ -143,7 +119,10 @@ function AlarmGroup({ record, open, closePage }) {
     <>
       <div className="content-wrap">
         <Lbreadcrumb data={["系统设置", "数据报警", "报警规则"]} />
-        <PageHead title="创建规则组" onClick={() => closePage(true)} />
+        <PageHead
+          title={`${record ? "编辑" : "创建"}规则组`}
+          onClick={() => closePage(false)}
+        />
         <h2 className="second-title ">基本信息</h2>
         <Form
           name="basic"
@@ -158,13 +137,12 @@ function AlarmGroup({ record, open, closePage }) {
             maxWidth: 600,
           }}
           onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
           autoComplete="off"
           colon={false}
         >
           <Form.Item
             label="规则组名称"
-            name="company_name"
+            name="name"
             rules={[
               {
                 required: true,
@@ -174,18 +152,10 @@ function AlarmGroup({ record, open, closePage }) {
           >
             <Input />
           </Form.Item>
-          <Form.Item
-            label="生效月份"
-            rules={[
-              {
-                required: true,
-                message: "请选择",
-              },
-            ]}
-          >
+          <Form.Item label="生效月份">
             <Space>
               <Form.Item
-                name={["address", "province"]}
+                name="beginMonth"
                 noStyle
                 rules={[
                   {
@@ -198,7 +168,7 @@ function AlarmGroup({ record, open, closePage }) {
               </Form.Item>
               至
               <Form.Item
-                name={["address", "street"]}
+                name={["endMonth"]}
                 noStyle
                 rules={[
                   {
@@ -214,51 +184,60 @@ function AlarmGroup({ record, open, closePage }) {
 
           <Form.Item
             label="报警站点组"
-            name="company_name"
+            name="stationGroupIds"
             rules={[
               {
                 required: true,
-                message: "请输入",
+                message: "请选择",
               },
             ]}
           >
             <Transfer
-              dataSource={mockData}
+              dataSource={stationGroup}
               titles={["未选", "已选"]}
               targetKeys={targetKeys}
-              selectedKeys={selectedKeys}
-              onChange={onChange}
-              onSelectChange={onSelectChange}
-              onScroll={onScroll}
-              render={(item) => item.title}
+              // selectedKeys={selectedKeys}
+              onChange={onTransferChange}
+              // onSelectChange={onSelectChange}
+              // onScroll={onScroll}
+              render={(item) => item.name}
               footer={renderFooter}
+              rowKey={(record) => record.id}
             />
           </Form.Item>
 
           <h2 className="second-title ">消息通知</h2>
-          <Form.Item name="rad" label="通知方式">
-            <Checkbox.Group>
-              <Checkbox value="1">短信通知</Checkbox>
-              <Checkbox value="2">微信通知</Checkbox>
-            </Checkbox.Group>
+          <Form.Item label="通知方式">
+            <Space>
+              <Form.Item name="enableSmsNotification" valuePropName="checked">
+                <Checkbox>短信通知</Checkbox>
+              </Form.Item>
+              <Form.Item name="enableWxNotification" valuePropName="checked">
+                <Checkbox>微信通知</Checkbox>
+              </Form.Item>
+            </Space>
           </Form.Item>
 
-          <Form.Item name="通知时间" label="通知时间">
+          <Form.Item name="isScheduledSend" label="通知时间">
             <Radio.Group>
-              <Radio value="a">实时</Radio>
-              <Radio value="b">定时</Radio>
+              <Radio value={0}>实时</Radio>
+              <Radio value={1}>定时</Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item name="radio-group" label="通知人员">
-            <Checkbox.Group>
-              <Checkbox value="1">超标联系人</Checkbox>
-              <Checkbox value="2">运维联系人</Checkbox>
-            </Checkbox.Group>
+          <Form.Item label="通知人员">
+            <Space>
+              <Form.Item name="exceededContact" valuePropName="checked">
+                <Checkbox>超标联系人</Checkbox>
+              </Form.Item>
+              <Form.Item name="operationContact" valuePropName="checked">
+                <Checkbox>运维联系人</Checkbox>
+              </Form.Item>
+            </Space>
           </Form.Item>
-          <Form.Item name="通知时间" label="通知内容">
+          <Form.Item name="notificationFormat" label="通知内容">
             <Radio.Group>
-              <Radio value="a">精简</Radio>
-              <Radio value="b">完整</Radio>
+              <Radio value={1}>精简</Radio>
+              <Radio value={2}>完整</Radio>
             </Radio.Group>
           </Form.Item>
           <Form.Item
@@ -280,7 +259,7 @@ function AlarmGroup({ record, open, closePage }) {
               span: 16,
             }}
           >
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={loading}>
               保存
             </Button>
           </Form.Item>

@@ -1,28 +1,11 @@
 import React, { useState, useEffect } from "react";
-import {
-  Input,
-  Select,
-  Button,
-  Space,
-  Table,
-  Tag,
-  Modal,
-  Form,
-  message,
-  Tooltip,
-  PageHeader,
-  DatePicker,
-  Checkbox,
-  Row,
-  Col,
-} from "antd";
-import IconFont from "@Components/IconFont";
-import { groupAdd, groupUpdate, groupGet } from "@Api/set_station_group.js";
+import { Input, Modal, Form, message, Row, Col } from "antd";
 import StationSelect from "@Components/StationSelect";
 import { stationPage } from "@Api/set_station.js";
 
-//precord 父 --> code
-function GroupCreate({ record, open, closeModal, precord }) {
+import { addGroup, updateGroup, getGroup } from "@Api/set_alarm_station.js";
+
+function GroupCreate({ record, open, closeModal }) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [stationList, setStationList] = useState([]);
@@ -34,7 +17,7 @@ function GroupCreate({ record, open, closeModal, precord }) {
     getStationList();
   }, []);
   const getPageData = async () => {
-    let { data } = await groupGet({
+    let { data } = await getGroup({
       id: record.id,
     });
     setTimeout(() => {
@@ -60,13 +43,10 @@ function GroupCreate({ record, open, closeModal, precord }) {
     const values = form.getFieldsValue();
     setLoading(true);
     // 编辑
-    // son or p
-    if (precord) {
-      values.parentCode = precord.code;
-    }
+
     if (record?.id) {
       values.id = record.id;
-      let { success, message: msg } = await groupUpdate(values);
+      let { success, message: msg } = await updateGroup(values);
       if (success) {
         message.success(msg);
         closeModal(true);
@@ -74,7 +54,7 @@ function GroupCreate({ record, open, closeModal, precord }) {
         message.error(msg);
       }
     } else {
-      let { success, message: msg } = await groupAdd(values);
+      let { success, message: msg } = await addGroup(values);
       if (success) {
         message.success(msg);
         closeModal(true);
@@ -87,61 +67,59 @@ function GroupCreate({ record, open, closeModal, precord }) {
   };
 
   return (
-    <>
-      <Modal
-        title={`${record ? "编辑" : "新建"}分组`}
-        open={open}
-        onOk={handleOk}
-        onCancel={() => closeModal(false)}
-        maskClosable={false}
-        confirmLoading={loading}
-        width={888}
+    <Modal
+      title={`${record ? "编辑" : "新建"}站点组`}
+      open={open}
+      onOk={handleOk}
+      onCancel={() => closeModal(false)}
+      maskClosable={false}
+      confirmLoading={loading}
+      width={888}
+    >
+      <Form
+        name="basic"
+        labelCol={{ span: 4 }}
+        wrapperCol={{ span: 18 }}
+        autoComplete="off"
+        form={form}
+        colon={false}
+        layout="vertical"
       >
-        <Form
-          name="basic"
-          labelCol={{ span: 4 }}
-          wrapperCol={{ span: 18 }}
-          autoComplete="off"
-          form={form}
-          colon={false}
-          layout="vertical"
-        >
-          <Row>
-            <Col span={12}>
-              <Form.Item
-                label="分组名称"
-                name="name"
-                rules={[
-                  {
-                    required: true,
-                    message: "请选择",
-                  },
-                ]}
-              >
-                <Input className="width-3" placeholder="请输入" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="备注" name="code">
-                <Input className="width-3" placeholder="请输入" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row>
-            <Col span={24}>
-              <Form.Item
-                name="stationIdList"
-                wrapperCol={{
-                  span: 24,
-                }}
-              >
-                <StationSelect options={stationList} />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-      </Modal>
-    </>
+        <Row>
+          <Col span={12}>
+            <Form.Item
+              label="分组名称"
+              name="name"
+              rules={[
+                {
+                  required: true,
+                  message: "请选择",
+                },
+              ]}
+            >
+              <Input className="width-3" placeholder="请输入" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="备注" name="remark">
+              <Input className="width-3" placeholder="请输入" />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={24}>
+            <Form.Item
+              name="stationIds"
+              wrapperCol={{
+                span: 24,
+              }}
+            >
+              <StationSelect options={stationList} />
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
+    </Modal>
   );
 }
 

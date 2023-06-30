@@ -15,6 +15,14 @@ export function statusStation(data) {
   });
 }
 
+// 告警因子状态
+export function listFactor(data) {
+  return _post({
+    url: `/api/rule/factor/list`,
+    data,
+  });
+}
+
 // 告警因子状态修改
 export function statusFactor(data) {
   return _post({

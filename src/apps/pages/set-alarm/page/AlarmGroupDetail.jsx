@@ -13,30 +13,42 @@ import {
   Switch,
 } from "antd";
 import Lbreadcrumb from "@Components/Lbreadcrumb";
-import IconFont from "@Components/IconFont";
-import OpForm from "../components/OpForm";
-import { fieldUpdate, fieldList, fieldDelete } from "@Api/set_meta_field.js";
-import { ExclamationCircleOutlined, SettingOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import PageHead from "@Components/PageHead";
-const { Option } = Select;
+import RuleForm from "../components/RuleForm";
+import { deleteContent, statusContent, pageContent } from "@Api/set_alarm.js";
 
-function AlarmGroupDetail() {
-  const [searchForm] = Form.useForm();
+function AlarmGroupDetail({ record, open, closePage }) {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [operate, setOperate] = useState(null); //正在操作id
 
   const [data, setData] = useState([]);
-
-  const [page, setPage] = useState({
-    rGroup: false,
-    sGroup: false,
-    station: false,
+  const [pageMsg, setPagemsg] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
   });
 
   useEffect(() => {
     getPageData();
-  }, []);
+  }, [JSON.stringify(pageMsg.pagination.current, pageMsg.pagination.pageSize)]);
+
+  // 查询
+  const search = () => {
+    if (pageMsg.pagination.current === 1) {
+      getPageData();
+    } else {
+      setPagemsg({
+        ...pageMsg,
+        pagination: {
+          ...pageMsg.pagination,
+          current: 1,
+        },
+      });
+    }
+  };
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -44,17 +56,22 @@ function AlarmGroupDetail() {
 
   const getPageData = async () => {
     setLoading(true);
-    let values = searchForm.getFieldsValue();
-    let { data } = await fieldList(values);
+    let { additional_data, data } = await pageContent({
+      page: pageMsg.pagination.current,
+      size: pageMsg.pagination.pageSize,
+      data: record.id,
+    });
     setData(data);
     setLoading(false);
+    setPagemsg({
+      ...pageMsg,
+      pagination: {
+        ...pageMsg.pagination,
+        total: additional_data.pagination.total,
+      },
+    });
   };
 
-  // 新建
-  const handleAdd = () => {
-    setOperate(null);
-    setIsModalOpen(true);
-  };
   // 编辑
   const handleEdit = (record) => {
     setOperate(record);
@@ -70,7 +87,7 @@ function AlarmGroupDetail() {
       okText: "确认",
       cancelText: "取消",
       onOk: async () => {
-        let { success, message: msg } = await fieldDelete({ id });
+        let { success, message: msg } = await deleteContent({ id });
         if (success) {
           message.success(msg);
           setIsModalOpen(false);
@@ -85,12 +102,10 @@ function AlarmGroupDetail() {
   const handleStatusChange = async (checked, record) => {
     record.status = checked ? "1" : "0";
 
-    let { success, message: msg } = await fieldUpdate(record);
+    let { success, message: msg } = await statusContent(record);
     if (success) {
       message.success(msg);
       closeModal(true);
-    } else {
-      message.error(msg);
     }
   };
 
@@ -103,34 +118,34 @@ function AlarmGroupDetail() {
     },
     {
       title: "规则名称",
-      dataIndex: "fieldGroupName",
-      key: "fieldGroupName",
+      dataIndex: "name",
+      key: "name",
     },
     {
       title: "规则类型",
-      dataIndex: "fieldGroupName",
-      key: "fieldGroupName",
+      dataIndex: "ruleType",
+      key: "ruleType",
     },
     {
       title: "规则编号",
-      dataIndex: "name",
-      key: "name  ",
+      dataIndex: "ruleCode",
+      key: "ruleCode  ",
     },
 
     {
       title: "因子",
-      dataIndex: "code",
-      key: "code",
+      dataIndex: "factorNames",
+      key: "factorNames",
     },
     {
       title: "连续次数",
-      dataIndex: "code",
-      key: "code",
+      dataIndex: "continuousCount",
+      key: "continuousCount",
     },
     {
       title: "是否启用",
-      dataIndex: "isCommon",
-      key: "isCommon",
+      dataIndex: "status",
+      key: "status",
       render: (value, record) => (
         <Switch
           checked={!!Number(value)}
@@ -157,51 +172,25 @@ function AlarmGroupDetail() {
     // flag 确定还是取消
     setIsModalOpen(false);
     if (flag) getPageData();
+    setOperate(null);
   };
-  const closePage = (flag) => {
-    // flag 确定还是取消
-    setPage({
-      rGroup: false,
-      sGroup: false,
-      station: false,
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    // if filters not changed, don't update pagination.current
+    setPagemsg({
+      pagination,
+      filters,
+      ...sorter,
     });
-    if (flag) getPageData();
-  };
-  const openPage = (flag) => {
-    if (flag === "rGroup") {
-      setPage({
-        rGroup: true,
-        sGroup: false,
-        station: false,
-      });
-    } else if (flag === "sGroup") {
-      setPage({
-        rGroup: false,
-        sGroup: true,
-        station: false,
-      });
-    } else if (flag === "station") {
-      setPage({
-        rGroup: false,
-        sGroup: false,
-        station: true,
-      });
-    } else {
-      setPage({
-        rGroup: false,
-        sGroup: false,
-        station: false,
-      });
-    }
   };
 
   return (
     <>
       <div className="content-wrap">
         <Lbreadcrumb data={["系统设置", "数据报警", "报警规则"]} />
-        <PageHead title="规则组1" onClick={() => closePage(true)} />
+        <PageHead title={record.name ?? ""} onClick={() => closePage(true)} />
         <div className="search">
-          <Button type="primary" onClick={() => openPage("rGroup")}>
+          <Button type="primary" onClick={() => setIsModalOpen(true)}>
             创建规则
           </Button>
         </div>
@@ -210,12 +199,19 @@ function AlarmGroupDetail() {
           dataSource={data}
           loading={loading}
           rowKey={(record) => record.id}
+          pagination={pageMsg.pagination}
+          onChange={handleTableChange}
         />
       </div>
 
       {/* 弹出表单 */}
       {isModalOpen && (
-        <OpForm open={isModalOpen} closeModal={closeModal} record={operate} />
+        <RuleForm
+          open={isModalOpen}
+          closeModal={closeModal}
+          record={operate}
+          groupId={record.id}
+        />
       )}
     </>
   );

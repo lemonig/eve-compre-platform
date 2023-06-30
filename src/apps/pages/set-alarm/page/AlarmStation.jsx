@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
-  Input,
   Select,
   Button,
   Space,
   Table,
-  Tag,
   Modal,
   Form,
   message,
@@ -13,31 +11,43 @@ import {
   Switch,
 } from "antd";
 import Lbreadcrumb from "@Components/Lbreadcrumb";
-import IconFont from "@Components/IconFont";
-import { fieldUpdate, fieldList, fieldDelete } from "@Api/set_meta_field.js";
-import { ExclamationCircleOutlined, SettingOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import PageHead from "@Components/PageHead";
 import GroupCreate from "../components/GroupCreate";
 
-const { Option } = Select;
+import { deleteGroup, statusGroup, pageGroup } from "@Api/set_alarm_station.js";
 
 function AlarmStation({ record, open, closePage }) {
-  const [searchForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [operate, setOperate] = useState(null); //正在操作id
 
   const [data, setData] = useState([]);
-
-  const [page, setPage] = useState({
-    rGroup: false,
-    sGroup: false,
-    station: false,
+  const [pageMsg, setPagemsg] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
   });
 
   useEffect(() => {
     getPageData();
-  }, []);
+  }, [JSON.stringify(pageMsg.pagination.current, pageMsg.pagination.pageSize)]);
+
+  // 查询
+  const search = () => {
+    if (pageMsg.pagination.current === 1) {
+      getPageData();
+    } else {
+      setPagemsg({
+        ...pageMsg,
+        pagination: {
+          ...pageMsg.pagination,
+          current: 1,
+        },
+      });
+    }
+  };
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -45,10 +55,19 @@ function AlarmStation({ record, open, closePage }) {
 
   const getPageData = async () => {
     setLoading(true);
-    let values = searchForm.getFieldsValue();
-    let { data } = await fieldList(values);
+    let { additional_data, data } = await pageGroup({
+      page: pageMsg.pagination.current,
+      size: pageMsg.pagination.pageSize,
+    });
     setData(data);
     setLoading(false);
+    setPagemsg({
+      ...pageMsg,
+      pagination: {
+        ...pageMsg.pagination,
+        total: additional_data.pagination.total,
+      },
+    });
   };
 
   // 新建
@@ -71,7 +90,7 @@ function AlarmStation({ record, open, closePage }) {
       okText: "确认",
       cancelText: "取消",
       onOk: async () => {
-        let { success, message: msg } = await fieldDelete({ id });
+        let { success, message: msg } = await deleteGroup({ id });
         if (success) {
           message.success(msg);
           setIsModalOpen(false);
@@ -82,16 +101,13 @@ function AlarmStation({ record, open, closePage }) {
       },
     });
   };
-
   const handleStatusChange = async (checked, record) => {
     record.status = checked ? "1" : "0";
 
-    let { success, message: msg } = await fieldUpdate(record);
+    let { success, message: msg } = await statusGroup({ id: record.id });
     if (success) {
       message.success(msg);
-      closeModal(true);
-    } else {
-      message.error(msg);
+      setData([...data]);
     }
   };
 
@@ -100,44 +116,53 @@ function AlarmStation({ record, open, closePage }) {
       title: "序号",
       key: "index",
       width: 60,
-      render: (_, record, index) => index + 1,
+      render: (_, record, index) =>
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        index +
+        1,
     },
     {
-      title: "规则名称",
-      dataIndex: "fieldGroupName",
-      key: "fieldGroupName",
-    },
-    {
-      title: "规则类型",
-      dataIndex: "fieldGroupName",
-      key: "fieldGroupName",
-    },
-    {
-      title: "规则编号",
+      title: "站点组名称",
       dataIndex: "name",
-      key: "name  ",
+      key: "name",
+    },
+    {
+      title: "站点数",
+      dataIndex: "stationNum",
+      key: "stationNum",
+    },
+    {
+      title: "规则组数",
+      dataIndex: "ruleGroupNum",
+      key: "ruleGroupNum  ",
     },
 
     {
-      title: "因子",
-      dataIndex: "code",
-      key: "code",
-    },
-    {
-      title: "连续次数",
-      dataIndex: "code",
-      key: "code",
-    },
-    {
       title: "是否启用",
-      dataIndex: "isCommon",
-      key: "isCommon",
+      dataIndex: "status",
+      key: "status",
       render: (value, record) => (
         <Switch
           checked={!!Number(value)}
           onChange={(checked) => handleStatusChange(checked, record)}
         />
       ),
+    },
+
+    {
+      title: "备注",
+      dataIndex: "remark",
+      key: "remark",
+    },
+    {
+      title: "创建时间",
+      dataIndex: "gmtCreate",
+      key: "gmtCreate",
+    },
+    {
+      title: "修改时间",
+      dataIndex: "gmtModify",
+      key: "gmtModify",
     },
 
     {
@@ -160,32 +185,13 @@ function AlarmStation({ record, open, closePage }) {
     if (flag) getPageData();
   };
 
-  const openPage = (flag) => {
-    if (flag === "rGroup") {
-      setPage({
-        rGroup: true,
-        sGroup: false,
-        station: false,
-      });
-    } else if (flag === "sGroup") {
-      setPage({
-        rGroup: false,
-        sGroup: true,
-        station: false,
-      });
-    } else if (flag === "station") {
-      setPage({
-        rGroup: false,
-        sGroup: false,
-        station: true,
-      });
-    } else {
-      setPage({
-        rGroup: false,
-        sGroup: false,
-        station: false,
-      });
-    }
+  const handleTableChange = (pagination, filters, sorter) => {
+    // if filters not changed, don't update pagination.current
+    setPagemsg({
+      pagination,
+      filters,
+      ...sorter,
+    });
   };
 
   return (
@@ -195,7 +201,7 @@ function AlarmStation({ record, open, closePage }) {
         <PageHead title="规则组1" onClick={() => closePage(true)} />
         <div className="search">
           <Button type="primary" onClick={handleAdd}>
-            创建规则
+            创建站点组
           </Button>
         </div>
         <Table
@@ -203,6 +209,8 @@ function AlarmStation({ record, open, closePage }) {
           dataSource={data}
           loading={loading}
           rowKey={(record) => record.id}
+          pagination={pageMsg.pagination}
+          onChange={handleTableChange}
         />
       </div>
 
@@ -210,8 +218,8 @@ function AlarmStation({ record, open, closePage }) {
       {isModalOpen && (
         <GroupCreate
           open={isModalOpen}
-          closeModal={() => setIsModalOpen(false)}
-          // record={operate}
+          closeModal={closeModal}
+          record={operate}
         />
       )}
     </>

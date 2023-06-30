@@ -3,7 +3,7 @@ import { message } from "antd";
 import { PUSH_LOADING, SHIFT_LOADING } from "@Store/features/loadSlice";
 import { store } from "../../store";
 
-axios.defaults.timeout = 10000;
+axios.defaults.timeout = 30000;
 axios.interceptors.request.use(
   (config) => {
     store.dispatch(PUSH_LOADING());
