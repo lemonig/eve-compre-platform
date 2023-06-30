@@ -68,7 +68,6 @@ function ChartModel({
   const [chartdata, setChartdata] = useState(null);
 
   const chartRef = useRef(null);
-  console.log(factor);
   useEffect(() => {
     const chart = chartRef.current && chartRef.current.getEchartsInstance();
     const handleResize = () => {
@@ -80,7 +79,6 @@ function ChartModel({
     };
   }, [chartRef]);
   useEffect(() => {
-    console.log(station);
     if (!factor.id) {
       return;
     }

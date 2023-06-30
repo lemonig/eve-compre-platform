@@ -36,7 +36,6 @@ function StationTreeMul({ query, onChange }) {
   const [checkKey1, setCheckKey1] = useState([]);
 
   const [pageDataTit, setPageDataTit] = useState([]);
-  console.log(query);
   useEffect(() => {
     if (query) {
       getTreeData(query);

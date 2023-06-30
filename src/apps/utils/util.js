@@ -127,7 +127,6 @@ export function formatePickTime(type, value) {
 
 // 找出最小数据频次
 export function findMinFrequent(list) {
-  console.log(list);
   if (!Array.isArray(list)) {
     return;
   }
@@ -153,5 +152,5 @@ export function tableIndex(data) {
     // item.key = pageMsg.pagination.current + "-" + idx;
     item.index = idx + 1;
   });
-  return data
+  return data;
 }

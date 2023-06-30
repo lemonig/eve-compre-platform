@@ -8,7 +8,6 @@ function FactorSelectModal({ record, open, factorSelectCallback }) {
   const [confirmLoading, setConfrimLoading] = useState(false);
   useEffect(() => {
     if (!!record.length) {
-      console.log(record);
       form.setFieldsValue({
         factorIdList: record,
       });
@@ -22,7 +21,6 @@ function FactorSelectModal({ record, open, factorSelectCallback }) {
     await form.validateFields();
     const values = form.getFieldsValue();
     setConfrimLoading(true);
-    console.log(values);
     factorSelectCallback(values.factorIdList);
     setConfrimLoading(false);
   };

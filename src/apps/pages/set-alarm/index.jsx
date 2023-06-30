@@ -112,7 +112,6 @@ function SetAlarm() {
     if (success) {
       message.success(msg);
     }
-    console.log(data);
     setData([...data]);
   };
 

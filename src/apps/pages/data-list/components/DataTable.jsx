@@ -71,13 +71,10 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
   //   },
   // });
 
-  useEffect(() => {
-    console.log("init");
-  }, []);
+  useEffect(() => {}, []);
 
   //station Change
   useEffect(() => {
-    console.log("pageMsg change");
     if (stationMsg.key && factorList.length) {
       getPageData();
     }
@@ -126,7 +123,6 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
     if (!valueCopy.dataSource || !valueCopy.time) {
       return;
     }
-    console.log(valueCopy);
     setLoading(true);
     valueCopy.startTime = formatePickTime(
       valueCopy.time.type,
@@ -148,7 +144,6 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
         showFieldList: initFactor,
       },
     };
-    console.log(params);
     let { additional_data, data: getdata } = await queryStation(params);
     setLoading(false);
     setOtherData(additional_data);
@@ -230,7 +225,6 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
   };
 
   const confirmModal = (data) => {
-    console.log("callback", data);
     setVisable(false);
     setFactorList(data);
     getPageData({ initFactor: data });

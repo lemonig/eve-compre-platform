@@ -28,8 +28,6 @@ function Login() {
       localStorage.setItem("token", data.access_token);
       let res1 = await getMenuList();
       let res = await getUserInfo();
-      console.log(res);
-      console.log(res1);
       if ("id" in res && res1.length > 0) {
         navigate("/", { replace: true });
         // window.location.href = "/"; //FIXME刷新menu,应改成navigate,但有异步
@@ -52,7 +50,6 @@ function Login() {
 
   const getMenuList = async () => {
     let res = await dispatch(getMenuData());
-    console.log(res);
     return res.payload;
     // localStorage.setItem("menuList", JSON.stringify(menu));
     // let menuTree = handleMenu(menu);

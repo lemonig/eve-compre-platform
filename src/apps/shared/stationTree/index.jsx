@@ -42,32 +42,19 @@ function StationTree({ query, onChange }) {
   const [pageDataTit, setPageDataTit] = useState([]);
 
   useEffect(() => {
+    setExpandedKeys([]);
+    setTreeData1([]);
     getTreeData(query);
   }, [query]);
 
   const getTreeData = async (query) => {
-    setTreeData1([]);
     let { data } = await stationTreeAll({
       stationType: query,
     });
-    // setTreeData(data);
     let title = [];
-    // for (let i in data) {
-    //   if (!!data[i]) {
-    //     title.push({
-    //       label: titleIn[i],
-    //       name: i,
-    //     });
-    //   }
-    // }
     if (data.region) {
       setTreeData1(loop(data.region)); //初始化
-      setExpandedKeys([
-        data.region[0].key,
-        data.region[0].children[0].key,
-        data.region[0].children[0].children[0].key,
-      ]); //FIXME第一条数据一定有的基础上。
-
+      setExpandedKeys(expendkey);
       title.push({
         label: "区域",
         name: "region",
@@ -91,9 +78,9 @@ function StationTree({ query, onChange }) {
     setCurrentTab(title[0].name);
     setPageDataTit(title);
   };
-  useEffect(() => {});
   // 树循环
   let flag = true; //第一次递归
+  const expendkey = [];
   const loop = (data) => {
     if (!data) {
       return null;
@@ -104,12 +91,14 @@ function StationTree({ query, onChange }) {
       // if (item.stationNum === 0) {
       //   return [];
       // }
+      // 展开树
+      if (idx === 0 && !item.isStation && flag) {
+        expendkey.push(item.key);
+      }
       if (item.children) {
         if (idx === 0 && item.isStation && flag) {
           //默认选中
-
           flag = false;
-
           setActiveNode([item.key]);
           onChange({
             key: item.id || "",
@@ -117,15 +106,15 @@ function StationTree({ query, onChange }) {
           });
         }
         return {
+          ...item,
           label,
           key: item.key,
-          ...item,
           children: loop(item.children),
         };
       }
       return {
-        label,
         ...item,
+        label,
         key: item.key,
       };
     });

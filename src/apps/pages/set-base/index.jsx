@@ -9,7 +9,6 @@ const onFinishFailed = (errorInfo) => {
 };
 
 const normFile = (e) => {
-  console.log("Upload event:", e);
   if (Array.isArray(e)) {
     return e;
   }
@@ -47,7 +46,6 @@ function SetBase() {
   };
 
   const onFinish = async (values) => {
-    console.log("Success:", values);
     values.header_logo = imageUrl;
     let { success, message: msg } = await settingUpdate(values);
     if (success) {

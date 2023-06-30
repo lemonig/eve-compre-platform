@@ -277,7 +277,6 @@ function AlarmMsgRecord() {
   const getPageData = async () => {
     setLoading(true);
     let values = searchForm.getFieldsValue();
-    console.log(values);
     values.beginTime = formatePickTime(values.time.type, values.time.startTime);
     values.endTime = formatePickTime(values.time.type, values.time.endTime);
     values.timeType = values.time.type;

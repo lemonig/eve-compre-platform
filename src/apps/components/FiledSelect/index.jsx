@@ -45,7 +45,6 @@ function FiledSelect({
     setData2(JSON.parse(JSON.stringify(options2)));
   }, [options2]);
   useEffect(() => {
-    console.log(options3);
     setData3(JSON.parse(JSON.stringify(options3)));
   }, [options3]);
 
@@ -60,13 +59,7 @@ function FiledSelect({
   }, [options3]); //TODO可能要根据站点变化刷新
 
   useEffect(() => {
-    console.log("----------------");
     if (data1.length && data2.length && data3.length) {
-      console.log(
-        ...filterOption(data1),
-        ...filterOption(data2),
-        ...filterOption(data3)
-      );
       setRdata([
         ...filterOption(data1),
         ...filterOption(data2),

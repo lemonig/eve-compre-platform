@@ -7,7 +7,6 @@ import WaterLevel from "@Components/WaterLevel";
 import { SettingOutlined, WarningFilled } from "@ant-design/icons";
 
 function DayModel({ open, closeModal, station, factor, timeType, time }) {
-  console.log(time);
   const handleOk = async () => {};
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -25,7 +24,6 @@ function DayModel({ open, closeModal, station, factor, timeType, time }) {
   });
 
   useEffect(() => {
-    console.log(station);
     if (!factor.length) {
       return;
     }
@@ -93,7 +91,6 @@ function DayModel({ open, closeModal, station, factor, timeType, time }) {
 
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
-    console.log(pagination);
     setPagemsg({
       pagination,
       filters,

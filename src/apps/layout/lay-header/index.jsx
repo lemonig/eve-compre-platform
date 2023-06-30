@@ -30,7 +30,6 @@ const Header = ({ message }) => {
       let res = menu.find((item) => item.path === resolvedPath.pathname);
       if (res) {
         let res1 = menu.find((item) => item.id === res.pid);
-        console.log(res1);
         setActiveMenu(res1.id);
       }
     }

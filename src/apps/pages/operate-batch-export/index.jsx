@@ -57,7 +57,6 @@ function BatchExport() {
   }, []);
 
   useEffect(() => {
-    console.log(stationTypeValue);
     if (stationTypeValue) {
       getStationList(stationTypeValue).then((idList) =>
         getMetaData(idList, stationTypeValue)
@@ -84,7 +83,6 @@ function BatchExport() {
       size: 10000,
     });
     let defaultIds = [];
-    console.log(stationTypeValue);
     let idata = data.map((item, idx) => {
       if (item.stationType == stationType) {
         defaultIds.push(item.id);
@@ -95,14 +93,12 @@ function BatchExport() {
         key: item.id,
       };
     });
-    console.log(defaultIds);
     setStationList(idata);
     setStationId(defaultIds);
     return defaultIds;
   };
   // 表单选项
   const getMetaData = async (idList, stationType) => {
-    console.log(idList);
     let { data, success } = await batchExportMeta({
       stationType: stationTypeValue ?? stationType,
       stationIdList: idList,
@@ -170,7 +166,6 @@ function BatchExport() {
       dataSource: values.dataSource,
       timeTypeList: values.timeTypeList,
     };
-    console.log(values);
     let res = stationTypeList.find((ele) => ele.id === values.stationType);
     await batchExport(params, `统计报表-${res.name}`);
     setLoading(false);

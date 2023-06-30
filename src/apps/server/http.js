@@ -23,15 +23,12 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   (response) => {
-    console.log(response);
     store.dispatch(SHIFT_LOADING());
     if (response.data && response.status === 200) {
       if (Object.prototype.toString.call(response.data) === "[object Blob]") {
-        console.log("图片上传中...");
       } else if (response.data.code === 401) {
         // window.location.href = window.location.origin + "/loading";
       } else if (response.data.code === 403) {
-        console.log("http serve 403");
       } else if (!response.data.success) {
         message.error(response.data.message);
       } else {
@@ -128,7 +125,6 @@ export const _download = ({ url, data, title }) => {
       data: data,
       responseType: "blob",
     }).then((res) => {
-      console.log(res);
       let result = res.data;
       var blob = new Blob([result], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

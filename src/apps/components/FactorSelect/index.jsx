@@ -49,7 +49,6 @@ function FactorSelect({ value = [], onChange }) {
   };
 
   const getPageData = async () => {
-    console.log("factor select loading");
     let { data } = await factorPage({
       page: 1,
       size: 10000,
@@ -106,7 +105,6 @@ function FactorSelect({ value = [], onChange }) {
       let { data: dataIn } = await groupGet({
         id: e,
       });
-      console.log(dataIn);
       setGroupDetail(dataIn.factorIdList ?? []);
     } else {
       setGroupDetail([]);
