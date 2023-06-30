@@ -13,6 +13,7 @@ import {
   PageHeader,
   DatePicker,
   Checkbox,
+  InputNumber,
 } from "antd";
 import IconFont from "@Components/IconFont";
 import { topicAdd, topicUpdate } from "@Api/set_meta_theme.js";
@@ -130,7 +131,12 @@ function OpForm({ record, open, closeModal }) {
             <Select placeholder="请选择" options={iconList()}></Select>
           </Form.Item>
           <Form.Item label="展示次序" name="orderNum">
-            <Input placeholder="请输入" />
+            <InputNumber
+              min={0}
+              max={99999}
+              formatter={(value) => `${value}`.replace(/[^0-9]/g, "")} // 格式化显示为整数
+              parser={(value) => parseInt(value || "0", 10)} // 将输入解析为整数值
+            />
           </Form.Item>
         </Form>
       </Modal>

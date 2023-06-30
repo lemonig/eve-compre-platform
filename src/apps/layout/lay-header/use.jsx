@@ -100,7 +100,7 @@ function User() {
             onClick={(e) => e.preventDefault()}
             size="small"
           />
-          <span className="user-name">{userInfo?.nickname ?? "xx"}</span>
+          <span className="user-name">{userInfo?.nickname ?? "未设置"}</span>
         </li>
       </Dropdown>
       {/* 修改密码 */}

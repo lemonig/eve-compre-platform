@@ -13,6 +13,7 @@ import {
   PageHeader,
   DatePicker,
   Checkbox,
+  InputNumber,
 } from "antd";
 import IconFont from "@Components/IconFont";
 import PageHead from "@Components/PageHead";
@@ -437,7 +438,12 @@ function OpForm({ record, open, closeModal }) {
             />
           </Form.Item>
           <Form.Item label="展示次序" name="orderNum">
-            <Input placeholder="请输入" className="width-3" />
+            <InputNumber
+              min={0}
+              max={99999}
+              formatter={(value) => `${value}`.replace(/[^0-9]/g, "")} // 格式化显示为整数
+              parser={(value) => parseInt(value || "0", 10)} // 将输入解析为整数值
+            />
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 3, span: 19 }}>
             <Button type="primary" htmlType="submit">
