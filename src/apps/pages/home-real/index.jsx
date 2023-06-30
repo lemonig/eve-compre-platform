@@ -158,7 +158,7 @@ function HomeReal() {
     setOtherData(additional_data.countData);
     let newCol = additional_data.columnList.map((item) => ({
       title: (
-        <p>
+        <p key={item.key}>
           <p>{item.label}</p>
           <p>{item.unit ? `(${item.unit})` : ""}</p>
         </p>

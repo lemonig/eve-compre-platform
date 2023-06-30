@@ -53,12 +53,6 @@ function StationTreeMul({ query, onChange }) {
       let initCheckList = initCheck(data.region);
       setCheckKey1(initCheckList);
       onChange(initCheckList);
-      setExpandedKeys([
-        data.region[0].id,
-        data.region[0].children[0].id,
-        data.region[0].children[0].children[0].id,
-      ]); //FIXME第一条数据一定有的基础上。
-
       title.push({
         label: "区域",
         name: "region",
@@ -107,9 +101,6 @@ function StationTreeMul({ query, onChange }) {
     let newTree = [];
     newTree = data?.map((item, idx) => {
       const label = item.label;
-      // if (item.stationNum === 0) {
-      //   return [];
-      // }
       if (item.children) {
         if (idx === 0 && item.isStation && flag) {
           //默认选中
