@@ -11,6 +11,7 @@ import { formatePickTime } from "@Utils/util";
 import "./index.less";
 
 import ReactECharts from "echarts-for-react";
+import { validateQuery } from "@Utils/valid.js";
 
 function MultParam({ menuMsg, stationMsg, metaData, evaluteList }) {
   const [searchForm] = Form.useForm();
@@ -61,6 +62,15 @@ function MultParam({ menuMsg, stationMsg, metaData, evaluteList }) {
 
   const getPageData = async () => {
     let values = searchForm.getFieldsValue();
+    if (
+      !validateQuery(
+        values.time.startTime,
+        values.time.endTime,
+        values.time.type
+      )
+    ) {
+      return;
+    }
     if (!values.dataSource || !values.time) {
       return;
     }

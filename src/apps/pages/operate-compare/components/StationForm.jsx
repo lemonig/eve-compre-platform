@@ -31,6 +31,9 @@ function StationForm({ list, open, onOK, onCancel }) {
   const [stationList, setStationList] = useState([]);
 
   useEffect(() => {
+    if (list.length) {
+      setIdList(list);
+    }
     getStationList();
   }, []);
 

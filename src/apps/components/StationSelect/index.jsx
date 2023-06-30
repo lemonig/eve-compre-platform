@@ -255,6 +255,7 @@ function StationSelect({
             <Col span={6}>
               <Form.Item label="行政区" name="region">
                 <Cascader
+                  allowClear
                   style={{ width: "120px" }}
                   options={originOptions}
                   loadData={loadeReginData}
@@ -270,6 +271,7 @@ function StationSelect({
             <Col span={6}>
               <Form.Item label="河流" name="river">
                 <Cascader
+                  allowClear
                   style={{ width: "120px" }}
                   options={riverOptions}
                   loadData={loadRiverData}
@@ -287,6 +289,11 @@ function StationSelect({
                 <MetaSelect
                   dictType="control_level"
                   style={{ width: "120px" }}
+                  onChange={onFormChange}
+                  fieldNames={{
+                    label: "dictLabel",
+                    value: "dictValue",
+                  }}
                 />
               </Form.Item>
             </Col>

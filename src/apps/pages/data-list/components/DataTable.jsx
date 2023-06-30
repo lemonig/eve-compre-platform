@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import { SettingOutlined, WarningFilled } from "@ant-design/icons";
 import { getFactor } from "@Api/data-list.js";
 import { formatePickTime } from "@Utils/util";
+import { validateQuery } from "@Utils/valid.js";
 
 function tableRender(value) {
   if (value.divColor) {
@@ -118,6 +119,16 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
   ];
   const getPageData = async ({ initFactor = factorList } = {}) => {
     let values = searchForm.getFieldsValue();
+    if (
+      !validateQuery(
+        values.time.startTime,
+        values.time.endTime,
+        values.time.type
+      )
+    ) {
+      return;
+    }
+
     let valueCopy = JSON.parse(JSON.stringify(values));
 
     if (!valueCopy.dataSource || !valueCopy.time) {
@@ -233,6 +244,15 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
   //导出
   const download = async () => {
     let values = searchForm.getFieldsValue();
+    if (
+      !validateQuery(
+        values.time.startTime,
+        values.time.endTime,
+        values.time.type
+      )
+    ) {
+      return;
+    }
     setBtnLoading(true);
     values.startTime = formatePickTime(values.time.type, values.time.startTime);
     values.endTime = formatePickTime(values.time.type, values.time.endTime);

@@ -113,17 +113,13 @@ function LtimePicker({ value = {}, onChange, options = [] }) {
   };
 
   const pickerStartChange = (newVal) => {
-    if (!("setStartTime" in value)) {
-      setStartTime(newVal);
-    }
+    setStartTime(newVal);
     triggerChange({
       startTime: newVal,
     });
   };
   const pickerEndChange = (newVal) => {
-    if (!("endTime" in value)) {
-      setEndTime(newVal);
-    }
+    setEndTime(newVal);
     triggerChange({
       endTime: newVal,
     });
@@ -140,12 +136,14 @@ function LtimePicker({ value = {}, onChange, options = [] }) {
         onChange={typeChange}
       />
       <PickerWithType
+        key="start"
         type={value.type || type}
         onChange={pickerStartChange}
         value={value.startTime || startTime}
       />
       至
       <PickerWithType
+        key="end"
         type={value.type || type}
         onChange={pickerEndChange}
         value={value.endTime || endTime}

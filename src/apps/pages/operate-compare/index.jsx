@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Select, Button, Space, Table, Form, Tooltip, Radio } from "antd";
+import {
+  Select,
+  Button,
+  Space,
+  Table,
+  Form,
+  Tooltip,
+  Radio,
+  message,
+} from "antd";
 // com
 import Lbreadcrumb from "@Components/Lbreadcrumb";
 import LtimePicker from "@Components/LtimePicker";
@@ -18,59 +27,8 @@ import { searchMeta } from "@Api/data-list.js";
 import { formatePickTime } from "@Utils/util";
 import StationForm from "./components/StationForm";
 import Graph from "./components/Graph";
-
-let columnCopy = [];
-const getFormCasData = (data = []) => {
-  return data?.map((item) => {
-    return item[item.length - 1];
-  });
-};
-
-function tableRender(value) {
-  if (!value) {
-    return;
-  }
-  if (value.divColor) {
-    return <WaterLevel level={value.value} color={value.divColor}></WaterLevel>;
-  } else if (value.color) {
-    return (
-      <Tooltip title={"超标"}>
-        <span
-          style={{
-            color: "#F82504",
-            fontWeight: "bold",
-          }}
-        >
-          {value.value}
-        </span>
-      </Tooltip>
-    );
-  } else if (value.tips) {
-    return (
-      <>
-        <span>{value.value}</span>
-        &nbsp;
-        <Tooltip title={value.tips}>
-          <WarningFilled style={{ color: "#F82504" }} />
-        </Tooltip>
-      </>
-    );
-  } else {
-    return value.value;
-  }
-}
-
-const pageSize = 10;
-
-const DynamicTableHeader = ({ columns }) => {
-  return columns.map((column) => (
-    <Table.Column
-      title={column.title}
-      dataIndex={column.dataIndex}
-      key={column.key}
-    />
-  ));
-};
+import { validateQuery } from "@Utils/valid.js";
+import dayjs from "dayjs";
 
 function OperateCompare() {
   const [searchForm] = Form.useForm();
@@ -93,25 +51,30 @@ function OperateCompare() {
   const [stationType, setStationType] = useState();
   const [data, setData] = useState([]); //全部数据
   const [nowdata, setNowData] = useState([]); //当前数据
-  const [currentPage, setCurrentPage] = useState(1);
+  const [pageMsg, setPagemsg] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
   const [stationId, setStationId] = useState([]); //站点
   const [compType, setCompType] = useState("sequence"); //时间类型
   const [chartModal, setChartModal] = useState("2");
+
+  let normalCol = {
+    title: "序号",
+    key: "index",
+    width: 50,
+    fixed: true,
+    dataIndex: "index",
+    // render: (_, record, idx) =>
+    //   pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) + idx + 1,
+  };
 
   useEffect(() => {
     // 元数据获取
     getStationMetaPage();
   }, []);
-
-  let normalCol = [
-    {
-      title: "序号",
-      key: "index",
-      width: 50,
-      dataIndex: "index",
-      render: (text, record, index) => (currentPage - 1) * pageSize + index + 1,
-    },
-  ];
 
   const getMetaData = async (val) => {
     let values = searchForm.getFieldsValue();
@@ -122,14 +85,15 @@ function OperateCompare() {
     let { data, success } = await compareMeta(param);
     if (success) {
       setMetaData(data);
-      // searchForm.setFieldsValue({
-      //   dataSource: data.dataSource[0].value,
-      //   time: {
-      //     startTime: dayjs().subtract(1, "month"),
-      //     endTime: dayjs(),
-      //     type: data.computeDataLevel[0].value,
-      //   },
-      // });
+      searchForm.setFieldsValue({
+        factor: [data.factor[0].value],
+        dataSource: data.dataSource[0].value,
+        time: {
+          startTime: dayjs().subtract(1, "month"),
+          endTime: dayjs(),
+          type: data.computeDataLevel[0].value,
+        },
+      });
     }
   };
 
@@ -151,6 +115,20 @@ function OperateCompare() {
   const getPageData = async () => {
     setLoading(true);
     let values = searchForm.getFieldsValue();
+    if (!stationId.length) {
+      message.info("请选择站点");
+      return;
+    }
+    if (
+      !validateQuery(
+        values.time.startTime,
+        values.time.endTime,
+        values.time.type
+      )
+    ) {
+      return;
+    }
+
     values.beginTime = formatePickTime(values.time.type, values.time.startTime);
     values.endTime = formatePickTime(values.time.type, values.time.endTime);
     values.timeType = values.time.type;
@@ -177,9 +155,8 @@ function OperateCompare() {
           width: 60,
         };
       });
-
-      setColumns([...normalCol, ...newCol]);
-      setAdditionData([...normalCol, ...newCol]);
+      setColumns([normalCol, ...newCol]);
+      setAdditionData([normalCol, ...newCol]);
     }
     setLoading(false);
   };
@@ -187,23 +164,31 @@ function OperateCompare() {
   const handleData = (data, initCompType) => {
     //转表格数据
     let tabled = data[initCompType].map((item, idx) => {
-      let obj = {
-        id: idx,
-      };
-      item.forEach((jtem) => {
-        Reflect.defineProperty(obj, `${jtem.key}`, {
-          value: jtem.value,
+      if (!!item[0].fieldType) {
+        var obj = {
+          id: idx,
+          index: idx + 1,
+        };
+        item.forEach((jtem) => {
+          Reflect.defineProperty(obj, `${jtem.key}`, {
+            value: jtem.value,
+          });
         });
-      });
-      return obj;
+        return obj;
+      } else {
+        return null;
+      }
     });
-    return tabled;
+    return tabled.filter(Boolean);
   };
 
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
-    // `dataSource` is useless since `pageSize` changed
-    setCurrentPage(pagination.current);
+    setPagemsg({
+      pagination,
+      filters,
+      ...sorter,
+    });
   };
 
   const stationFormCancel = () => {
@@ -370,8 +355,8 @@ function OperateCompare() {
               dataSource={nowdata}
               loading={loading}
               rowKey={(record) => record.idx}
+              pagination={pageMsg.pagination}
               onChange={handleTableChange}
-              pagination={{ pageSize }}
             ></Table>
           </>
         )}
