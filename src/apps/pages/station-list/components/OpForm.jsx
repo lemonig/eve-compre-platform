@@ -450,7 +450,16 @@ function OpForm({ record, open, closeModal }) {
               </Form.Item>
             </Col>
             <Col span={12} style={filterElement("exceeded_call")}>
-              <Form.Item label="超标联系电话" name="exceeded_call">
+              <Form.Item
+                label="超标联系电话"
+                name="exceeded_call"
+                rules={[
+                  {
+                    pattern: /^1[3456789]\d{9}$/,
+                    message: "请输入正确电话号码",
+                  },
+                ]}
+              >
                 <Input className="width-3" placeholder="请输入" />
               </Form.Item>
             </Col>
@@ -461,7 +470,16 @@ function OpForm({ record, open, closeModal }) {
               </Form.Item>
             </Col>
             <Col span={12} style={filterElement("operation_call")}>
-              <Form.Item label="运维联系电话" name="operation_call">
+              <Form.Item
+                label="运维联系电话"
+                name="operation_call"
+                rules={[
+                  {
+                    pattern: /^1[3456789]\d{9}$/,
+                    message: "请输入正确电话号码",
+                  },
+                ]}
+              >
                 <Input className="width-3" placeholder="请输入" />
               </Form.Item>
             </Col>
