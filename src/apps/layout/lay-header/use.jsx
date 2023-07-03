@@ -104,61 +104,63 @@ function User() {
         </li>
       </Dropdown>
       {/* 修改密码 */}
-      <Modal
-        title="修改密码"
-        open={pwdModalVisible}
-        onOk={handlePwsOk}
-        onCancel={handlePwsCancel}
-        destroyOnClose
-        maskClosable={false}
-        confirmLoading={confirmLoading}
-      >
-        <Form
-          name="psd"
-          preserve={false}
-          form={pwdForm}
-          labelCol={{ span: 4 }}
-          wrapperCol={{ span: 20 }}
-          autoComplete="off"
+      {pwdModalVisible && (
+        <Modal
+          title="修改密码"
+          open={pwdModalVisible}
+          onOk={handlePwsOk}
+          onCancel={handlePwsCancel}
+          destroyOnClose
+          maskClosable={false}
+          confirmLoading={confirmLoading}
         >
-          <Form.Item
-            label="旧密码"
-            name="old_password"
-            rules={[{ required: true, message: "请输入旧密码!" }]}
+          <Form
+            name="psd"
+            preserve={false}
+            form={pwdForm}
+            labelCol={{ span: 4 }}
+            wrapperCol={{ span: 20 }}
+            autoComplete="off"
           >
-            <Input />
-          </Form.Item>
+            <Form.Item
+              label="旧密码"
+              name="oldPassword"
+              rules={[{ required: true, message: "请输入旧密码!" }]}
+            >
+              <Input />
+            </Form.Item>
 
-          <Form.Item
-            label="新密码"
-            name="new_password1"
-            rules={[
-              { required: true, message: "请输入新密码" },
-              {
-                pattern:
-                  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,20}$/,
-                message: "请输入至少8位，包含字母、数字和特殊字符",
-              },
-            ]}
-          >
-            <Input.Password />
-          </Form.Item>
-          <Form.Item
-            label="新密码"
-            name="new_password2"
-            rules={[
-              { required: true, message: "请再次输入新密码" },
-              {
-                pattern:
-                  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,20}$/,
-                message: "请输入至少8位，包含字母、数字和特殊字符",
-              },
-            ]}
-          >
-            <Input.Password />
-          </Form.Item>
-        </Form>
-      </Modal>
+            <Form.Item
+              label="新密码"
+              name="newPassword1"
+              rules={[
+                { required: true, message: "请输入新密码" },
+                {
+                  pattern:
+                    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,20}$/,
+                  message: "请输入至少8位，包含字母、数字和特殊字符",
+                },
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+            <Form.Item
+              label="新密码"
+              name="newPassword2"
+              rules={[
+                { required: true, message: "请再次输入新密码" },
+                {
+                  pattern:
+                    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,20}$/,
+                  message: "请输入至少8位，包含字母、数字和特殊字符",
+                },
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+          </Form>
+        </Modal>
+      )}
     </>
   );
 }
