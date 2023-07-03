@@ -143,12 +143,18 @@ function SetMetaField() {
       title: "操作",
       key: "operation",
       fixed: "right",
-      render: (_, record) => (
-        <Space>
-          <a onClick={() => handleEdit(record)}>编辑</a>
-          <a onClick={() => handleDel(record)}>删除</a>
-        </Space>
-      ),
+      render: (_, record) => {
+        if (!record.isCommon) {
+          return (
+            <Space>
+              <a onClick={() => handleEdit(record)}>编辑</a>
+              <a onClick={() => handleDel(record)}>删除</a>
+            </Space>
+          );
+        } else {
+          return "/";
+        }
+      },
     },
   ];
 
