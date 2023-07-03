@@ -5,7 +5,7 @@ import {
   Space,
   Table,
   Form,
-  Tooltip,
+  Empty,
   Radio,
   message,
 } from "antd";
@@ -50,7 +50,8 @@ function OperateCompare() {
   const [additionData, setAdditionData] = useState([]);
   const [stationType, setStationType] = useState();
   const [data, setData] = useState([]); //全部数据
-  const [nowdata, setNowData] = useState([]); //当前数据
+  const [nowdata, setNowData] = useState([]); //当前数据表格
+  const [dataGraph, setDataGraph] = useState([]); //图表数据
   const [pageMsg, setPagemsg] = useState({
     pagination: {
       current: 1,
@@ -94,6 +95,7 @@ function OperateCompare() {
           type: data.computeDataLevel[0].value,
         },
       });
+      getPageData();
     }
   };
 
@@ -140,6 +142,8 @@ function OperateCompare() {
     if (success) {
       setData(data);
       let nData = handleData(data, compType);
+      let graphData = handleGraph(data, compType);
+      setDataGraph(graphData);
       setNowData(nData);
       let newCol = additional_data.columnList.map((item) => {
         return {
@@ -182,6 +186,23 @@ function OperateCompare() {
     return tabled.filter(Boolean);
   };
 
+  const handleGraph = (data, initCompType) => {
+    let graph = data[initCompType].map((item, idx) => {
+      var obj = {
+        id: idx,
+        index: idx + 1,
+      };
+      item.forEach((jtem) => {
+        Reflect.defineProperty(obj, `${jtem.key}`, {
+          value: jtem.value,
+        });
+      });
+      return obj;
+    });
+    console.log(graph);
+    return graph;
+  };
+
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
     setPagemsg({
@@ -206,11 +227,14 @@ function OperateCompare() {
     searchForm.resetFields();
     setData([]);
     setNowData([]);
+    setDataGraph([]);
   };
 
   const onRadioChange = (e) => {
     setCompType(e.target.value);
-    let nData = handleData(data, e.target.value);
+    let nData = handleData(data, compType);
+    let graphData = handleGraph(data, compType);
+    setDataGraph(graphData);
     setNowData(nData);
     if (e.target.value === "avg") {
       let filterCol = columns.filter((ele) => ele.key !== "datatime");
@@ -298,52 +322,51 @@ function OperateCompare() {
             </Form>
           )}
         </div>
-        <div className="search">
-          <Radio.Group
-            onChange={onRadioChange}
-            optionType="button"
-            buttonStyle="solid"
-            value={compType}
-          >
-            <Radio.Button value="sequence">时序对比</Radio.Button>
-            <Radio.Button value="avg">均值对比</Radio.Button>
-          </Radio.Group>
-          <Space>
-            <span>坐标轴格式:</span>
-            <Select
-              style={{ width: 120 }}
-              placeholder="坐标轴格式"
-              onChange={handleChange}
-              value={chartModal}
-              options={[
-                {
-                  value: "1",
-                  label: "堆叠",
-                },
-                {
-                  value: "2",
-                  label: "同轴",
-                },
-                {
-                  value: "3",
-                  label: "多轴",
-                },
-              ]}
-            ></Select>
-          </Space>
-        </div>
-        {nowdata && (
-          <Graph
-            data={nowdata}
-            chartModal={chartModal}
-            loading={loading}
-            compType={compType}
-            originData={data}
-          />
-        )}
-
-        {columns.length > 0 && (
+        {nowdata.length ? (
           <>
+            <div className="search">
+              <Radio.Group
+                onChange={onRadioChange}
+                optionType="button"
+                buttonStyle="solid"
+                value={compType}
+              >
+                <Radio.Button value="sequence">时序对比</Radio.Button>
+                <Radio.Button value="avg">均值对比</Radio.Button>
+              </Radio.Group>
+              <Space>
+                <span>坐标轴格式:</span>
+                <Select
+                  style={{ width: 120 }}
+                  placeholder="坐标轴格式"
+                  onChange={handleChange}
+                  value={chartModal}
+                  options={[
+                    {
+                      value: "1",
+                      label: "堆叠",
+                    },
+                    {
+                      value: "2",
+                      label: "同轴",
+                    },
+                    {
+                      value: "3",
+                      label: "多轴",
+                    },
+                  ]}
+                ></Select>
+              </Space>
+            </div>
+
+            <Graph
+              data={dataGraph}
+              chartModal={chartModal}
+              loading={loading}
+              compType={compType}
+              originData={data}
+            />
+
             <div className="search">
               <div></div>
               <Button onClick={download} loading={btnloading}>
@@ -359,6 +382,8 @@ function OperateCompare() {
               onChange={handleTableChange}
             ></Table>
           </>
+        ) : (
+          <Empty />
         )}
       </>
 
