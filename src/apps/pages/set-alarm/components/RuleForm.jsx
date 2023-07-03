@@ -33,6 +33,7 @@ function RuleForm({ record, open, closeModal, groupId }) {
     });
     onRuleCodeChange(data.ruleCode);
     form.setFieldsValue({ ...data });
+    setFactorId(data.factorIds);
   };
 
   const getMetaData = async () => {

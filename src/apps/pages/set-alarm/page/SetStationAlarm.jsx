@@ -21,7 +21,7 @@ function SetStationAlarm({ record, open, closeModal }) {
   const getPageData = async () => {
     setLoading(true);
     let { data } = await listFactor({
-      stationId: record.id,
+      stationId: record.stationId,
     });
     setData(data);
     setLoading(false);

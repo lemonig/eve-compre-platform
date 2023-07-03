@@ -37,6 +37,7 @@ function AlarmGroup({ record, open, closePage }) {
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [stationGroup, setStationGroup] = useState([]); //站点组
+  const enableWxNotification = Form.useWatch("enableWxNotification", form);
 
   useEffect(() => {
     if (record) {
@@ -56,10 +57,14 @@ function AlarmGroup({ record, open, closePage }) {
 
   //获取站点组
   const getStationGroup = async () => {
-    let { data } = await stationPageGroup();
+    let { data } = await stationPageGroup({
+      page: 1,
+      size: 9999,
+    });
     let nData = data.map((item) => ({
       ...item,
-      key: item.id,
+      id: String(item.id),
+      key: String(item.id),
     }));
     setStationGroup(nData);
   };
@@ -79,16 +84,17 @@ function AlarmGroup({ record, open, closePage }) {
       let { success, message: msg } = await updateGroup(params);
       if (success) {
         message.success(msg);
+        closePage(true);
       }
     } else {
       let { success, message: msg } = await addGroup(params);
       if (success) {
         message.success(msg);
+        closePage(true);
       }
     }
     // 添加
     setLoading(false);
-    closePage(true);
   };
 
   // 穿梭
@@ -115,6 +121,11 @@ function AlarmGroup({ record, open, closePage }) {
     }
   };
 
+  const closeStationModal = () => {
+    setIsModalOpen(false);
+    getStationGroup();
+  };
+
   return (
     <>
       <div className="content-wrap">
@@ -128,17 +139,18 @@ function AlarmGroup({ record, open, closePage }) {
           name="basic"
           form={form}
           labelCol={{
-            span: 8,
+            span: 5,
           }}
           wrapperCol={{
-            span: 16,
+            span: 19,
           }}
           style={{
-            maxWidth: 600,
+            maxWidth: 1000,
           }}
           onFinish={onFinish}
           autoComplete="off"
           colon={false}
+          initialValues={{ isScheduledSend: 0, notificationFormat: 1 }}
         >
           <Form.Item
             label="规则组名称"
@@ -152,7 +164,7 @@ function AlarmGroup({ record, open, closePage }) {
           >
             <Input />
           </Form.Item>
-          <Form.Item label="生效月份">
+          <Form.Item label="生效月份" required>
             <Space>
               <Form.Item
                 name="beginMonth"
@@ -215,6 +227,15 @@ function AlarmGroup({ record, open, closePage }) {
               <Form.Item name="enableWxNotification" valuePropName="checked">
                 <Checkbox>微信通知</Checkbox>
               </Form.Item>
+              {enableWxNotification && (
+                <Form.Item
+                  label="微信群聊名称"
+                  name="wechatGroupName"
+                  colon={true}
+                >
+                  <Input></Input>
+                </Form.Item>
+              )}
             </Space>
           </Form.Item>
 
@@ -269,7 +290,7 @@ function AlarmGroup({ record, open, closePage }) {
       {isModalOpen && (
         <GroupCreate
           open={isModalOpen}
-          closeModal={() => setIsModalOpen(false)}
+          closeModal={closeStationModal}
           // record={operate}
         />
       )}

@@ -136,6 +136,7 @@ function AlarmGroupDetail({ record, open, closePage }) {
       title: "因子",
       dataIndex: "factorNames",
       key: "factorNames",
+      render: (value) => <span>{value.toString()}</span>,
     },
     {
       title: "连续次数",

@@ -107,31 +107,27 @@ function SetAlarm() {
   };
 
   const handleStatusChange = async (checked, record) => {
-    record.status = checked ? "1" : "0";
     let { success, message: msg } = await statusGroup(record);
     if (success) {
       message.success(msg);
+      getPageData();
     }
-    setData([...data]);
   };
 
   const handleStatusChangewx = async (checked, record) => {
-    record.status = checked ? "1" : "0";
     let { success, message: msg } = await wxStatusGroup(record);
     if (success) {
       message.success(msg);
+      getPageData();
     }
-    setData([...data]);
   };
 
   const handleStatusChangesms = async (checked, record) => {
-    record.status = checked ? "1" : "0";
     let { success, message: msg } = await smsStatusGroup(record);
     if (success) {
       message.success(msg);
+      getPageData();
     }
-
-    setData([...data]);
   };
 
   const columns = [

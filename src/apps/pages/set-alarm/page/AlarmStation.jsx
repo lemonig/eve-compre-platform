@@ -135,6 +135,9 @@ function AlarmStation({ record, open, closePage }) {
       title: "规则组数",
       dataIndex: "ruleGroupNum",
       key: "ruleGroupNum  ",
+      render: (value, record) => (
+        <Tooltip title={record.ruleGroupTip}>{value}</Tooltip>
+      ),
     },
 
     {
@@ -198,7 +201,7 @@ function AlarmStation({ record, open, closePage }) {
     <>
       <div className="content-wrap">
         <Lbreadcrumb data={["系统设置", "数据报警", "报警规则"]} />
-        <PageHead title="规则组1" onClick={() => closePage(true)} />
+        <PageHead title={"报警站点组"} onClick={() => closePage(true)} />
         <div className="search">
           <Button type="primary" onClick={handleAdd}>
             创建站点组
