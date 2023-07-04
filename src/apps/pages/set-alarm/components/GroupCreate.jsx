@@ -114,7 +114,7 @@ function GroupCreate({ record, open, closeModal }) {
                 span: 24,
               }}
             >
-              <StationSelect options={stationList} />
+              <StationSelect options={stationList} isUser={false} />
             </Form.Item>
           </Col>
         </Row>

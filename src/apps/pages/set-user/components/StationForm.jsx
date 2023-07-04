@@ -70,6 +70,7 @@ function StationForm({ list, open, onOK, onCancel }) {
             onChange={onStationChange}
             value={list}
             options={stationList}
+            isUser={false}
           />
         </div>
       </Modal>

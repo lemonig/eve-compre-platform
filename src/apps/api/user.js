@@ -65,17 +65,31 @@ export function userStation(data) {
     data,
   });
 }
+// 用户相关信息
+export function stationRelation(data) {
+  return _post({
+    url: `/api/user/station/relation`,
+    data,
+  });
+}
 // 用户相关河流
 export function userRiver(data) {
   return _post({
-    url: `/api/user/river`,
+    url: `/api/user/river/list`,
     data,
   });
 }
 // 用户相关区域
 export function userRegion(data) {
   return _post({
-    url: `/api/user/region`,
+    url: `/api/user/region/list`,
+    data,
+  });
+}
+// 用户相关区域
+export function userControlLevel(data) {
+  return _post({
+    url: `/api/user/controlLevel/list`,
     data,
   });
 }

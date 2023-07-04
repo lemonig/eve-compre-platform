@@ -23,7 +23,7 @@ import Lbreadcrumb from "@Components/Lbreadcrumb";
 import { inputTrim } from "@Utils/util";
 
 import StationSelect from "@Components/StationSelect";
-import { stationPage } from "@Api/set_station.js";
+import { userStation } from "@Api/user.js";
 
 function StationForm({ list, open, onOK, onCancel }) {
   const [loading, setLoading] = useState(false);
@@ -45,7 +45,7 @@ function StationForm({ list, open, onOK, onCancel }) {
   };
 
   const getStationList = async () => {
-    const { data } = await stationPage({
+    const { data } = await userStation({
       page: 1,
       size: 10000,
     });

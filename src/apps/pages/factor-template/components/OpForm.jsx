@@ -17,7 +17,6 @@ import PageHead from "@Components/PageHead";
 import Lbreadcrumb from "@Components/Lbreadcrumb";
 import { inputTrim } from "@Utils/util";
 
-import StationSelect from "@Components/StationSelect";
 import {
   templateGet,
   templateUpdate,

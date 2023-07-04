@@ -24,7 +24,7 @@ import {
   stationPage as stationMetaPage,
   stationGet as stationMetaGet,
 } from "@Api/set_meta_station.js";
-import { stationPage } from "@Api/set_station.js";
+import { userStation } from "@Api/user.js";
 
 const onFinishFailed = (errorInfo) => {
   console.log("Failed:", errorInfo);
@@ -78,7 +78,7 @@ function BatchExport() {
 
   // 获取站点
   const getStationList = async (stationType) => {
-    const { data } = await stationPage({
+    const { data } = await userStation({
       page: 1,
       size: 10000,
     });

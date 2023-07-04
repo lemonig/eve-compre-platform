@@ -19,7 +19,7 @@ import {
 import IconFont from "@Components/IconFont";
 import { groupAdd, groupUpdate, groupGet } from "@Api/set_station_group.js";
 import StationSelect from "@Components/StationSelect";
-import { stationPage } from "@Api/set_station.js";
+import { userStation } from "@Api/user.js";
 
 //precord 父 --> code
 function OpForm({ record, open, closeModal, precord }) {
@@ -43,7 +43,7 @@ function OpForm({ record, open, closeModal, precord }) {
   };
 
   const getStationList = async () => {
-    const { data } = await stationPage({
+    const { data } = await userStation({
       page: 1,
       size: 10000,
     });

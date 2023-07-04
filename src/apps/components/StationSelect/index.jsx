@@ -25,6 +25,13 @@ import MetaSelect from "@Shared/MetaSelect";
 import { stationPage as stationMetaPage } from "@Api/set_meta_station.js";
 import { regionList } from "@Api/set_region.js";
 import { riverList } from "@Api/set_rival.js";
+import {
+  userRegion,
+  userRiver,
+  userStation,
+  userControlLevel,
+  stationPage as stationUserPage,
+} from "@Api/user.js";
 
 const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
   <Transfer {...restProps}>
@@ -95,6 +102,7 @@ function StationSelect({
   onChange,
   options = [],
   defaultStationType,
+  isUser = true,
 }) {
   const optionsClone = JSON.parse(JSON.stringify(options));
   const [searchForm] = Form.useForm();
@@ -111,10 +119,15 @@ function StationSelect({
 
   useEffect(() => {
     // 元数据获取
-
-    getOriginPage();
-    getRiverPage();
-    getStationMetaPage();
+    if (isUser) {
+      getOriginPage1();
+      getRiverPage1();
+      getStationMetaPage1();
+    } else {
+      getOriginPage();
+      getRiverPage();
+      getStationMetaPage();
+    }
   }, []);
 
   useEffect(() => {
@@ -154,6 +167,32 @@ function StationSelect({
 
   const getStationMetaPage = async () => {
     let { data } = await stationMetaPage();
+    setStationList(data);
+  };
+
+  const getOriginPage1 = async () => {
+    let { data } = await userRegion({
+      level: "1",
+    });
+    let newd = data.map((item) => ({
+      ...item,
+      isLeaf: false,
+    }));
+    setOriginOptions(newd);
+  };
+  const getRiverPage1 = async () => {
+    let { data } = await userRiver({
+      level: "1",
+    });
+    let newd = data.map((item) => ({
+      ...item,
+      isLeaf: false,
+    }));
+    setRiverOptions(newd);
+  };
+
+  const getStationMetaPage1 = async () => {
+    let { data } = await stationUserPage();
     setStationList(data);
   };
 
