@@ -95,7 +95,7 @@ function OperateCompare() {
           type: data.computeDataLevel[0].value,
         },
       });
-      getPageData();
+      getPageData(val);
     }
   };
 
@@ -114,10 +114,11 @@ function OperateCompare() {
     setStationType(findRes);
   };
 
-  const getPageData = async () => {
+  const getPageData = async (stationIds = stationId) => {
     setLoading(true);
     let values = searchForm.getFieldsValue();
-    if (!stationId.length) {
+    console.log(stationIds);
+    if (!stationIds.length) {
       message.info("请选择站点");
       return;
     }
@@ -137,7 +138,7 @@ function OperateCompare() {
     values.showFieldList = [...values.factor, ...[values.evaluate ?? ""]]
       .filter(Boolean)
       .flat();
-    values.stationIdList = stationId;
+    values.stationIdList = stationIds;
     let { additional_data, data, success } = await dataCompare(values);
     if (success) {
       setData(data);
@@ -220,7 +221,9 @@ function OperateCompare() {
     clartPage();
     setStationId(val);
     setIsModalOpen(false);
-    getMetaData(val);
+    setTimeout(() => {
+      getMetaData(val);
+    }, 0);
   };
   // 清空页面
   const clartPage = () => {
@@ -232,8 +235,8 @@ function OperateCompare() {
 
   const onRadioChange = (e) => {
     setCompType(e.target.value);
-    let nData = handleData(data, compType);
-    let graphData = handleGraph(data, compType);
+    let nData = handleData(data, e.target.value);
+    let graphData = handleGraph(data, e.target.value);
     setDataGraph(graphData);
     setNowData(nData);
     if (e.target.value === "avg") {
