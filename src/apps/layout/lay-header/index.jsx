@@ -73,7 +73,7 @@ const Header = ({ message }) => {
   const creatMenu = () =>
     menuTree.map((item) => (
       <React.Fragment key={item.id}>
-        {item.label === "系统设置" || item.label === "数据运营" ? (
+        {item.label === "系统设置" ? (
           <NavLink
             to={item.path}
             style={({ isActive }) => (isActive ? activeStyle : undefined)}

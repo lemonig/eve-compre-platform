@@ -13,7 +13,10 @@ function OperateLayout() {
   //   icone: <IconFont name={item.icon} size={16}></IconFont>,
   // }));
   const menuTree = menu ? handleMenu(menu) : [];
-  let operateMenu = menuTree.find((ele) => ele.component === "lay-operate");
+  let operateMenu = menuTree[2].children.find(
+    (ele) => ele.component === "lay-operate"
+  );
+  console.log(operateMenu);
   return (
     <>
       <LayMenu menuList={operateMenu.children} />

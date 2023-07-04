@@ -28,82 +28,127 @@ const routerList = [
   // {
   //   element: lazyLoad("home"),
   // },
+  //综合看板
   {
     // path: "list",
     element: lazyLoad("home-real"),
     index: true,
   },
   {
-    path: "resource",
+    path: "dashboard_index",
     element: lazyLoad("home-view"),
   },
+
   {
-    path: "dataList",
+    path: "dashboard_resource",
+    element: lazyLoad("home-resource"),
+  },
+  //数据查询
+  {
+    path: "data_environment",
     element: lazyLoad("data-list"),
-    // children: [
-    //   {
-    //     path: ":id",
-    //     element: lazyLoad("set-user"),
-    //   },
-    // ],
   },
   {
     path: "dataBase",
     element: lazyLoad("data-base"),
   },
   {
-    path: "dataVideo",
+    path: "data_camera",
     element: lazyLoad("data-video"),
   },
   // 数据运营
   {
-    path: "operation",
+    path: "operation_compare",
+    element: lazyLoad("operate-compare"),
+  },
+
+  // 报警
+  {
+    path: "operation_alarm",
     element: <OperateLayout />,
     children: [
       {
-        element: lazyLoad("operate-compare"),
-        index: true,
+        path: "alarm_record", //报警记录
+        element: lazyLoad("alarm-record"),
+        // index: true,
       },
       {
-        path: "date_range",
-        element: lazyLoad("operate-date-report"),
+        path: "send_record", //消息记录
+        element: lazyLoad("alarm-msg-record"),
       },
       {
-        path: "month_change",
-        element: lazyLoad("operate-month-change"),
+        path: "alarm_statis", //报警统计
+        element: lazyLoad("alarm-statis"),
       },
       {
-        path: "exception_data",
-        element: lazyLoad("operate-except-data"),
+        path: "send_statis", //消息统计
+        element: lazyLoad("alarm-msg-statis"),
       },
-      {
-        path: "batch_export",
-        element: lazyLoad("operate-batch-export"),
-      },
-      // 报警
-      // {
-      //   path: "alarm_record", //报警记录
-      //   element: lazyLoad("alarm-record"),
-      // },
-      // {
-      //   path: "alarm_send", //消息记录
-      //   element: lazyLoad("alarm-msg-record"),
-      // },
-      // {
-      //   path: "alarm_statis", //报警统计
-      //   element: lazyLoad("alarm-statis"),
-      // },
-      // {
-      //   path: "alarm_send_statis", //消息统计
-      //   element: lazyLoad("alarm-msg-statis"),
-      // },
     ],
   },
+  {
+    path: "operation_report",
+    element: lazyLoad("operate-sql"),
+  },
+  {
+    path: "operation_report_batch_export",
+    element: lazyLoad("operate-batch-export"),
+  },
+
+  {
+    path: "operation_report_exception_data",
+    element: lazyLoad("operate-except-data"),
+  },
+  {
+    path: "operation_report_export_record",
+    element: lazyLoad("operate-export-history"),
+  },
+  // 数据质量
+  {
+    path: "quality_audit",
+    element: lazyLoad("quality-audit"),
+  },
+  {
+    path: "quality_reverse_status",
+    element: lazyLoad("quality_reverse_status"),
+  },
+  // 数据共享
+  {
+    path: "share_api",
+    element: lazyLoad("share-api"),
+  },
+  {
+    path: "share_log",
+    element: lazyLoad("share-log"),
+  },
+  {
+    path: "share_database",
+    element: lazyLoad("share-database"),
+  },
+  // 接入管理
+  {
+    path: "input_setting",
+    element: lazyLoad("input-set"),
+  },
+  {
+    path: "input_hand",
+    element: lazyLoad("input-hand"),
+  },
+  {
+    path: "input_log",
+    element: lazyLoad("input-log"),
+  },
+  {
+    path: "input_transfer_statis",
+    element: lazyLoad("input-statis"),
+  },
+  // 设置
   {
     path: "setting",
     element: <SetLayout />,
     children: [
       {
+        path: "system",
         element: lazyLoad("set-base"),
         index: true,
       },
@@ -116,7 +161,7 @@ const routerList = [
         element: lazyLoad("set-alarm"),
       },
       // 站点
-      { path: "station", element: lazyLoad("station-list") },
+      { path: "station_list", element: lazyLoad("station-list") },
       { path: "station_group", element: lazyLoad("station-group") },
       { path: "station_online", element: lazyLoad("station-online") },
       // 因子
@@ -137,7 +182,7 @@ const routerList = [
         element: lazyLoad("set-meta-field"),
       },
       {
-        path: "meta_evaluate_standard",
+        path: "meta_evaluate_plan",
         element: lazyLoad("set-meta-standard"),
       },
       {
@@ -159,7 +204,7 @@ const routerList = [
       },
       {
         path: "msg_company",
-        element: lazyLoad("set-msg-region"),
+        element: lazyLoad("set-msg-company"),
       },
       {
         path: "msg_park",
@@ -184,6 +229,15 @@ const routerList = [
       {
         path: "msg_domestic_pollution_source",
         element: lazyLoad("set-msg-live"),
+      },
+      // 报表管理
+      {
+        path: "report_config",
+        element: lazyLoad("set-report-config"),
+      },
+      {
+        path: "report_log",
+        element: lazyLoad("set-report-log"),
       },
     ],
   },
