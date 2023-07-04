@@ -3,6 +3,7 @@ import * as React from "react";
 import { Navigate } from "react-router-dom";
 import { RouterAuth } from "./routerAuth"; // 401
 import OperateLayout from "@App/layout/lay-operate";
+import InfoLayout from "@App/layout/lay-info";
 import BodyLayout from "@App/layout/lay-body";
 import SetLayout from "@App/layout/lay-set";
 
@@ -55,6 +56,46 @@ const routerList = [
   {
     path: "data_camera",
     element: lazyLoad("data-video"),
+  },
+  //信息挡挡
+  {
+    path: "data",
+    element: <InfoLayout />,
+    children: [
+      {
+        path: "info_station", //站点资料
+        element: lazyLoad("data-station"),
+        index: true,
+      },
+      {
+        path: "info_non-station_air_zone",
+        element: lazyLoad("data-info-air"),
+      },
+      {
+        path: "info_non-station_water_zone",
+        element: lazyLoad("data-info-water"),
+      },
+      {
+        path: "info_non-station_drink_water_source",
+        element: lazyLoad("data-info-drink"),
+      },
+      {
+        path: "info_non-station_company",
+        element: lazyLoad("data-info-company"),
+      },
+      {
+        path: "info_non-station_park",
+        element: lazyLoad("data-info-park"),
+      },
+      {
+        path: "info_non-station_sensitive_point",
+        element: lazyLoad("data-info-sensitive"),
+      },
+      {
+        path: "info_non-station/domestic_pollution_source",
+        element: lazyLoad("data-info-domestic"),
+      },
+    ],
   },
   // 数据运营
   {

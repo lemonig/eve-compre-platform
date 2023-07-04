@@ -1,7 +1,7 @@
 import React from "react";
 
-function Base() {
+function Station() {
   return <div>Base</div>;
 }
 
-export default Base;
+export default Station;
