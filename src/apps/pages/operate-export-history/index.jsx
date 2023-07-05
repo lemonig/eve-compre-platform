@@ -83,14 +83,16 @@ function OperateExportHistory({ isRouter = true, closeModal }) {
       key: "operation",
       fixed: "right",
       render: (_, record) => {
-        if (record.status === "0") {
+        if (record.status == "0") {
           return "-";
-        } else if (record.status === "1") {
-          <a href={record.fileUrl}>下载</a>;
+        } else if (record.status == "1") {
+          return <a href={record.fileUrl}>下载</a>;
         } else {
-          <Button type="link" disabled>
-            下载
-          </Button>;
+          return (
+            <Button type="link" disabled>
+              下载
+            </Button>
+          );
         }
       },
     },
