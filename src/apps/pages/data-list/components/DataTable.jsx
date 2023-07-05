@@ -59,6 +59,7 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
       pageSize: 20,
     },
   });
+  console.log(metaData);
 
   const [visable, setVisable] = useState(false); //因子选择
   const [factorList, setFactorList] = useState([]); //字段选择回调
@@ -294,6 +295,10 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
       )
     );
   }, [visable, facList, metaData]);
+
+  useEffect(() => {
+    searchForm.resetFields();
+  }, [metaData]);
 
   return (
     <>

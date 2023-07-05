@@ -386,7 +386,16 @@ function OperateCompare() {
             ></Table>
           </>
         ) : (
-          <Empty />
+          <div
+            style={{
+              height: "500px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Empty />
+          </div>
         )}
       </>
 
