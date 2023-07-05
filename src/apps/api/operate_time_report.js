@@ -16,7 +16,7 @@ export function reportTimeMeta(data) {
 }
 // 批量导出
 export function batchExport(data, title) {
-  return _download({
+  return _post({
     url: `/api/data/report/batchExport`,
     data,
     title,
@@ -39,6 +39,13 @@ export function dashboardRealtime(data) {
 export function realtimeMeta(data) {
   return _post({
     url: `/api/data/dashboard/realtime/meta`,
+    data,
+  });
+}
+//导出记录
+export function exportRecord(data) {
+  return _post({
+    url: `/api/user/exportRecord/page`,
     data,
   });
 }
