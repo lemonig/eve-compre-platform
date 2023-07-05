@@ -89,9 +89,9 @@ function OperateExportHistory({ isRouter = true, closeModal }) {
           return <a href={record.fileUrl}>下载</a>;
         } else {
           return (
-            <Button type="link" disabled>
+            <a style={{ cursor: "not-allowed", color: "rgba(0,0,0,0.24)" }}>
               下载
-            </Button>
+            </a>
           );
         }
       },
