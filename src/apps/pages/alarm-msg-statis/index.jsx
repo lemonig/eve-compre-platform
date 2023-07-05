@@ -29,7 +29,7 @@ import { regionList } from "@Api/set_region.js";
 import { riverList } from "@Api/set_rival.js";
 import { searchMeta } from "@Api/data-list.js";
 // util
-import { formatePickTime } from "@Utils/util";
+import { formatePickTime, formPickTime } from "@Utils/util";
 
 const { Option } = Select;
 

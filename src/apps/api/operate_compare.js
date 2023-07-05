@@ -13,9 +13,10 @@ export function compareMeta(data) {
     data,
   });
 }
-export function compareExport(data) {
+export function compareExport(data, title) {
   return _download({
     url: `/api/data/report/compare/export`,
     data,
+    title,
   });
 }

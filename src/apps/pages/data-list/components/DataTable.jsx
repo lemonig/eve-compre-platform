@@ -7,7 +7,7 @@ import FiledSelect from "@Components/FiledSelect";
 import dayjs from "dayjs";
 import { SettingOutlined, WarningFilled } from "@ant-design/icons";
 import { getFactor } from "@Api/data-list.js";
-import { formatePickTime } from "@Utils/util";
+import { formatePickTime, formPickTime } from "@Utils/util";
 import { validateQuery } from "@Utils/valid.js";
 
 function tableRender(value) {
@@ -59,19 +59,9 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
       pageSize: 20,
     },
   });
-  console.log(metaData);
 
   const [visable, setVisable] = useState(false); //因子选择
   const [factorList, setFactorList] = useState([]); //字段选择回调
-  // const [facList, setfacList] = useState([]); //因子
-  // searchForm.setFieldsValue({
-  //   dataSource: metaData.dataSource[0].value,
-  //   time: {
-  //     startTime: dayjs().subtract(1, "month"),
-  //     endTime: dayjs(),
-  //     type: metaData.computeDataLevel[0].value,
-  //   },
-  // });
 
   useEffect(() => {}, []);
 
@@ -81,30 +71,6 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
       getPageData();
     }
   }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
-
-  //factorList/menuMsg Change
-  // useEffect(() => {
-  //   if (stationMsg.key) {
-  //     getMetaData();
-  //   }
-  // }, [JSON.stringify(factorList)]);
-
-  // const getMetaData = async () => {
-  //   let { data, success } = await searchMeta({
-  //     id: menuMsg.query,
-  //   });
-  //   if (success) {
-  //     setMetaData(data);
-  //     searchForm.setFieldsValue({
-  //       dataSource: data.dataSource[0].value,
-  //       time: {
-  //         startTime: dayjs().subtract(1, "month"),
-  //         endTime: dayjs(),
-  //         type: data.computeDataLevel[0].value,
-  //       },
-  //     });
-  //   }
-  // };
 
   let normalCol = [
     {
@@ -310,11 +276,7 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
             onFinish={search}
             initialValues={{
               dataSource: metaData.dataSource[0].value,
-              time: {
-                startTime: dayjs().subtract(1, "month"),
-                endTime: dayjs(),
-                type: metaData.computeDataLevel[0].value,
-              },
+              time: formPickTime(metaData.computeDataLevel[0].value),
             }}
           >
             <Form.Item label="" name="dataSource">

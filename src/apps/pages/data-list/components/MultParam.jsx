@@ -7,7 +7,7 @@ import {
   chartEvaluateIndex,
 } from "@Api/data-list.js";
 import dayjs from "dayjs";
-import { formatePickTime } from "@Utils/util";
+import { formatePickTime, formPickTime } from "@Utils/util";
 import "./index.less";
 
 import ReactECharts from "echarts-for-react";
@@ -211,7 +211,10 @@ function MultParam({ menuMsg, stationMsg, metaData, evaluteList }) {
           layout="inline"
           form={searchForm}
           onFinish={getPageData}
-          initialValues={{}}
+          initialValues={{
+            dataSource: metaData.dataSource[0].value,
+            time: formPickTime(metaData.computeDataLevel[0].value),
+          }}
           colon={false}
         >
           <Form.Item label="" name="dataSource">

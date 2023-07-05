@@ -1,4 +1,4 @@
-import { Form, Button, Checkbox } from "antd";
+import { Col, Row, Checkbox } from "antd";
 import React, { useMemo } from "react";
 
 function LcheckBoxGroup(props) {
@@ -15,9 +15,8 @@ function LcheckBoxGroup(props) {
       indeterminate: !!value.length && value.length < options.length,
     };
   }, [value, options]);
-  // 选择所
+
   const onChangeCheckAll = (e) => {
-    // 如果不全选就是空
     const list = e.target.checked ? options?.map((v) => v.value) : [];
     onChange(list);
   };
@@ -34,7 +33,28 @@ function LcheckBoxGroup(props) {
       >
         {checkAllLabel}
       </Checkbox>
-      <Checkbox.Group {...props} onChange={onChangeGroup} />
+      <Checkbox.Group
+        {...props}
+        onChange={onChangeGroup}
+        options={[]}
+        style={{
+          width: "90%",
+        }}
+      >
+        <Row
+          style={{
+            width: "100%",
+          }}
+        >
+          {options.map((item) => {
+            return (
+              <Col span={3}>
+                <Checkbox value={item.value}>{item.label}</Checkbox>
+              </Col>
+            );
+          })}
+        </Row>
+      </Checkbox.Group>
     </div>
   );
 }

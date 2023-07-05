@@ -23,7 +23,7 @@ import {
   chartEvaluateIndex,
 } from "@Api/data-list.js";
 import dayjs from "dayjs";
-import { formatePickTime } from "@Utils/util";
+import { formatePickTime, formPickTime } from "@Utils/util";
 import "./index.less";
 import CompareTime from "./CompareTime";
 
@@ -237,11 +237,7 @@ function SingleParam({ menuMsg, stationMsg, metaData, evaluteList }) {
           onFinish={search}
           initialValues={{
             dataSource: metaData.dataSource[0].value,
-            time: {
-              startTime: dayjs().subtract(1, "month"),
-              endTime: dayjs(),
-              type: metaData.computeDataLevel[0].value,
-            },
+            time: formPickTime(metaData.computeDataLevel[0].value),
             showFieldList: evaluteList[0].value,
           }}
         >

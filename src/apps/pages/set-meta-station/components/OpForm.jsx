@@ -49,6 +49,7 @@ function OpForm({ record, open, closeModal }) {
       getMetaData8(),
       getMetaData9(),
     ]).then((res) => {
+      console.log(res);
       setMetaSelect(res);
       setTimeout(() => {
         if (!!record) {
@@ -103,13 +104,24 @@ function OpForm({ record, open, closeModal }) {
     let { data } = await metaList({
       dictType: "data_frequency",
     });
+
+    console.log(data);
     return data;
   };
   const getMetaData6 = async () => {
     let { data } = await metaList({
       dictType: "compute_data_level",
     });
-    return data;
+    let nData = data.map((item) => {
+      if (item.dictValue === "mm" || item.dictValue === "hh") {
+        return item;
+      }
+      return {
+        ...item,
+        disabled: true,
+      };
+    });
+    return nData;
   };
   const getMetaData7 = async () => {
     let { data } = await metaList({

@@ -242,6 +242,7 @@ function StationSelect({
 
   const onFormChange = () => {
     let value = searchForm.getFieldsValue();
+    console.log(value);
     let res = optionsClone
       .filter((item) => {
         return item.stationType === value.stationType || !value.stationType;
@@ -318,7 +319,7 @@ function StationSelect({
                   changeOnSelect
                   fieldNames={{
                     label: "name",
-                    value: "code",
+                    value: "name",
                   }}
                 />
               </Form.Item>

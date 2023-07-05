@@ -147,6 +147,36 @@ export function findMinFrequent(list) {
   }
 }
 
+//表单默认时间格式化
+export function formPickTime(type) {
+  if (type === "mm") {
+    return {
+      startTime: dayjs().subtract(6, "day").startOf("day"),
+      endTime: dayjs().endOf("day"),
+      type: type,
+    };
+  } else {
+    return {
+      startTime: dayjs().subtract(1, "month").startOf("day"),
+      endTime: dayjs().endOf("day"),
+      type: type,
+    };
+  }
+  // } else if (type === "hh") {
+  //   return dayjs(value).startOf("day");
+  // }
+  // else if (type === "d") {
+  //   return dayjs(value).startOf("day");
+  // } else if (type === "w") {
+  //   return dayjs(value).startOf("week");
+  // } else if (type === "m") {
+  //   return dayjs(value).startOf("month");
+  // } else if (type === "q") {
+  //   return dayjs(value);
+  // } else if (type === "y") {
+  //   return dayjs(value).startOf("year");
+  // }
+}
 export function tableIndex(data) {
   data.forEach((item, idx) => {
     // item.key = pageMsg.pagination.current + "-" + idx;

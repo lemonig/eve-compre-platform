@@ -24,11 +24,11 @@ import {
 } from "@Api/operate_compare.js";
 import { searchMeta } from "@Api/data-list.js";
 // util
-import { formatePickTime } from "@Utils/util";
 import StationForm from "./components/StationForm";
 import Graph from "./components/Graph";
 import { validateQuery } from "@Utils/valid.js";
 import dayjs from "dayjs";
+import { formatePickTime, formPickTime } from "@Utils/util";
 
 function OperateCompare() {
   const [searchForm] = Form.useForm();
@@ -87,13 +87,9 @@ function OperateCompare() {
     if (success) {
       setMetaData(data);
       searchForm.setFieldsValue({
-        factor: [data.factor[0].value],
-        dataSource: data.dataSource[0].value,
-        time: {
-          startTime: dayjs().subtract(1, "month"),
-          endTime: dayjs(),
-          type: data.computeDataLevel[0].value,
-        },
+        factor: [data.factor[0]?.value],
+        dataSource: data.dataSource[0]?.value,
+        time: formPickTime(data.computeDataLevel[0]?.value),
       });
       getPageData(val);
     }
