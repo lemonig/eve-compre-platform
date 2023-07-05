@@ -114,10 +114,9 @@ function OperateCompare() {
     setStationType(findRes);
   };
 
-  const getPageData = async (stationIds = stationId) => {
+  const getPageData = async (stationIds) => {
     setLoading(true);
     let values = searchForm.getFieldsValue();
-    console.log(stationIds);
     if (!stationIds.length) {
       message.info("请选择站点");
       return;
@@ -200,7 +199,6 @@ function OperateCompare() {
       });
       return obj;
     });
-    console.log(graph);
     return graph;
   };
 
@@ -273,7 +271,7 @@ function OperateCompare() {
             <Form
               name="station"
               form={searchForm}
-              onFinish={getPageData}
+              onFinish={() => getPageData(stationId)}
               layout="inline"
             >
               <Form.Item label="站点">

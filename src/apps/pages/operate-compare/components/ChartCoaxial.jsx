@@ -42,7 +42,20 @@ function ChartCoaxial({
       legend: {
         data: legend,
       },
-      tooltip: tooltip,
+      tooltip: {
+        trigger: "axis",
+        formatter: function (params) {
+          let html = `<div>${params[0].axisValue}</div>`;
+          params.map((item) => {
+            // if (item.value || item.value === 0) {
+            html += `<div>${item.marker} ${item.seriesName}：${
+              item.value ? item.value : "--"
+            } ${item.data.unit ? item.data.unit : ""}</div>`;
+            // }
+          });
+          return html;
+        },
+      },
       grid: {
         left: "10%",
         right: "10%",

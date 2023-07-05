@@ -29,7 +29,21 @@ function ChartMul({
     }
   }, [chartPart]);
 
-  const drawChart = ({ series, legend, xData, toolbox, tooltip }) => {
+  const drawChart = ({ series, legend, xData, toolbox }) => {
+    const tooltip = {
+      trigger: "axis",
+      formatter: function (params) {
+        let html = `<div>${params[0].axisValue}</div>`;
+        params.map((item) => {
+          // if (item.value || item.value === 0) {
+          html += `<div>${item.marker} ${item.seriesName}：${
+            item.value ? item.value : "--"
+          } ${item.data.unit ? item.data.unit : ""}</div>`;
+          // }
+        });
+        return html;
+      },
+    };
     let legendSelected = {};
     // Y轴
     let yAxisData = [];
@@ -81,6 +95,7 @@ function ChartMul({
       },
 
       grid: {
+        top: "15%",
         left: "15%",
         right: "15%",
         bottom: "0%",

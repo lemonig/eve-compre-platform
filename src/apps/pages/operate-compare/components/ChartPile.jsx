@@ -28,7 +28,21 @@ function ChartPile({
     }
   }, [chartPart]);
 
-  const drawChart = ({ series, legend, xData, toolbox, tooltip }) => {
+  const drawChart = ({ series, legend, xData, toolbox }) => {
+    const tooltip = {
+      trigger: "axis",
+      formatter: function (params) {
+        let html = `<div>${params[0].axisValue}</div>`;
+        params.map((item) => {
+          // if (item.value || item.value === 0) {
+          html += `<div>${item.marker} ${item.seriesName}：${
+            item.value ? item.value : "--"
+          } ${item.data.unit ? item.data.unit : ""}</div>`;
+          // }
+        });
+        return html;
+      },
+    };
     let grid = [];
     let xAxis = [];
     let yAxis = [];
@@ -66,7 +80,11 @@ function ChartPile({
         type: "value",
         name: item.name,
         nameLocation: "center",
+        nameRotate: 0,
         gridIndex: idx,
+        nameTextStyle: {
+          ellipsis: "...",
+        },
         nameGap: 50,
         nameTextStyle: {
           fontSize: 12,

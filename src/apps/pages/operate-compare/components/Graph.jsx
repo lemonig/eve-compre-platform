@@ -77,7 +77,7 @@ const tooltip = {
       // if (item.value || item.value === 0) {
       html += `<div>${item.marker} ${item.seriesName}：${
         item.value ? item.value : "--"
-      } ${item.data.unit ? item.data.unit : ""}</div>`;
+      } ${item.unit ? item.unit : ""}</div>`;
       // }
     });
     return html;
@@ -124,6 +124,7 @@ function Graph({ data, chartModal, compType, loading, originData }) {
           type: "line",
           connectNulls: true,
           data: [],
+          unit: ele.unit,
         });
       });
     }
@@ -164,6 +165,7 @@ function Graph({ data, chartModal, compType, loading, originData }) {
         type: "line",
         connectNulls: true,
         data: [],
+        unit: ele.unit,
       });
     });
     data.forEach((item) => {
@@ -175,7 +177,6 @@ function Graph({ data, chartModal, compType, loading, originData }) {
         });
       });
     });
-
     return {
       series,
       legend,
