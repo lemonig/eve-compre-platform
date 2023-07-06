@@ -6,7 +6,7 @@ import {
   Form,
   Input,
   Checkbox,
-  message,
+  message as msgApi,
   Select,
   Row,
   Col,
@@ -156,20 +156,26 @@ function BatchExport() {
 
   const onFinish = async () => {
     let values = form.getFieldsValue();
+    console.log(values);
     if (!stationId) {
-      message.warning("请选择站点");
+      msgApi.info("请选择站点");
       return;
     }
-    if (!values.showFieldList2?.length) {
-      message.warning("请选择评价指标");
-      return;
-    }
+
     if (!values.showFieldList3?.length) {
-      message.warning("请选择监测因子");
+      msgApi.warning("请选择监测因子");
       return;
     }
     if (!values.timeTypeList) {
-      message.warning("请选择统计方法");
+      msgApi.warning("请选择统计方法");
+      return;
+    }
+    if (!values.beginTime) {
+      msgApi.warning("请选择开始时间");
+      return;
+    }
+    if (!values.endTime) {
+      msgApi.warning("请选择结束时间");
       return;
     }
     setLoading(true);
@@ -199,10 +205,18 @@ function BatchExport() {
   const closeModal = () => {
     setShowHistory(false);
   };
+  const formItemLayout = {
+    labelCol: {
+      span: 2,
+    },
+    wrapperCol: {
+      span: 14,
+    },
+  };
 
   return (
     <div className="content-wrap">
-      <Lbreadcrumb data={["当前位置：数据运营", "统计报表", "批量导出"]} />
+      <Lbreadcrumb data={["当前位置：数据运营", "批量导出"]} />
       {!showHistory ? (
         <Form
           name="basic"
@@ -211,44 +225,77 @@ function BatchExport() {
           onFinishFailed={onFinishFailed}
           autoComplete="off"
           colon={false}
+          {...formItemLayout}
         >
-          <Row>
-            <Col span={4} style={{}}>
-              <Form.Item label="站点类型" name="stationType">
-                <Select
-                  className="width-18"
-                  options={stationTypeList}
-                  placeholder="请选择"
-                  fieldNames={{
-                    label: "name",
-                    value: "id",
-                  }}
-                  // onChange={getStationTypeDetail}
-                />
-              </Form.Item>
-            </Col>
+          <Form.Item
+            label="站点类型"
+            style={{
+              marginBottom: "0",
+            }}
+          >
+            <Form.Item
+              name="stationType"
+              style={{
+                display: "inline-block",
+                marginBottom: "0",
+              }}
+            >
+              <Select
+                className="width-18"
+                style={{ width: "180px" }}
+                options={stationTypeList}
+                placeholder="请选择"
+                fieldNames={{
+                  label: "name",
+                  value: "id",
+                }}
+                // onChange={getStationTypeDetail}
+              />
+            </Form.Item>
+            <span
+              style={{
+                display: "inline-block",
+                width: "15px",
+              }}
+            ></span>
             {stationTypeValue ? (
-              <Col span={12} style={{ marginLeft: "8px" }}>
-                <Form.Item name="stationIdList">
-                  <span className="ant-form-text">
-                    已选择{stationId.length}个站点
-                  </span>
-                  <Form.Item name="stationIdList" noStyle>
-                    <a onClick={() => setIsModalOpen(true)}>选择站点</a>
-                  </Form.Item>
+              <Form.Item
+                name="stationIdList"
+                style={{
+                  display: "inline-block",
+                }}
+              >
+                <span className="ant-form-text">
+                  已选择{stationId.length}个站点
+                </span>
+                <Form.Item name="stationIdList" noStyle>
+                  <a onClick={() => setIsModalOpen(true)}>选择站点</a>
                 </Form.Item>
-              </Col>
+              </Form.Item>
             ) : null}
-          </Row>
+          </Form.Item>
+
           {stationTypeValue ? (
             <>
-              <Form.Item label="站点属性" name="showFieldList1">
+              <Form.Item
+                label="站点属性"
+                name="showFieldList1"
+                style={{
+                  marginBottom: "0",
+                }}
+              >
                 <LcheckBoxGroup
                   options={[...metaData.stationField]}
                   checkAllLabel="全部"
                 />
               </Form.Item>
-              <Form.Item label="评价指标" name="showFieldList2">
+              <Form.Item
+                label="评价指标"
+                name="showFieldList2"
+                style={{
+                  marginBottom: "0",
+                }}
+              >
                 <LcheckBoxGroup
                   options={metaData.evaluateIndex}
                   checkAllLabel="全部"
@@ -257,76 +304,63 @@ function BatchExport() {
               <Form.Item
                 label="监测因子"
                 name="showFieldList3"
-                rules={[
-                  {
-                    required: true,
-                    message: "请选择",
-                  },
-                ]}
+                required
+                style={{
+                  marginBottom: "0",
+                }}
               >
                 <LcheckBoxGroup
                   options={metaData.factor}
                   checkAllLabel="全部"
                 />
               </Form.Item>
-              <Form.Item
-                label="数据类型"
-                name="dataSource"
-                rules={[
-                  {
-                    required: true,
-                    message: "请选择",
-                  },
-                ]}
-              >
+              <Form.Item label="数据类型" name="dataSource" required>
                 <Radio.Group options={metaData.dataSource} />
               </Form.Item>
-              <Form.Item
-                label="统计方法"
-                name="timeTypeList"
-                rules={[
-                  {
-                    required: true,
-                    message: "请选择",
-                  },
-                ]}
-              >
+              <Form.Item label="统计方法" name="timeTypeList" required>
                 <Checkbox.Group options={metaData.computeDataLevel} />
               </Form.Item>
-              <Row align="middle ">
-                <Col style={{}}>
-                  <Form.Item
-                    label="监测时间"
-                    name="beginTime"
-                    rules={[
-                      {
-                        required: true,
-                        message: "请选择",
-                      },
-                    ]}
-                  >
-                    <DatePicker allowClear={false} />
-                  </Form.Item>
-                </Col>
-                <Col style={{ margin: "0 8px" }}>
-                  <Form.Item>至</Form.Item>
-                </Col>
-                <Col span={8} style={{}}>
-                  <Form.Item
-                    name="endTime"
-                    rules={[
-                      {
-                        required: true,
-                        message: "请选择",
-                      },
-                    ]}
-                  >
-                    <DatePicker allowClear={false} />
-                  </Form.Item>
-                </Col>
-              </Row>
 
-              <Form.Item>
+              <Form.Item
+                style={{
+                  marginBottom: 0,
+                }}
+                label="监测时间"
+                required
+              >
+                <Form.Item
+                  style={{
+                    display: "inline-block",
+                  }}
+                  name="beginTime"
+                >
+                  <DatePicker allowClear={false} />
+                </Form.Item>
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "24px",
+                    lineHeight: "32px",
+                    textAlign: "center",
+                  }}
+                >
+                  至
+                </span>
+                <Form.Item
+                  name="endTime"
+                  style={{
+                    display: "inline-block",
+                  }}
+                >
+                  <DatePicker allowClear={false} />
+                </Form.Item>
+              </Form.Item>
+
+              <Form.Item
+                wrapperCol={{
+                  offset: 2,
+                }}
+              >
                 <Button type="primary" htmlType="submit" loading={loading}>
                   导出
                 </Button>

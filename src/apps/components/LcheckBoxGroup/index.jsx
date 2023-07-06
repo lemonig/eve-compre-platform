@@ -23,16 +23,25 @@ function LcheckBoxGroup(props) {
   const onChangeGroup = (list) => {
     onChange(list);
   };
+
   return (
     <div>
-      <Checkbox
-        {...props}
-        indeterminate={indeterminate}
-        onChange={onChangeCheckAll}
-        checked={checkAll}
+      <div
+        style={{
+          lineHeight: "32px",
+        }}
       >
-        {checkAllLabel}
-      </Checkbox>
+        {options.length ? (
+          <Checkbox
+            {...props}
+            indeterminate={indeterminate}
+            onChange={onChangeCheckAll}
+            checked={checkAll}
+          >
+            {checkAllLabel}
+          </Checkbox>
+        ) : null}
+      </div>
       <Checkbox.Group
         {...props}
         onChange={onChangeGroup}
@@ -48,7 +57,12 @@ function LcheckBoxGroup(props) {
         >
           {options.map((item) => {
             return (
-              <Col span={3}>
+              <Col
+                span={3}
+                style={{
+                  lineHeight: "32px",
+                }}
+              >
                 <Checkbox value={item.value}>{item.label}</Checkbox>
               </Col>
             );
