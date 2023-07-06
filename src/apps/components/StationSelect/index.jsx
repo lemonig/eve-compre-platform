@@ -198,8 +198,27 @@ function StationSelect({
 
   const onTanferChange = (nextTargetKeys) => {
     setTargetKeys(nextTargetKeys);
+    //返回form数据
     onChange(nextTargetKeys);
+    let res1 = optionsClone.filter((ele) => nextTargetKeys.includes(ele.id));
+    let res2 = removeDuplicates([...data, ...res1], "id");
+    setData(res2);
   };
+
+  function removeDuplicates(arr, key) {
+    const uniqueObjects = [];
+    const uniqueKeys = new Set();
+
+    for (let obj of arr) {
+      const objKey = obj[key];
+      if (!uniqueKeys.has(objKey)) {
+        uniqueObjects.push(obj);
+        uniqueKeys.add(objKey);
+      }
+    }
+
+    return uniqueObjects;
+  }
 
   // q区域
   const loadeReginData = async (selectedOptions) => {
@@ -242,7 +261,6 @@ function StationSelect({
 
   const onFormChange = () => {
     let value = searchForm.getFieldsValue();
-    console.log(value);
     let res = optionsClone
       .filter((item) => {
         return item.stationType === value.stationType || !value.stationType;
@@ -347,12 +365,12 @@ function StationSelect({
         targetKeys={targetKeys}
         showSearch={true}
         onChange={onTanferChange}
-        filterOption={(inputValue, item) => {
-          return (
-            item.name.indexOf(inputValue) !== -1 ||
-            item.code.indexOf(inputValue) !== -1
-          );
-        }}
+        // filterOption={(inputValue, item) => {
+        //   return (
+        //     item.name.indexOf(inputValue) !== -1 ||
+        //     item.code.indexOf(inputValue) !== -1
+        //   );
+        // }}
         leftColumns={tableColumns}
         rightColumns={tableColumns}
         operationStyle={{ color: "red" }}
