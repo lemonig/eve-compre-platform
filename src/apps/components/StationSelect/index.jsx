@@ -327,6 +327,7 @@ function StationSelect({
             <Col span={6}>
               <Form.Item label="管控级别" name="controlLevel">
                 <MetaSelect
+                  allowClear
                   dictType="control_level"
                   style={{ width: "120px" }}
                   onChange={onFormChange}
