@@ -53,11 +53,21 @@ function ChartPile({
       grid.push({
         left: "10%",
         right: "10%",
-        top: `${
-          idx * Math.ceil((100 - (arr.length - 1) * 2) / arr.length) +
-          (idx == 0 ? 1 : 2)
-        }%`,
-        height: `${Math.floor((100 - (arr.length - 1) * 5) / arr.length)}%`,
+        top: (function () {
+          if (arr.length == 1) {
+            return "15%";
+          }
+          return `${
+            idx * Math.ceil((100 - (arr.length - 1) * 2) / arr.length) +
+            (idx == 0 ? 1 : 2)
+          }%`;
+        })(),
+        height: (function () {
+          if (arr.length == 1) {
+            return "80%";
+          }
+          return `${Math.floor((100 - (arr.length - 1) * 5) / arr.length)}%`;
+        })(),
       });
       xAxis.push({
         gridIndex: idx,
@@ -137,7 +147,11 @@ function ChartPile({
         option={chartOption}
         lazyUpdate={true}
         theme={"theme_name"}
-        style={{ height: `${50 + chartOption.series.length * 150}px` }}
+        style={(function () {
+          return {
+            height: `${50 + chartOption.series.length * 150}px`,
+          };
+        })()}
         ref={chartRef}
         notMerge={true}
         showLoading={loading}

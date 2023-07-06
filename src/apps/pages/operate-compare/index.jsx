@@ -163,11 +163,13 @@ function OperateCompare() {
 
   const handleData = (data, initCompType) => {
     //转表格数据
+    let index = 0;
     let tabled = data[initCompType].map((item, idx) => {
       if (!!item[0].fieldType) {
+        index += 1;
         var obj = {
           id: idx,
-          index: idx + 1,
+          index: index,
         };
         item.forEach((jtem) => {
           Reflect.defineProperty(obj, `${jtem.key}`, {
