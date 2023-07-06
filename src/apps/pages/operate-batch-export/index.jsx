@@ -46,6 +46,7 @@ function BatchExport() {
   const [stationList, setStationList] = useState([]);
   const [api, contextHolder] = notification.useNotification();
   const [showHistory, setShowHistory] = useState(false);
+  const timeTypeListFile = Form.useWatch("timeTypeList", form);
   let navigate = useNavigate();
   //全选
 
@@ -67,6 +68,23 @@ function BatchExport() {
       );
     }
   }, [stationTypeValue]);
+
+  useEffect(() => {
+    console.log(timeTypeListFile);
+    if (timeTypeListFile) {
+      if (timeTypeListFile.includes("mm")) {
+        form.setFieldsValue({
+          beginTime: dayjs().startOf("day").subtract(7, "day"),
+          endTime: dayjs().endOf("day"),
+        });
+      } else {
+        form.setFieldsValue({
+          beginTime: dayjs().startOf("day").subtract(1, "month"),
+          endTime: dayjs().endOf("day"),
+        });
+      }
+    }
+  }, [timeTypeListFile]);
 
   // 获取站点类型
   const getStationTpeData = async () => {
@@ -193,10 +211,6 @@ function BatchExport() {
           onFinishFailed={onFinishFailed}
           autoComplete="off"
           colon={false}
-          initialValues={{
-            beginTime: dayjs().subtract(1, "month"),
-            endTime: dayjs(),
-          }}
         >
           <Row>
             <Col span={4} style={{}}>
@@ -240,21 +254,57 @@ function BatchExport() {
                   checkAllLabel="全部"
                 />
               </Form.Item>
-              <Form.Item label="监测因子" name="showFieldList3">
+              <Form.Item
+                label="监测因子"
+                name="showFieldList3"
+                rules={[
+                  {
+                    required: true,
+                    message: "请选择",
+                  },
+                ]}
+              >
                 <LcheckBoxGroup
                   options={metaData.factor}
                   checkAllLabel="全部"
                 />
               </Form.Item>
-              <Form.Item label="数据类型" name="dataSource">
+              <Form.Item
+                label="数据类型"
+                name="dataSource"
+                rules={[
+                  {
+                    required: true,
+                    message: "请选择",
+                  },
+                ]}
+              >
                 <Radio.Group options={metaData.dataSource} />
               </Form.Item>
-              <Form.Item label="统计方法" name="timeTypeList">
+              <Form.Item
+                label="统计方法"
+                name="timeTypeList"
+                rules={[
+                  {
+                    required: true,
+                    message: "请选择",
+                  },
+                ]}
+              >
                 <Checkbox.Group options={metaData.computeDataLevel} />
               </Form.Item>
               <Row align="middle ">
                 <Col style={{}}>
-                  <Form.Item label="监测时间" name="beginTime">
+                  <Form.Item
+                    label="监测时间"
+                    name="beginTime"
+                    rules={[
+                      {
+                        required: true,
+                        message: "请选择",
+                      },
+                    ]}
+                  >
                     <DatePicker allowClear={false} />
                   </Form.Item>
                 </Col>
@@ -262,7 +312,15 @@ function BatchExport() {
                   <Form.Item>至</Form.Item>
                 </Col>
                 <Col span={8} style={{}}>
-                  <Form.Item name="endTime">
+                  <Form.Item
+                    name="endTime"
+                    rules={[
+                      {
+                        required: true,
+                        message: "请选择",
+                      },
+                    ]}
+                  >
                     <DatePicker allowClear={false} />
                   </Form.Item>
                 </Col>
