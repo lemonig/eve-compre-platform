@@ -142,7 +142,10 @@ function MultParam({ menuMsg, stationMsg, metaData, evaluteList }) {
         top: "10%",
         containLabel: true,
       },
-      legend: legend,
+      legend: {
+        ...legend,
+        top: 0,
+      },
       tooltip: {
         trigger: "axis",
         formatter: function (params) {
