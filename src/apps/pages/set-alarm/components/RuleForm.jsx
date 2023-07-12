@@ -52,26 +52,32 @@ function RuleForm({ record, open, closeModal, groupId }) {
   const handleOk = async () => {
     // await form.validateFields();
     const values = form.getFieldsValue();
-    values.ruleGroupId = groupId;
     values.factorIds = factorId;
     setLoading(true);
+    let params = {};
+    factorFile.forEach((item) => {
+      Reflect.defineProperty(params, item, {
+        value: values[item],
+        enumerable: true,
+      });
+    });
+    params.ruleGroupId = groupId;
+    params.ruleCode = values.ruleCode;
+    params.name = values.name;
+
     // 编辑
     if (record?.id) {
-      values.id = record.id;
-      let { success, message: msg } = await updateContent(values);
+      params.id = record.id;
+      let { success, message: msg } = await updateContent(params);
       if (success) {
         message.success(msg);
         closeModal(true);
-      } else {
-        message.error(msg);
       }
     } else {
-      let { success, message: msg } = await addContent(values);
+      let { success, message: msg } = await addContent(params);
       if (success) {
         message.success(msg);
         closeModal(true);
-      } else {
-        message.error(msg);
       }
     }
     // 添加

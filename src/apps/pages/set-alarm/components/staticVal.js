@@ -4,7 +4,6 @@ export const waterList = [
   { label: "Ⅲ类", value: 3 },
   { label: "Ⅳ类", value: 4 },
   { label: "Ⅴ类", value: 5 },
-  { label: "劣Ⅴ类", value: 5 },
   { label: "水质目标类别", value: 0 },
 ];
 
