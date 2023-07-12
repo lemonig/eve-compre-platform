@@ -49,11 +49,8 @@ function MultParam({ menuMsg, stationMsg, metaData, evaluteList }) {
     if (metaData.dataSource.length) {
       searchForm.setFieldsValue({
         dataSource: metaData.dataSource[0].value,
-        time: {
-          startTime: dayjs().subtract(1, "month"),
-          endTime: dayjs(),
-          type: metaData.computeDataLevel[0].value,
-        },
+        time: formPickTime(metaData.computeDataLevel[0].value),
+
         multiY: false,
       });
     }
@@ -142,7 +139,7 @@ function MultParam({ menuMsg, stationMsg, metaData, evaluteList }) {
         width: "auto",
         left: "8%",
         right: "8%",
-        top: "20%",
+        top: "10%",
         containLabel: true,
       },
       legend: legend,
@@ -203,7 +200,7 @@ function MultParam({ menuMsg, stationMsg, metaData, evaluteList }) {
   const EventsDict = {
     legendselectchanged: chartLegendSelected,
   };
-
+  console.log(formPickTime(metaData.computeDataLevel[0].value));
   return (
     <div>
       <div className="search">

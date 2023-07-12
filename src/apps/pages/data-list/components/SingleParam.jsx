@@ -60,11 +60,8 @@ function SingleParam({ menuMsg, stationMsg, metaData, evaluteList }) {
     if (metaData.dataSource.length) {
       searchForm.setFieldsValue({
         dataSource: metaData.dataSource[0].value,
-        time: {
-          startTime: dayjs().subtract(1, "month"),
-          endTime: dayjs(),
-          type: metaData.computeDataLevel[0].value,
-        },
+        time: formPickTime(metaData.computeDataLevel[0].value),
+
         showFieldList: evaluteList[0].value,
         compareList: undefined,
       });

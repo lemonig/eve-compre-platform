@@ -98,9 +98,6 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
 
     let valueCopy = JSON.parse(JSON.stringify(values));
 
-    if (!valueCopy.dataSource || !valueCopy.time) {
-      return;
-    }
     setLoading(true);
     valueCopy.startTime = formatePickTime(
       valueCopy.time.type,
