@@ -24,7 +24,7 @@ import FiledSelect from "@Components/FiledSelect";
 import WaterLevel from "@Components/WaterLevel";
 // api
 import { reportTime, reportTimeMeta } from "@Api/operate_time_report.js";
-import { stationPage as stationMetaPage } from "@Api/user.js";
+import { stationPage as stationMetaPage, topicList } from "@Api/user.js";
 import { regionList } from "@Api/set_region.js";
 import { riverList } from "@Api/set_rival.js";
 import { searchMeta } from "@Api/data-list.js";
@@ -92,6 +92,7 @@ function AlarmRecord() {
 
   // 元数据
   const [originOptions, setOriginOptions] = useState([]);
+  const [topicOption, setTopicOption] = useState([]);
   const [riverOptions, setRiverOptions] = useState([]);
   const [stationList, setStationList] = useState([]);
   const regionValue = Form.useWatch("region", searchForm);
@@ -110,12 +111,22 @@ function AlarmRecord() {
   const [visable, setVisable] = useState(false); //因子选择
   const [factorList, setFactorList] = useState([]); //字段选择回调
   const [currentPage, setCurrentPage] = useState(1);
+  let normalCol = [
+    {
+      title: "序号",
+      key: "index",
+      width: 50,
+      dataIndex: "index",
+      render: (text, record, index) => (currentPage - 1) * pageSize + index + 1,
+    },
+  ];
   useEffect(() => {
     // 元数据获取
 
     getOriginPage();
-    getRiverPage();
+    getRiverPage(); //河流
     getStationMetaPage();
+    getTopicList(); //主题
   }, []);
 
   useEffect(() => {
@@ -130,15 +141,10 @@ function AlarmRecord() {
     }
   }, [JSON.stringify(factorList)]);
 
-  let normalCol = [
-    {
-      title: "序号",
-      key: "index",
-      width: 50,
-      dataIndex: "index",
-      render: (text, record, index) => (currentPage - 1) * pageSize + index + 1,
-    },
-  ];
+  const getTopicList = async () => {
+    let { data } = await topicList();
+    setTopicOption(data);
+  };
 
   const getMetaData = async () => {
     let values = searchForm.getFieldsValue();
@@ -338,83 +344,90 @@ function AlarmRecord() {
 
   return (
     <div className="content-wrap">
-      <Lbreadcrumb data={["当前位置：数据运营", "报表统计", "时间报表"]} />
+      <Lbreadcrumb data={["当前位置：数据运营", "数据报警", "报警记录"]} />
       <>
         <div className="search">
-          {!!stationType && (
-            <Form
-              name="station"
-              form={searchForm}
-              onFinish={getPageData}
-              layout="inline"
-            >
-              <Form.Item label="站点类型" name="stationType">
-                <Select
-                  options={stationList}
-                  placeholder="请选择"
-                  fieldNames={{
-                    label: "name",
-                    value: "id",
-                  }}
-                  style={{ width: "120px" }}
-                  onChange={onStationTypeChange}
-                />
-              </Form.Item>
+          <Form
+            name="station"
+            form={searchForm}
+            onFinish={getPageData}
+            layout="inline"
+          >
+            <Form.Item label="业务主题" name="stationType">
+              <Select
+                options={topicOption}
+                placeholder="请选择"
+                fieldNames={{
+                  label: "name",
+                  value: "id",
+                }}
+                style={{ width: "120px" }}
+              />
+            </Form.Item>
+            <Form.Item label="站点类型" name="stationType">
+              <Select
+                options={stationList}
+                placeholder="请选择"
+                fieldNames={{
+                  label: "name",
+                  value: "id",
+                }}
+                style={{ width: "120px" }}
+                onChange={onStationTypeChange}
+              />
+            </Form.Item>
 
-              <Form.Item label="行政区" name="region">
-                <Cascader
-                  style={{ width: "120px" }}
-                  options={originOptions}
-                  loadData={loadeReginData}
-                  changeOnSelect
-                  fieldNames={{
-                    label: "name",
-                    value: "name",
-                  }}
-                  multiple
-                  maxTagCount="responsive"
-                />
-              </Form.Item>
-              {stationType.showRiver && (
-                <Form.Item label="河流" name="river">
-                  <Cascader
-                    style={{ width: "120px" }}
-                    options={riverOptions}
-                    loadData={loadRiverData}
-                    changeOnSelect
-                    fieldNames={{
-                      label: "name",
-                      value: "code",
-                    }}
-                    multiple
-                    maxTagCount="responsive"
-                  />
-                </Form.Item>
-              )}
+            <Form.Item label="行政区" name="region">
+              <Cascader
+                style={{ width: "120px" }}
+                options={originOptions}
+                loadData={loadeReginData}
+                changeOnSelect
+                fieldNames={{
+                  label: "name",
+                  value: "name",
+                }}
+                multiple
+                maxTagCount="responsive"
+              />
+            </Form.Item>
+            <Form.Item label="河流" name="river">
+              <Cascader
+                style={{ width: "120px" }}
+                options={riverOptions}
+                loadData={loadRiverData}
+                changeOnSelect
+                fieldNames={{
+                  label: "name",
+                  value: "code",
+                }}
+                multiple
+                maxTagCount="responsive"
+              />
+            </Form.Item>
 
-              <Form.Item label="" name="dataSource">
-                <Select
-                  style={{ width: 120 }}
-                  placeholder="数据来源"
-                  options={metaData?.dataSource}
-                />
-              </Form.Item>
-              <Form.Item label="" name="time">
-                <LtimePicker options={metaData?.computeDataLevel} />
-              </Form.Item>
-              <Form.Item>
-                <Space>
-                  <Button type="primary" htmlType="submit">
-                    查询
-                  </Button>
-                  <Button loading={loading}>导出</Button>
-                </Space>
-              </Form.Item>
-              <Form.Item>
-                <Checkbox>热图</Checkbox>
-              </Form.Item>
-            </Form>
-          )}
+            <Form.Item label="" name="dataSource">
+              <Select
+                style={{ width: 120 }}
+                placeholder="数据来源"
+                options={metaData?.dataSource}
+              />
+            </Form.Item>
+            <Form.Item label="" name="time">
+              <LtimePicker options={metaData?.computeDataLevel} />
+            </Form.Item>
+            <Form.Item>
+              <Space>
+                <Button type="primary" htmlType="submit">
+                  查询
+                </Button>
+                <Button loading={loading}>导出</Button>
+              </Space>
+            </Form.Item>
+            <Form.Item>
+              <Checkbox>热图</Checkbox>
+            </Form.Item>
+          </Form>
           <SettingOutlined
             onClick={() => setVisable(true)}
             style={{ fontSize: "18px" }}

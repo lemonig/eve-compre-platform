@@ -106,7 +106,9 @@ const Header = ({ message }) => {
   const handleGotoComment = () => {
     navigate("comment");
   };
-
+  const gotoWeChart = () => {
+    window.location.href = "weixin://";
+  };
   return (
     <div className="page-title">
       <div className="title">
@@ -135,7 +137,9 @@ const Header = ({ message }) => {
               </Badge>
             </li> */}
           {creatMenu()}
-
+          <li className="li-outer" onClick={gotoWeChart}>
+            客服
+          </li>
           <User></User>
         </ul>
       </div>

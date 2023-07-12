@@ -85,9 +85,8 @@ function User() {
       icon: <LogoutOutlined />,
     },
   ];
-
   return (
-    <>
+    <div>
       <Dropdown
         menu={{
           items,
@@ -161,7 +160,7 @@ function User() {
           </Form>
         </Modal>
       )}
-    </>
+    </div>
   );
 }
 
