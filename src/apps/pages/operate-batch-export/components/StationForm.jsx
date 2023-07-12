@@ -4,7 +4,7 @@ import { Modal } from "antd";
 import StationSelect from "@Components/StationSelect";
 
 function StationForm({
-  list,
+  list = [],
   options,
   open,
   onOK,
@@ -13,14 +13,13 @@ function StationForm({
 }) {
   const [loading, setLoading] = useState(false);
   const [selectIds, setSelectIds] = useState([]);
-  useEffect(() => {}, []);
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
   const onStationChange = (id) => {
     setSelectIds(id);
   };
+  useEffect(() => {
+    setSelectIds(list || []);
+  }, [list]);
 
   return (
     <>

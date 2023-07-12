@@ -70,7 +70,6 @@ function BatchExport() {
   }, [stationTypeValue]);
 
   useEffect(() => {
-    console.log(timeTypeListFile);
     if (timeTypeListFile) {
       if (timeTypeListFile.includes("mm")) {
         form.setFieldsValue({
@@ -148,7 +147,7 @@ function BatchExport() {
   const stationFormOk = (val) => {
     setStationId(val);
     setIsModalOpen(false);
-    getMetaData(stationId);
+    getMetaData(val);
   };
   const stationFormCancel = () => {
     setIsModalOpen(false);
@@ -156,7 +155,6 @@ function BatchExport() {
 
   const onFinish = async () => {
     let values = form.getFieldsValue();
-    console.log(values);
     if (!stationId) {
       msgApi.info("请选择站点");
       return;
@@ -195,7 +193,6 @@ function BatchExport() {
       timeTypeList: values.timeTypeList,
     };
     let { success, message } = await batchExport(params);
-    console.log(success);
     if (success) {
       setShowHistory(true);
     }
