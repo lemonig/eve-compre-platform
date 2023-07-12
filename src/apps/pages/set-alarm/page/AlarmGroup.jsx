@@ -21,10 +21,20 @@ import { pageGroup as stationPageGroup } from "@Api/set_alarm_station.js";
 // 月份选项
 const creatMonth = () => {
   let res = [];
-  for (let i = 1; i < 12; i++) {
+  for (let i = 1; i <= 12; i++) {
     res.push({
       value: i,
       label: i + "月",
+    });
+  }
+  return res;
+};
+const creatHour = () => {
+  let res = [];
+  for (let i = 0; i <= 23; i++) {
+    res.push({
+      value: i,
+      label: i + "时",
     });
   }
   return res;
@@ -38,7 +48,7 @@ function AlarmGroup({ record, open, closePage }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [stationGroup, setStationGroup] = useState([]); //站点组
   const enableWxNotification = Form.useWatch("enableWxNotification", form);
-
+  const isScheduledSend = Form.useWatch("isScheduledSend", form);
   useEffect(() => {
     if (record) {
       getRuleDetail(record);
@@ -126,6 +136,14 @@ function AlarmGroup({ record, open, closePage }) {
     getStationGroup();
   };
 
+  // 定时通知只支持精简
+  useEffect(() => {
+    if (isScheduledSend) {
+      form.setFieldsValue({
+        notificationFormat: 1,
+      });
+    }
+  }, [isScheduledSend]);
   return (
     <>
       <div className="content-wrap">
@@ -227,7 +245,8 @@ function AlarmGroup({ record, open, closePage }) {
               <Form.Item name="enableWxNotification" valuePropName="checked">
                 <Checkbox>微信通知</Checkbox>
               </Form.Item>
-              {enableWxNotification && (
+              {console.log(enableWxNotification)}
+              {enableWxNotification ? (
                 <Form.Item
                   label="微信群聊名称"
                   name="wechatGroupName"
@@ -235,15 +254,32 @@ function AlarmGroup({ record, open, closePage }) {
                 >
                   <Input></Input>
                 </Form.Item>
-              )}
+              ) : null}
             </Space>
           </Form.Item>
+          {console.log(isScheduledSend)}
+          <Form.Item label="通知时间">
+            <Space>
+              <Form.Item name="isScheduledSend">
+                <Radio.Group>
+                  <Radio value={0}>实时</Radio>
+                  <Radio value={1}>定时</Radio>
+                </Radio.Group>
+              </Form.Item>
 
-          <Form.Item name="isScheduledSend" label="通知时间">
-            <Radio.Group>
-              <Radio value={0}>实时</Radio>
-              <Radio value={1}>定时</Radio>
-            </Radio.Group>
+              {isScheduledSend ? (
+                <Form.Item name="scheduledHour" colon={true}>
+                  <Select
+                    placeholder="请选择"
+                    mode="multiple"
+                    options={creatHour()}
+                    style={{ width: 120 }}
+                    maxTagCount="responsive"
+                    allowClear
+                  ></Select>
+                </Form.Item>
+              ) : null}
+            </Space>
           </Form.Item>
           <Form.Item label="通知人员">
             <Space>
@@ -258,25 +294,27 @@ function AlarmGroup({ record, open, closePage }) {
           <Form.Item name="notificationFormat" label="通知内容">
             <Radio.Group>
               <Radio value={1}>精简</Radio>
-              <Radio value={2}>完整</Radio>
+              {!isScheduledSend ? <Radio value={2}>完整</Radio> : null}
             </Radio.Group>
           </Form.Item>
           <Form.Item
             wrapperCol={{
-              offset: 8,
+              offset: 5,
               span: 16,
             }}
           >
-            <p>
+            <p style={{ color: "rgba(0,0,0,0.5)" }}>
               精简版：【站点名称】+【因子】+【规则名称】+【@站点运维】
-              例如：栟茶运河栟茶河二桥pH值连续值@张三
-              完整版：【站点名称】+【mm月dd日hh时】+【报警描述】+【累计次数】+【监测值】+【@站点运维】
+              <p>例如：栟茶运河栟茶河二桥pH值连续值@张三</p>
+              <p>
+                完整版：【站点名称】+【mm月dd日hh时】+【报警描述】+【累计次数】+【监测值】+【@站点运维】
+              </p>
               例如：栟茶运河栟茶河二桥12月22日07时pH值连续值，累计2次(7.55)@张三
             </p>
           </Form.Item>
           <Form.Item
             wrapperCol={{
-              offset: 8,
+              offset: 5,
               span: 16,
             }}
           >
