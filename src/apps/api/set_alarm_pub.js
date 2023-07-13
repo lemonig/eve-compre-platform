@@ -30,3 +30,11 @@ export function statusFactor(data) {
     data,
   });
 }
+
+// 告警因子状态全部
+export function allListFactor(data) {
+  return _post({
+    url: `/api/rule/factor/all`,
+    data,
+  });
+}

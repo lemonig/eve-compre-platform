@@ -13,6 +13,7 @@ import {
   Switch,
   Cascader,
   Checkbox,
+  DatePicker,
 } from "antd";
 // com
 import Lbreadcrumb from "@Components/Lbreadcrumb";
@@ -20,17 +21,19 @@ import IconFont from "@Components/IconFont";
 import dayjs from "dayjs";
 import LtimePicker from "@Components/LtimePicker";
 import { SettingOutlined, WarningFilled } from "@ant-design/icons";
-import FiledSelect from "@Components/FiledSelect";
+import AlarmFiled from "@Components/AlarmFiled";
 import WaterLevel from "@Components/WaterLevel";
 // api
-import { reportTime, reportTimeMeta } from "@Api/operate_time_report.js";
+import { pageAlarm } from "@Api/alarm.js";
 import { stationPage as stationMetaPage, topicList } from "@Api/user.js";
 import { regionList } from "@Api/set_region.js";
 import { riverList } from "@Api/set_rival.js";
 import { searchMeta } from "@Api/data-list.js";
+import { allListFactor as listFactor } from "@Api/set_alarm_pub.js";
+import { listRule } from "@Api/set_alarm.js";
 // util
-import { formatePickTime } from "@Utils/util";
-
+import { formatePickTime, formPickTime } from "@Utils/util";
+const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const getFormCasData = (data = []) => {
@@ -111,11 +114,14 @@ function AlarmRecord() {
   const [visable, setVisable] = useState(false); //因子选择
   const [factorList, setFactorList] = useState([]); //字段选择回调
   const [currentPage, setCurrentPage] = useState(1);
+  const [factorOption, setFactorOption] = useState([]); //报警因子
+  const [ruleOption, setRuleOption] = useState([]); //规则类型
+
   let normalCol = [
     {
       title: "序号",
       key: "index",
-      width: 50,
+      width: 60,
       dataIndex: "index",
       render: (text, record, index) => (currentPage - 1) * pageSize + index + 1,
     },
@@ -124,59 +130,26 @@ function AlarmRecord() {
     // 元数据获取
 
     getOriginPage();
-    getRiverPage(); //河流
     getStationMetaPage();
     getTopicList(); //主题
+
+    //报警因子
+    const getFactorList = async () => {
+      let { data } = await listFactor();
+      setFactorOption(data);
+    };
+    // 规则
+    const getRuleList = async () => {
+      let { data: data1 } = await listRule();
+      setRuleOption(data1);
+    };
+    getFactorList();
+    getRuleList();
   }, []);
-
-  useEffect(() => {
-    if (!!stationTypeValue) {
-      getMetaData();
-    }
-  }, [stationTypeValue, riverValue, regionValue]);
-
-  useEffect(() => {
-    if (factorList.length > 0) {
-      getPageData();
-    }
-  }, [JSON.stringify(factorList)]);
 
   const getTopicList = async () => {
     let { data } = await topicList();
     setTopicOption(data);
-  };
-
-  const getMetaData = async () => {
-    let values = searchForm.getFieldsValue();
-    if ("region" in values) {
-      values.region = getFormCasData(values.region);
-    }
-    if ("river" in values) {
-      values.river = getFormCasData(values.river);
-    }
-
-    let param = {
-      stationType: values.stationType,
-      river: values.river,
-      region: values.region,
-    };
-
-    let { data, success } = await reportTimeMeta(param);
-    if (success) {
-      data.factor.forEach((element) => {
-        element.checked = true;
-      });
-
-      setMetaData(data);
-      searchForm.setFieldsValue({
-        dataSource: data.dataSource[0].value,
-        time: {
-          startTime: dayjs().subtract(1, "month"),
-          endTime: dayjs(),
-          type: data.computeDataLevel[0].value,
-        },
-      });
-    }
   };
 
   const getOriginPage = async () => {
@@ -189,24 +162,10 @@ function AlarmRecord() {
     }));
     setOriginOptions(newd);
   };
-  const getRiverPage = async () => {
-    let { data } = await riverList({
-      level: "1",
-    });
-    let newd = data.map((item) => ({
-      ...item,
-      isLeaf: false,
-    }));
-    setRiverOptions(newd);
-  };
 
   const getStationMetaPage = async () => {
     let { data } = await stationMetaPage();
     setStationList(data);
-    setStationType(data[0]);
-    searchForm.setFieldsValue({
-      stationType: data[0].id,
-    });
   };
 
   // 区域
@@ -226,25 +185,6 @@ function AlarmRecord() {
       targetOption.children = newd;
     }
     setOriginOptions([...originOptions]);
-  };
-
-  // 河流
-  const loadRiverData = async (selectedOptions) => {
-    const targetOption = selectedOptions[selectedOptions.length - 1];
-    targetOption.loading = true;
-    let { data } = await riverList({
-      parentCode: selectedOptions[selectedOptions.length - 1].code,
-    });
-    if (selectedOptions[selectedOptions.length - 1].level === 2) {
-      targetOption.children = data;
-    } else {
-      let newd = data.map((item) => ({
-        ...item,
-        isLeaf: false,
-      }));
-      targetOption.children = newd;
-    }
-    setRiverOptions([...riverOptions]);
   };
 
   const onStationTypeChange = (id) => {
@@ -270,19 +210,15 @@ function AlarmRecord() {
   const getPageData = async () => {
     setLoading(true);
     let values = searchForm.getFieldsValue();
-    values.beginTime = formatePickTime(values.time.type, values.time.startTime);
-    values.endTime = formatePickTime(values.time.type, values.time.endTime);
-    values.timeType = values.time.type;
-    values.showFieldList = factorList;
+    console.log(values);
+    values.notificationBeginDate = values.time[0];
+    values.notificationEndDate = values.time[1];
 
     if ("region" in values) {
       values.region = getFormCasData(values.region);
     }
-    if ("river" in values) {
-      values.river = getFormCasData(values.river);
-    }
 
-    let { additional_data, data, success } = await reportTime(values);
+    let { data, success } = await pageAlarm(values);
     if (success) {
       let iData = data.map((item, idx) => ({
         ...item,
@@ -290,16 +226,16 @@ function AlarmRecord() {
       }));
       setData(iData);
 
-      let newCol = additional_data.columnList.map((item) => ({
-        title: item.label,
-        dataIndex: item.key,
-        key: item.key,
-        render: (value) => tableRender(value),
-        width: 60,
-        sorter: sortSelf(item),
-      }));
+      // let newCol = additional_data.columnList.map((item) => ({
+      //   title: item.label,
+      //   dataIndex: item.key,
+      //   key: item.key,
+      //   render: (value) => tableRender(value),
+      //   width: 60,
+      //   sorter: sortSelf(item),
+      // }));
 
-      setColumns([...newCol]);
+      // setColumns([...newCol]);
     }
     setLoading(false);
   };
@@ -338,6 +274,8 @@ function AlarmRecord() {
   };
 
   const confirmModal = (data) => {
+    console.log(data);
+    setColumns(data);
     setVisable(false);
     setFactorList(data);
   };
@@ -352,8 +290,11 @@ function AlarmRecord() {
             form={searchForm}
             onFinish={getPageData}
             layout="inline"
+            initialValues={{
+              time: [dayjs().subtract(1, "month"), dayjs()],
+            }}
           >
-            <Form.Item label="业务主题" name="stationType">
+            <Form.Item label="业务主题" name="topicType">
               <Select
                 options={topicOption}
                 placeholder="请选择"
@@ -362,6 +303,9 @@ function AlarmRecord() {
                   value: "id",
                 }}
                 style={{ width: "120px" }}
+                mode="multiple"
+                maxTagCount="responsive"
+                allowClear
               />
             </Form.Item>
             <Form.Item label="站点类型" name="stationType">
@@ -373,7 +317,10 @@ function AlarmRecord() {
                   value: "id",
                 }}
                 style={{ width: "120px" }}
-                onChange={onStationTypeChange}
+                // onChange={onStationTypeChange}
+                mode="multiple"
+                maxTagCount="responsive"
+                allowClear
               />
             </Form.Item>
 
@@ -391,30 +338,37 @@ function AlarmRecord() {
                 maxTagCount="responsive"
               />
             </Form.Item>
-            <Form.Item label="河流" name="river">
-              <Cascader
-                style={{ width: "120px" }}
-                options={riverOptions}
-                loadData={loadRiverData}
-                changeOnSelect
+
+            <Form.Item label="报警因子" name="factorId">
+              <Select
+                style={{ width: 120 }}
+                placeholder="报警因子"
+                options={factorOption}
+                fieldNames={{
+                  label: "factorName",
+                  value: "factorId",
+                }}
+                mode="multiple"
+                maxTagCount="responsive"
+                allowClear
+              />
+            </Form.Item>
+            <Form.Item label="规则类型" name="ruleCode">
+              <Select
+                style={{ width: 120 }}
+                placeholder="规则类型"
+                options={ruleOption}
                 fieldNames={{
                   label: "name",
                   value: "code",
                 }}
-                multiple
+                mode="multiple"
                 maxTagCount="responsive"
+                allowClear
               />
             </Form.Item>
-
-            <Form.Item label="" name="dataSource">
-              <Select
-                style={{ width: 120 }}
-                placeholder="数据来源"
-                options={metaData?.dataSource}
-              />
-            </Form.Item>
-            <Form.Item label="" name="time">
-              <LtimePicker options={metaData?.computeDataLevel} />
+            <Form.Item label="报警时间" name="time">
+              <RangePicker />
             </Form.Item>
             <Form.Item>
               <Space>
@@ -424,39 +378,29 @@ function AlarmRecord() {
                 <Button loading={loading}>导出</Button>
               </Space>
             </Form.Item>
-            <Form.Item>
-              <Checkbox>热图</Checkbox>
-            </Form.Item>
           </Form>
           <SettingOutlined
             onClick={() => setVisable(true)}
             style={{ fontSize: "18px" }}
           />
         </div>
-        {columns.length > 0 && (
-          <Table
-            columns={[...normalCol, ...columns]}
-            dataSource={data}
-            loading={loading}
-            rowKey={(record) => record.idx}
-            onChange={handleTableChange}
-            pagination={{ pageSize }}
-          ></Table>
-        )}
+        <Table
+          columns={[...normalCol, ...columns]}
+          dataSource={data}
+          loading={loading}
+          rowKey={(record) => record.idx}
+          onChange={handleTableChange}
+          pagination={{ pageSize }}
+        ></Table>
       </>
 
       {/* 弹出表单 */}
-      {metaData?.stationField.length ? (
-        <FiledSelect
-          title={["站点属性", "评价因子", "监测因子"]}
-          options1={metaData?.stationField}
-          options2={metaData?.evaluateIndex}
-          options3={metaData.factor}
-          open={visable}
-          closeModal={() => setVisable(false)}
-          onOk={confirmModal}
-        />
-      ) : null}
+      <AlarmFiled
+        title={["报警字段", "站点字段"]}
+        open={visable}
+        closeModal={() => setVisable(false)}
+        onOk={confirmModal}
+      />
     </div>
   );
 }

@@ -338,7 +338,7 @@ function AlarmStatis() {
 
   return (
     <div className="content-wrap">
-      <Lbreadcrumb data={["当前位置：数据运营", "报表统计", "时间报表"]} />
+      <Lbreadcrumb data={["当前位置：数据运营", "数据报警", "报警统计"]} />
       <>
         <div className="search">
           {!!stationType && (
