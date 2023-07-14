@@ -107,9 +107,8 @@ function RuleForm({ record, open, closeModal, groupId }) {
   });
   const filterRequire = (name) => factorFile.find((ele) => ele === name);
 
-  const validatFactor = (_, value) => {
-    console.log(factorId);
-    if (factorId.length === 0) {
+  const validatFactor = (flag, value) => {
+    if (flag && factorId.length === 0) {
       return Promise.reject(new Error("请选择"));
     }
     return Promise.resolve();
@@ -180,8 +179,8 @@ function RuleForm({ record, open, closeModal, groupId }) {
 
           <Form.Item
             label={<span>因子 &nbsp;</span>}
-            required
             style={filterElement("factorIds")}
+            required
           >
             <span className="ant-form-text">已选择{factorId.length}个因子</span>
             <Form.Item
@@ -190,7 +189,7 @@ function RuleForm({ record, open, closeModal, groupId }) {
               rules={[
                 {
                   required: filterRequire("factorIds"),
-                  validator: validatFactor,
+                  validator: () => validatFactor(filterRequire("factorIds")),
                 },
               ]}
             >
