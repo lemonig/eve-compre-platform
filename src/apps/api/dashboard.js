@@ -56,3 +56,15 @@ export function chartDataTop(data) {
     data,
   });
 }
+export function chartApiLog(data) {
+  return _post({
+    url: `/api/data/dashboard/resource/chartApiLog`,
+    data,
+  });
+}
+export function chartApiLogTop(data) {
+  return _post({
+    url: `/api/data/dashboard/resource/chartApiLogTop`,
+    data,
+  });
+}
