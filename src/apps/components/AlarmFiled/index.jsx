@@ -37,7 +37,7 @@ const text = [
   { label: "运维厂家", key: "operationFactory" },
   { label: "超标联系人", key: "exceededContact" },
   { label: "运维联系人", key: "operationContact" },
-  { label: "河流   ", key: "x" },
+  { label: "河流   ", key: "river" },
 ];
 
 const fields = text.map((item, idx) => {

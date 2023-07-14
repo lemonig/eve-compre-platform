@@ -1,40 +1,20 @@
 import React, { useState, useEffect } from "react";
-import {
-  Input,
-  Select,
-  Button,
-  Space,
-  Table,
-  Tag,
-  Modal,
-  Form,
-  message,
-  Tooltip,
-  Switch,
-  Cascader,
-  Checkbox,
-  DatePicker,
-} from "antd";
+import { Select, Button, Space, Table, Form, Cascader, DatePicker } from "antd";
 // com
 import Lbreadcrumb from "@Components/Lbreadcrumb";
-import IconFont from "@Components/IconFont";
 import dayjs from "dayjs";
-import LtimePicker from "@Components/LtimePicker";
-import { SettingOutlined, WarningFilled } from "@ant-design/icons";
+import { SettingOutlined } from "@ant-design/icons";
 import AlarmFiled from "@Components/AlarmFiled";
-import WaterLevel from "@Components/WaterLevel";
 // api
 import { pageAlarm } from "@Api/alarm.js";
 import { stationPage as stationMetaPage, topicList } from "@Api/user.js";
 import { regionList } from "@Api/set_region.js";
-import { riverList } from "@Api/set_rival.js";
-import { searchMeta } from "@Api/data-list.js";
 import { allListFactor as listFactor } from "@Api/set_alarm_pub.js";
 import { listRule } from "@Api/set_alarm.js";
 // util
-import { formatePickTime, formPickTime } from "@Utils/util";
+import { validateQuery } from "@Utils/valid.js";
+
 const { RangePicker } = DatePicker;
-const { Option } = Select;
 
 const getFormCasData = (data = []) => {
   return data?.map((item) => {
@@ -42,80 +22,25 @@ const getFormCasData = (data = []) => {
   });
 };
 
-function tableRender(value) {
-  if (value.divColor) {
-    return <WaterLevel level={value.value} color={value.divColor}></WaterLevel>;
-  } else if (value.color) {
-    return (
-      <Tooltip title={"超标"}>
-        <span
-          style={{
-            color: "#F82504",
-            fontWeight: "bold",
-          }}
-        >
-          {value.value}
-        </span>
-      </Tooltip>
-    );
-  } else if (value.tips) {
-    return (
-      <>
-        <span>{value.value}</span>
-        &nbsp;
-        <Tooltip title={value.tips}>
-          <WarningFilled style={{ color: "#F82504" }} />
-        </Tooltip>
-      </>
-    );
-  } else {
-    return value.value;
-  }
-}
-
-const pageSize = 10;
-
-const DynamicTableHeader = ({ columns }) => {
-  return columns.map((column) => (
-    <Table.Column
-      title={column.title}
-      dataIndex={column.dataIndex}
-      key={column.key}
-    />
-  ));
-};
-
 function AlarmRecord() {
   const [searchForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState({
-    form: false,
-  });
-  const [operate, setOperate] = useState(null); //正在操作id
-
   // 元数据
   const [originOptions, setOriginOptions] = useState([]);
   const [topicOption, setTopicOption] = useState([]);
-  const [riverOptions, setRiverOptions] = useState([]);
   const [stationList, setStationList] = useState([]);
-  const regionValue = Form.useWatch("region", searchForm);
-  const riverValue = Form.useWatch("river", searchForm);
-  const stationTypeValue = Form.useWatch("stationType", searchForm);
-  const [metaData, setMetaData] = useState({
-    computeDataLevel: [],
-    dataSource: [],
-    stationField: [],
-    evaluateIndex: [],
-    factor: [],
-  });
   const [columns, setColumns] = useState([]);
-  const [stationType, setStationType] = useState();
   const [data, setData] = useState([]);
   const [visable, setVisable] = useState(false); //因子选择
   const [factorList, setFactorList] = useState([]); //字段选择回调
-  const [currentPage, setCurrentPage] = useState(1);
   const [factorOption, setFactorOption] = useState([]); //报警因子
   const [ruleOption, setRuleOption] = useState([]); //规则类型
+  const [pageMsg, setPagemsg] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 20,
+    },
+  });
 
   let normalCol = [
     {
@@ -123,7 +48,10 @@ function AlarmRecord() {
       key: "index",
       width: 60,
       dataIndex: "index",
-      render: (text, record, index) => (currentPage - 1) * pageSize + index + 1,
+      render: (_, record, idx) =>
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        idx +
+        1,
     },
   ];
   useEffect(() => {
@@ -146,6 +74,10 @@ function AlarmRecord() {
     getFactorList();
     getRuleList();
   }, []);
+
+  useEffect(() => {
+    getPageData();
+  }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
 
   const getTopicList = async () => {
     let { data } = await topicList();
@@ -187,94 +119,57 @@ function AlarmRecord() {
     setOriginOptions([...originOptions]);
   };
 
-  const onStationTypeChange = (id) => {
-    let findRes = stationList.find((item) => item.id === id);
-    setStationType(findRes);
-  };
-
-  const showModal = () => {
-    setIsModalOpen({
-      ...isModalOpen,
-      form: true,
-    });
-  };
-
-  const sortSelf = (item) => {
-    if (item.isDigital) {
-      return (a, b) => a[item.key].value - b[item.key].value;
-    } else {
-      return false;
-    }
-  };
-
   const getPageData = async () => {
     setLoading(true);
     let values = searchForm.getFieldsValue();
-    console.log(values);
-    values.notificationBeginDate = values.time[0];
-    values.notificationEndDate = values.time[1];
-
+    if (!validateQuery(values.time[0], values.time[1])) {
+      return;
+    }
+    values.notificationBeginDate = dayjs(values.time[0]).format("YYYYMMDD");
+    values.notificationEndDate = dayjs(values.time[1]).format("YYYYMMDD");
     if ("region" in values) {
       values.region = getFormCasData(values.region);
     }
-
-    let { data, success } = await pageAlarm(values);
+    let params = {
+      page: pageMsg.pagination.current,
+      size: pageMsg.pagination.pageSize,
+      data: values,
+    };
+    let { additional_data, data, success } = await pageAlarm(params);
     if (success) {
       let iData = data.map((item, idx) => ({
         ...item,
         idx,
       }));
       setData(iData);
-
-      // let newCol = additional_data.columnList.map((item) => ({
-      //   title: item.label,
-      //   dataIndex: item.key,
-      //   key: item.key,
-      //   render: (value) => tableRender(value),
-      //   width: 60,
-      //   sorter: sortSelf(item),
-      // }));
-
-      // setColumns([...newCol]);
+      if (pageMsg.total !== additional_data.pagination.total) {
+        setPagemsg({
+          ...pageMsg,
+          pagination: {
+            ...pageMsg.pagination,
+            total: additional_data.pagination.total,
+          },
+        });
+      }
     }
     setLoading(false);
-  };
-
-  // 新建
-  const handleAdd = () => {
-    setOperate(null);
-    setIsModalOpen({
-      ...isModalOpen,
-      form: true,
-    });
-  };
-  // 编辑
-  const handleEdit = (record) => {
-    setOperate(record);
-    setIsModalOpen({
-      ...isModalOpen,
-      form: true,
-    });
-  };
-
-  //表单回调
-  const closeModal = (flag) => {
-    // flag 确定还是取消
-    setIsModalOpen({
-      ...isModalOpen,
-      form: false,
-    });
-    if (flag) getPageData();
   };
 
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
     // `dataSource` is useless since `pageSize` changed
-    setCurrentPage(pagination.current);
+    setPagemsg({
+      pagination,
+      filters,
+      ...sorter,
+    });
+    // `dataSource` is useless since `pageSize` changed
+    if (pagination.pageSize !== pageMsg.pagination?.pageSize) {
+      setData([]);
+    }
   };
 
   const confirmModal = (data) => {
-    console.log(data);
     setColumns(data);
     setVisable(false);
     setFactorList(data);
@@ -390,7 +285,10 @@ function AlarmRecord() {
           loading={loading}
           rowKey={(record) => record.idx}
           onChange={handleTableChange}
-          pagination={{ pageSize }}
+          pagination={{
+            ...pageMsg.pagination,
+            showSizeChanger: true,
+          }}
         ></Table>
       </>
 
