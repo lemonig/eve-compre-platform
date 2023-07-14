@@ -50,7 +50,8 @@ function RuleForm({ record, open, closeModal, groupId }) {
   };
 
   const handleOk = async () => {
-    // await form.validateFields();
+    await form.validateFields();
+
     const values = form.getFieldsValue();
     values.factorIds = factorId;
     setLoading(true);
@@ -104,6 +105,15 @@ function RuleForm({ record, open, closeModal, groupId }) {
   const filterElement = (name) => ({
     display: factorFile.find((ele) => ele === name) ? "block" : "none",
   });
+  const filterRequire = (name) => factorFile.find((ele) => ele === name);
+
+  const validatFactor = (_, value) => {
+    console.log(factorId);
+    if (factorId.length === 0) {
+      return Promise.reject(new Error("请选择"));
+    }
+    return Promise.resolve();
+  };
 
   return (
     <>
@@ -174,7 +184,16 @@ function RuleForm({ record, open, closeModal, groupId }) {
             style={filterElement("factorIds")}
           >
             <span className="ant-form-text">已选择{factorId.length}个因子</span>
-            <Form.Item name="factorIds" noStyle>
+            <Form.Item
+              name="factorIds"
+              noStyle
+              rules={[
+                {
+                  required: filterRequire("factorIds"),
+                  validator: validatFactor,
+                },
+              ]}
+            >
               <a onClick={() => setIsModalOpen(true)}>选择因子</a>
             </Form.Item>
           </Form.Item>
@@ -185,7 +204,7 @@ function RuleForm({ record, open, closeModal, groupId }) {
             name="dataType"
             rules={[
               {
-                required: true,
+                required: filterRequire("filterRequire"),
                 message: "请选择",
               },
             ]}
@@ -206,14 +225,14 @@ function RuleForm({ record, open, closeModal, groupId }) {
             name="continuousCount"
             rules={[
               {
-                required: true,
+                required: filterRequire("continuousCount"),
                 message: "请输入",
               },
             ]}
           >
             <InputNumber
               placeholder="请输入"
-              min={ruleCode === "ALM20220905" ? 3 : 0}
+              min={ruleCode === "ALM20220905" ? 3 : 1}
               max={999999}
             />
           </Form.Item>
@@ -224,7 +243,7 @@ function RuleForm({ record, open, closeModal, groupId }) {
             name="wtLevel"
             rules={[
               {
-                required: true,
+                required: filterRequire("wtLevel"),
                 message: "请选择",
               },
             ]}
@@ -238,7 +257,7 @@ function RuleForm({ record, open, closeModal, groupId }) {
             name="airLevel"
             rules={[
               {
-                required: true,
+                required: filterRequire("airLevel"),
                 message: "请选择",
               },
             ]}
@@ -252,7 +271,7 @@ function RuleForm({ record, open, closeModal, groupId }) {
               noStyle
               rules={[
                 {
-                  required: true,
+                  required: filterRequire("percentage"),
                   message: "请输入",
                 },
               ]}
@@ -275,7 +294,7 @@ function RuleForm({ record, open, closeModal, groupId }) {
             name="comparisonOperator"
             rules={[
               {
-                required: true,
+                required: filterRequire("comparisonOperator"),
                 message: "请选择",
               },
             ]}
@@ -300,7 +319,7 @@ function RuleForm({ record, open, closeModal, groupId }) {
               noStyle
               rules={[
                 {
-                  required: true,
+                  required: filterRequire("exceedLimit"),
                   message: "请输入",
                 },
               ]}
