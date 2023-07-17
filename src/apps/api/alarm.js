@@ -6,3 +6,11 @@ export function pageAlarm(data) {
     data,
   });
 }
+//数据告警导出
+export function pageAlarmExport(data, title) {
+  return _download({
+    url: `/api/alarm/data/export`,
+    data,
+    title,
+  });
+}

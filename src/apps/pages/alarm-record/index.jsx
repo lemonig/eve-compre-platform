@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import { SettingOutlined } from "@ant-design/icons";
 import AlarmFiled from "@Components/AlarmFiled";
 // api
-import { pageAlarm } from "@Api/alarm.js";
+import { pageAlarm, pageAlarmExport } from "@Api/alarm.js";
 import { stationPage as stationMetaPage, topicList } from "@Api/user.js";
 import { regionList } from "@Api/set_region.js";
 import { allListFactor as listFactor } from "@Api/set_alarm_pub.js";
@@ -25,6 +25,7 @@ const getFormCasData = (data = []) => {
 function AlarmRecord() {
   const [searchForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [btnLoading, setBtnLoading] = useState(false);
   // 元数据
   const [originOptions, setOriginOptions] = useState([]);
   const [topicOption, setTopicOption] = useState([]);
@@ -175,6 +176,29 @@ function AlarmRecord() {
     setFactorList(data);
   };
 
+  //导出
+  const download = async () => {
+    setBtnLoading(true);
+    let values = searchForm.getFieldsValue();
+    if (!validateQuery(values.time[0], values.time[1])) {
+      return;
+    }
+    values.notificationBeginDate = dayjs(values.time[0]).format("YYYYMMDD");
+    values.notificationEndDate = dayjs(values.time[1]).format("YYYYMMDD");
+    if ("region" in values) {
+      values.region = getFormCasData(values.region);
+    }
+    values.columns = columns.map((item) => item.id);
+    console.log(columns);
+    let params = {
+      page: pageMsg.pagination.current,
+      size: pageMsg.pagination.pageSize,
+      data: values,
+    };
+    await pageAlarmExport(params, "报警记录");
+    setBtnLoading(false);
+  };
+
   return (
     <div className="content-wrap">
       <Lbreadcrumb data={["当前位置：数据运营", "数据报警", "报警记录"]} />
@@ -270,7 +294,9 @@ function AlarmRecord() {
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
-                <Button loading={loading}>导出</Button>
+                <Button loading={btnLoading} onClick={download}>
+                  导出
+                </Button>
               </Space>
             </Form.Item>
           </Form>
