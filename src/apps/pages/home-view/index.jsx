@@ -1,13 +1,10 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { Select, Space, Drawer, Table, Tooltip } from "antd";
 import {
-  SettingOutlined,
-  WarningFilled,
   CheckCircleOutlined,
   CloseCircleOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
-import { findMinFrequent, tableIndex } from "@Utils/util";
 import Card from "./components/Card";
 import List from "./components/List";
 // api
@@ -168,15 +165,6 @@ function HomeView() {
   const onClose = () => {
     setOpen(false);
   };
-  const data1 = [];
-  for (let i = 0; i < 100; i++) {
-    data1.push({
-      key: i,
-      name: `Edward King ${i}`,
-      age: 32,
-      address: `London, Park Lane no. ${i}`,
-    });
-  }
 
   return (
     <div className="content-wrap">
@@ -247,7 +235,7 @@ function HomeView() {
               title1={
                 <>
                   <span>异常</span>
-                  <Tooltip title="传输率≥90%的站点占比">
+                  <Tooltip title="传输率＜90%的站点个数">
                     <QuestionCircleOutlined />
                   </Tooltip>
                 </>

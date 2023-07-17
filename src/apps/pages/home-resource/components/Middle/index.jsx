@@ -16,39 +16,12 @@ import Card from "../Card";
 import IconFont from "@Components/IconFont";
 import Lstatistic from "@Components/Lstatistic";
 import ReactECharts from "echarts-for-react";
-const colorList = [
-  "#1C47BF",
-  "#DA4688",
-  "#14BA87",
-  "#DB5230",
-  "#9161F3",
-  "#1085E5",
-  "#A7198C",
-  "#1D7733",
-  "#432585",
-  "#958310",
-  "#931515",
-  "#FFD666",
-  "#BAE637",
-  "#73D13D",
-  "#5CDBD3",
-  "#69C0FF",
-  "#85A5FF",
-  "#B37FEB",
-  "#FF85C0",
-  "#A8071A",
-  "#AD6800",
-  "#5B8C00",
-  "#006D75",
-  "#0050B3",
-];
+import { colorList } from "../util";
 
-function Middle() {
+function Middle({ countData }) {
   const [chartdata, setChartdata] = useState(null);
   const [chartdata1, setChartdata1] = useState(null);
-  const [data, setData] = useState(null);
 
-  const [pie, setPie] = useState([]);
   const chartRef = useRef(null);
   const [stationTypeList, setStationTypeList] = useState([]);
   const [type, setType] = useState("");
@@ -69,7 +42,6 @@ function Middle() {
       let { data } = await chartDataTopApi({
         stationType: type,
       });
-      setData(data);
       setChartdata1(getOption1(data));
     };
     if (type) {
@@ -79,7 +51,6 @@ function Middle() {
   useEffect(() => {
     const getChartData = async () => {
       let { data } = await chartDataApi();
-      setPie(data);
       setChartdata(getOption(data));
     };
     getChartData();
@@ -96,7 +67,6 @@ function Middle() {
   }, []);
 
   const onTypeChange = (val) => {
-    console.log(val);
     setType(val);
   };
 
@@ -104,6 +74,9 @@ function Middle() {
     let { xAxis, yAxis, series } = data;
     const option = {
       color: colorList,
+      legend: {
+        top: "top",
+      },
       tooltip: {
         trigger: "axis",
         axisPointer: {
@@ -114,7 +87,7 @@ function Middle() {
         left: "3%",
         right: "4%",
         bottom: "0%",
-        top: "14%",
+        top: "18%",
         containLabel: true,
       },
 
@@ -168,37 +141,32 @@ function Middle() {
   const getOption1 = (data) => {
     const { series, yAxis } = data;
     const option = {
+      color: colorList,
       tooltip: {
         trigger: "axis",
         axisPointer: {
           type: "shadow",
         },
       },
-      // legend: {
-      //   data: ['2011年', '2012年']
-      // },
+      legend: {
+        top: "top",
+      },
       grid: {
         left: "3%",
         right: "4%",
         bottom: "0%",
-        top: 0,
+        top: "15%",
         containLabel: true,
       },
 
       xAxis: {
-        // type: 'none',
         splitLine: {
           show: true,
           lineStyle: {
             type: "linner",
           },
         },
-        axisLine: {
-          //x轴颜色
-          lineStyle: {
-            color: "#fff",
-          },
-        },
+
         axisTick: {
           show: false,
         },
@@ -206,7 +174,6 @@ function Middle() {
           color: "#000",
           fontSize: 1,
         },
-        // boundaryGap: [0, 0.01]
       },
       yAxis: {
         type: "category",
@@ -214,53 +181,41 @@ function Middle() {
           show: false,
         },
         data: yAxis[0].data,
-        axisLine: {
-          //x轴颜色
-          lineStyle: {},
-        },
       },
-      series: [
-        {
-          // name: 'wu',
-          type: "bar",
-          data: series[0].data,
-          itemStyle: {
-            normal: {
-              color: function (param) {
-                return colorList[param.dataIndex];
-              },
-            },
-          },
-        },
-      ],
+      series: series.map((item) => ({
+        ...item,
+      })),
     };
     return option;
   };
   return (
-    <div className="home-left">
-      <Card style={{ marginBottom: "25px" }} title="数据接入">
+    <div className="home-middle">
+      <Card style={{ marginBottom: "25px", height: "34%" }} title="数据接入">
         <div
           style={{
             display: "flex",
             flexDirection: "row",
-            justifyContent: "space-around",
             alignItems: "center",
+            padding: "0 10%",
           }}
         >
           <Lstatistic
-            value={1}
+            value={countData?.dataNum}
             valueStyle={{
               color: "#00C7FF",
-              fontSize: "36px",
+              fontSize: "28px",
             }}
             title="数据总量"
             suffix={
               <span style={{ fontSize: "12px", color: "#000" }}>万条</span>
             }
+            style={{
+              flexBasis: "70%",
+            }}
           ></Lstatistic>
 
           <Lstatistic
-            value={1}
+            value={countData?.dataYearAddNum}
             valueStyle={{
               fontSize: "12px",
             }}
@@ -274,23 +229,26 @@ function Middle() {
           style={{
             display: "flex",
             flexDirection: "row",
-            justifyContent: "space-around",
             alignItems: "center",
+            padding: "0 50px",
           }}
         >
           <Lstatistic
-            value={1}
+            value={countData?.stationNum}
             valueStyle={{
               color: "#00C7FF",
 
-              fontSize: "36px",
+              fontSize: "28px",
             }}
             title="站点总量"
             suffix={<span style={{ fontSize: "12px", color: "#000" }}>个</span>}
+            style={{
+              flexBasis: "70%",
+            }}
           ></Lstatistic>
 
           <Lstatistic
-            value={1}
+            value={countData?.stationYearAddNum}
             valueStyle={{
               fontSize: "12px",
             }}
@@ -302,22 +260,25 @@ function Middle() {
           style={{
             display: "flex",
             flexDirection: "row",
-            justifyContent: "space-around",
             alignItems: "center",
+            padding: "0 50px",
           }}
         >
           <Lstatistic
-            value={1}
+            value={countData?.cameraNum}
             valueStyle={{
               color: "#00C7FF",
-              fontSize: "36px",
+              fontSize: "28px",
             }}
             title="视频总量"
             suffix={<span style={{ fontSize: "12px", color: "#000" }}>个</span>}
+            style={{
+              flexBasis: "70%",
+            }}
           ></Lstatistic>
 
           <Lstatistic
-            value={1}
+            value={countData?.cameraYearAddNum}
             valueStyle={{
               fontSize: "12px",
             }}
@@ -326,8 +287,10 @@ function Middle() {
           ></Lstatistic>
         </div>
       </Card>
-
-      <Card style={{ marginBottom: "25px" }} title="每月数据增长趋势">
+      <Card
+        style={{ marginBottom: "25px", height: "34%" }}
+        title="每月数据增长趋势"
+      >
         {chartdata && (
           <ReactECharts
             option={chartdata}
@@ -341,6 +304,7 @@ function Middle() {
         )}
       </Card>
       <Card
+        style={{ height: "29%" }}
         title="本月数据增长TOP5"
         extra={
           <Select
@@ -361,7 +325,7 @@ function Middle() {
             option={chartdata1}
             lazyUpdate={true}
             theme={"theme_name"}
-            style={{ height: "200px" }}
+            style={{ height: "150px" }}
             notMerge={true}
             // showLoading={loading}
           />

@@ -1,46 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Col, Row, Space, Table, Radio } from "antd";
+import { Table, Radio } from "antd";
 // api
-import {
-  chartApiLogTop,
-  chartApiLog,
-  chartDataTop,
-  table as tableApi,
-  chartData as chartDataApi,
-  pie as pieApi,
-  count as countApi,
-} from "@Api/dashboard";
+import { table as tableApi, pie as pieApi } from "@Api/dashboard";
 import Card from "../Card";
 import IconFont from "@Components/IconFont";
 import Lstatistic from "@Components/Lstatistic";
 import ReactECharts from "echarts-for-react";
+import { colorList } from "../util";
 
-const colorList = [
-  "#1C47BF",
-  "#DA4688",
-  "#14BA87",
-  "#DB5230",
-  "#9161F3",
-  "#1085E5",
-  "#A7198C",
-  "#1D7733",
-  "#432585",
-  "#958310",
-  "#931515",
-  "#FFD666",
-  "#BAE637",
-  "#73D13D",
-  "#5CDBD3",
-  "#69C0FF",
-  "#85A5FF",
-  "#B37FEB",
-  "#FF85C0",
-  "#A8071A",
-  "#AD6800",
-  "#5B8C00",
-  "#006D75",
-  "#0050B3",
-];
 const colum1 = [
   {
     title: "资源主题",
@@ -83,14 +50,13 @@ const columsNormal = [
   },
 ];
 
-function Left() {
+function Left({ countData } = {}) {
   const [chartdata, setChartdata] = useState(null);
-  const [data, setData] = useState(null);
   const [table, setTable] = useState({
     topicType: [],
     typeStation: [],
   });
-  const [pie, setPie] = useState([]);
+  const [pie, setPie] = useState();
   const [type, setType] = useState("topicType"); // topicType typeStation
   const [type1, setType1] = useState("topicTypeList"); // topicTypeList typeStationList
   const [colums, setColums] = useState(colum1);
@@ -108,36 +74,57 @@ function Left() {
   }, [chartRef]);
 
   useEffect(() => {
-    const getcount = async () => {
-      let { data } = await countApi();
-      setData(data);
-    };
-    getcount();
-  }, []);
-  useEffect(() => {
     const getPie = async () => {
       let { data } = await pieApi();
       setPie(data);
-      setChartdata(getOption(data));
+      setChartdata(getOption(data["topicType"]));
     };
     getPie();
   }, []);
   useEffect(() => {
     const gettable = async () => {
       let { data } = await tableApi();
-      console.log(data);
       setTable(data);
     };
     gettable();
   }, []);
 
+  const onTypeChange = (e) => {
+    setType(e.target.value);
+  };
+  const onTypeChange1 = (e) => {
+    setType1(e.target.value);
+    if (e.target.value === "topicTypeList") {
+      setColums(colum1);
+    } else {
+      setColums(colum2);
+    }
+  };
+
+  useEffect(() => {
+    if (pie) {
+      setChartdata(getOption(pie[type]));
+    }
+  }, [type]);
+
   const getOption = (data) => {
+    const sum = data.series[0].data.reduce(
+      (accumulator, data) => accumulator + data.value,
+      0
+    );
     const option = {
       color: colorList,
       tooltip: {
         trigger: "item",
-        formatter: "{b}: {c}个",
+        formatter: "{b}:{d}%",
       },
+      grid: {
+        left: "0%",
+        right: "4%",
+        bottom: "0%",
+        containLabel: false,
+      },
+
       legend: {
         orient: "vertical",
         right: "right",
@@ -148,6 +135,14 @@ function Left() {
           borderRadius: "50%", // 小圆点型的图例形状
         },
         icon: "circle",
+        formatter: function (name) {
+          let singleData = data.series[0].data.filter(function (item) {
+            return item.name === name;
+          });
+          return (
+            name + "   " + ((singleData[0].value / sum) * 100).toFixed(2) + "%"
+          );
+        },
       },
       series: [
         {
@@ -164,30 +159,17 @@ function Left() {
           labelLine: {
             show: false,
           },
-          data: data[type].series[0].data,
+
+          data: data.series[0].data,
         },
       ],
     };
     return option;
   };
 
-  const onTypeChange = (e) => {
-    setType(e.target.value);
-  };
-  const onTypeChange1 = (e) => {
-    setType1(e.target.value);
-    if (e.target.value === "topicTypeList") {
-      setColums(colum1);
-    } else {
-      setColums(colum2);
-    }
-  };
-
-  useEffect(() => {});
-
   return (
     <div className="home-left">
-      <Card style={{ marginBottom: "25px" }}>
+      <Card style={{ marginBottom: "25px", height: "14%" }}>
         <div
           style={{
             display: "flex",
@@ -203,7 +185,7 @@ function Left() {
             style={{ fontWeight: "bold" }}
           ></IconFont>
           <Lstatistic
-            value={1}
+            value={countData?.typeTopicNum}
             valueStyle={{
               color: "#FF6200",
               fontSize: "36px",
@@ -212,7 +194,7 @@ function Left() {
             suffix={<span style={{ fontSize: "12px", color: "#000" }}>个</span>}
           ></Lstatistic>
           <Lstatistic
-            value={1}
+            value={countData?.typeStationNum}
             valueStyle={{
               color: "#FF6200",
               fontSize: "36px",
@@ -224,7 +206,7 @@ function Left() {
       </Card>
 
       <Card
-        style={{ marginBottom: "25px" }}
+        style={{ marginBottom: "25px", height: "34%" }}
         title="数据资源分布"
         extra={
           <Radio.Group
@@ -252,7 +234,8 @@ function Left() {
       </Card>
 
       <Card
-        title="数据资源分布"
+        title="数据资源统计"
+        style={{ marginBottom: "25px", height: "49%" }}
         extra={
           <Radio.Group
             value={type1}

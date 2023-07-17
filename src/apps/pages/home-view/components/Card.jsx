@@ -1,22 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
-import {
-  Layout,
-  Select,
-  Space,
-  Radio,
-  Checkbox,
-  Table,
-  Tooltip,
-  Button,
-  Progress,
-} from "antd";
-import {
-  SettingOutlined,
-  WarningFilled,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-} from "@ant-design/icons";
-import { findMinFrequent, tableIndex } from "@Utils/util";
+import React from "react";
+import { Space, Progress } from "antd";
 import "./index.less";
 
 function Card({

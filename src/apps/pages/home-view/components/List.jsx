@@ -1,21 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
-import {
-  Layout,
-  Select,
-  Space,
-  Radio,
-  Checkbox,
-  Table,
-  Tooltip,
-  Button,
-  Progress,
-} from "antd";
-import {
-  SettingOutlined,
-  WarningFilled,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-} from "@ant-design/icons";
+import React from "react";
+
 import "./index.less";
 
 function List({ children, title }) {
