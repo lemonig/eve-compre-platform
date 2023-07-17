@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Select, Space, Drawer, Table } from "antd";
+import { Select, Space, Drawer, Table, Tooltip } from "antd";
 import {
   SettingOutlined,
   WarningFilled,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 import { findMinFrequent, tableIndex } from "@Utils/util";
 import Card from "./components/Card";
@@ -95,7 +96,7 @@ function HomeView() {
             title: "网络状态",
             dataIndex: "value1",
             key: "online",
-            sorter: (a, b) => a - b,
+            sorter: (a, b) => a.value1 - b.value1,
             render: (value) =>
               value ? (
                 <>
@@ -117,20 +118,23 @@ function HomeView() {
           {
             title: "离线视频/视频总数",
             dataIndex: "value",
-            sorter: (a, b) => a - b,
+            render: (_, { value, value1 }) => (
+              <span>{`${value}/${value1}`}</span>
+            ),
+            sorter: (a, b) => a.value - b.value,
           },
         ];
-        title = name + "-数据传输";
+        title = name + "-视频状态";
         break;
       case 2:
         coloum = [
           {
             title: "传输率",
             dataIndex: "value",
-            sorter: (a, b) => a - b,
+            sorter: (a, b) => a.value - b.value,
           },
         ];
-        title = name + "-超标报警";
+        title = name + "-数据传输";
         break;
 
       case 3:
@@ -138,20 +142,20 @@ function HomeView() {
           {
             title: "报警总数",
             dataIndex: "value",
-            sorter: (a, b) => a - b,
+            sorter: (a, b) => a.value - b.value,
           },
         ];
-        title = name + "-运维报警";
+        title = name + "-超标报警";
         break;
       case 4:
         coloum = [
           {
             title: "报警总数",
             dataIndex: "value",
-            sorter: (a, b) => a - b,
+            sorter: (a, b) => a.value - b.value,
           },
         ];
-        title = name + "-站点状态";
+        title = name + "-运维报警";
         break;
       default:
         break;
@@ -222,6 +226,7 @@ function HomeView() {
               title="站点状态"
               title1="总数"
               title2="离线"
+              rightUnit="个"
               data={item.data.station}
               onClick={() =>
                 handleShowTable(0, item.data.station.list, item.name)
@@ -231,6 +236,7 @@ function HomeView() {
               title="视频状态"
               title1="总数"
               title2="离线"
+              rightUnit="个"
               data={item.data.camera}
               onClick={() =>
                 handleShowTable(1, item.data.camera.list, item.name)
@@ -238,8 +244,17 @@ function HomeView() {
             ></Card>
             <Card
               title="数据传输"
-              title1="异常"
+              title1={
+                <>
+                  <span>异常</span>
+                  <Tooltip title="传输率≥90%的站点占比">
+                    <QuestionCircleOutlined />
+                  </Tooltip>
+                </>
+              }
+              circleName="稳定率"
               title2=""
+              rightUnit="条"
               color="rgba(255, 114, 114, 1)"
               data={item.data.transmission}
               onClick={() =>
@@ -251,6 +266,7 @@ function HomeView() {
               title1="报警站点"
               title2="报警记录"
               color="rgba(255, 114, 114, 1)"
+              rightUnit="条"
               data={item.data.exceededAlarm}
               onClick={() =>
                 handleShowTable(3, item.data.exceededAlarm.list, item.name)
@@ -260,6 +276,7 @@ function HomeView() {
               title="运维报警"
               title1="报警站点"
               title2="报警记录"
+              rightUnit="条"
               color="rgba(255, 114, 114, 1)"
               data={item.data.operationAlarm}
               onClick={() =>

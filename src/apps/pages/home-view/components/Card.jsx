@@ -23,10 +23,12 @@ function Card({
   title,
   title1,
   title2,
+  rightUnit,
   data,
   onClick,
   color = "rgba(16, 16, 16, 1)",
-}) {
+  circleName = "在线率",
+} = {}) {
   return (
     <div className="card" onClick={onClick}>
       <div className="top">
@@ -52,7 +54,7 @@ function Card({
                 <>
                   <p style={{ fontSize: "16px" }}>{title2}</p>
                   <p style={{ fontSize: "14px" }}>
-                    <span className="font">{data?.rightNum}</span> 个
+                    <span className="font">{data?.rightNum}</span> {rightUnit}
                   </p>
                 </>
               ) : null}
@@ -70,7 +72,7 @@ function Card({
                 <div style={{ textAlign: "center", fontSize: "14px" }}>
                   <span style={{ fontWeight: "bold" }}>{`${percent}%`}</span>
                   <br />
-                  在线率
+                  {circleName}
                 </div>
               )}
               strokeWidth={10}
