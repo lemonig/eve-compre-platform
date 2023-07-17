@@ -4,7 +4,7 @@ import "./index.less";
 
 function List({ children, title }) {
   return (
-    <div className="list">
+    <div className="home-list">
       <div className="title">
         <span className="line"></span>
         <div className="title-name">{title}</div>

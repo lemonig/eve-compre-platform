@@ -22,7 +22,7 @@ import "./index.less";
 function Card(props) {
   const { title, onClick, extra, children, style } = props;
   return (
-    <div className="card" onClick={onClick} style={style}>
+    <div className="home-resource-card" onClick={onClick} style={style}>
       {title ? (
         <div className="top">
           <div className="head">

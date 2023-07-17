@@ -13,7 +13,7 @@ function Card({
   circleName = "在线率",
 } = {}) {
   return (
-    <div className="card" onClick={onClick}>
+    <div className="home-card" onClick={onClick}>
       <div className="top">
         <div>{title}</div>
         <div>{data?.datatime}</div>

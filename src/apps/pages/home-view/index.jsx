@@ -157,7 +157,6 @@ function HomeView() {
       default:
         break;
     }
-    console.log(coloum);
     setColumns(coloum);
     setDrawTitle(title);
   };
