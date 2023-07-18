@@ -126,7 +126,7 @@ function HomeView() {
       case 2:
         coloum = [
           {
-            title: "传输率",
+            title: "传输率(%)",
             dataIndex: "value",
             sorter: (a, b) => a.value - b.value,
           },
@@ -280,14 +280,16 @@ function HomeView() {
         onClose={onClose}
         open={open}
       >
-        <Table
-          columns={[...allColumns, ...columns]}
-          dataSource={row}
-          pagination={false}
-          scroll={{
-            y: "80vh",
-          }}
-        />
+        {open && (
+          <Table
+            columns={[...allColumns, ...columns]}
+            dataSource={row}
+            pagination={false}
+            scroll={{
+              y: "80vh",
+            }}
+          />
+        )}
       </Drawer>
     </div>
   );
