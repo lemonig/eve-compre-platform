@@ -100,7 +100,6 @@ function FactorSelect({ value = [], onChange }) {
   const throttleNameChange = throttle(handleNamechange, 500);
 
   const factorGroupChange = async (e) => {
-    console.log(e);
     if (e) {
       let { data: dataIn } = await groupGet({
         id: e,

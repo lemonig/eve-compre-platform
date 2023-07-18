@@ -203,7 +203,6 @@ function MultParam({ menuMsg, stationMsg, metaData, evaluteList }) {
   const EventsDict = {
     legendselectchanged: chartLegendSelected,
   };
-  console.log(formPickTime(metaData.computeDataLevel[0].value));
   return (
     <div>
       <div className="search">

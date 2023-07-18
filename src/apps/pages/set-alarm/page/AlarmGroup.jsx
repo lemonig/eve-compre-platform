@@ -245,7 +245,6 @@ function AlarmGroup({ record, open, closePage }) {
               <Form.Item name="enableWxNotification" valuePropName="checked">
                 <Checkbox>微信通知</Checkbox>
               </Form.Item>
-              {console.log(enableWxNotification)}
               {enableWxNotification ? (
                 <Form.Item
                   label="微信群聊名称"
@@ -257,7 +256,6 @@ function AlarmGroup({ record, open, closePage }) {
               ) : null}
             </Space>
           </Form.Item>
-          {console.log(isScheduledSend)}
           <Form.Item label="通知时间">
             <Space>
               <Form.Item name="isScheduledSend">

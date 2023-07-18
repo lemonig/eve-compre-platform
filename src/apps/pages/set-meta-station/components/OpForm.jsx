@@ -49,7 +49,6 @@ function OpForm({ record, open, closeModal }) {
       getMetaData8(),
       getMetaData9(),
     ]).then((res) => {
-      console.log(res);
       setMetaSelect(res);
       setTimeout(() => {
         if (!!record) {
@@ -105,7 +104,6 @@ function OpForm({ record, open, closeModal }) {
       dictType: "data_frequency",
     });
 
-    console.log(data);
     return data;
   };
   const getMetaData6 = async () => {

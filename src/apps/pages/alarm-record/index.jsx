@@ -189,7 +189,6 @@ function AlarmRecord() {
       values.region = getFormCasData(values.region);
     }
     values.columns = columns.map((item) => item.id);
-    console.log(columns);
     let params = {
       page: pageMsg.pagination.current,
       size: pageMsg.pagination.pageSize,
