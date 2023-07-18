@@ -127,7 +127,7 @@ function Left({ countData } = {}) {
 
       legend: {
         orient: "vertical",
-        right: "right",
+        right: "10%",
         top: "middle",
         itemWidth: 10,
         itemHeight: 10,
@@ -159,7 +159,8 @@ function Left({ countData } = {}) {
           labelLine: {
             show: false,
           },
-
+          left: "0%",
+          right: "40%",
           data: data.series[0].data,
         },
       ],

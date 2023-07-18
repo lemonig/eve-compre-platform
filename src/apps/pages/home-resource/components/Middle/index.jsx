@@ -195,7 +195,7 @@ function Middle({ countData }) {
           style={{
             display: "flex",
             flexDirection: "row",
-            alignItems: "center",
+            alignItems: "end",
             padding: "0 10%",
           }}
         >
@@ -229,7 +229,7 @@ function Middle({ countData }) {
           style={{
             display: "flex",
             flexDirection: "row",
-            alignItems: "center",
+            alignItems: "end",
             padding: "0 50px",
           }}
         >
@@ -260,7 +260,7 @@ function Middle({ countData }) {
           style={{
             display: "flex",
             flexDirection: "row",
-            alignItems: "center",
+            alignItems: "end",
             padding: "0 50px",
           }}
         >
