@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Select, Button, Table, Form, Tooltip, Row, Col } from "antd";
+import { Select, Button, Table, Form, Tooltip } from "antd";
 import LtimePicker from "@Components/LtimePicker";
 import WaterLevel from "@Components/WaterLevel";
-import { queryStation, searchMeta, exportStation } from "@Api/data-list.js";
+import { queryStation, exportStation } from "@Api/data-list.js";
 import FiledSelect from "@Components/FiledSelect";
-import dayjs from "dayjs";
 import { SettingOutlined, WarningFilled } from "@ant-design/icons";
-import { getFactor } from "@Api/data-list.js";
 import { formatePickTime, formPickTime } from "@Utils/util";
 import { validateQuery } from "@Utils/valid.js";
 
@@ -63,11 +61,10 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
   const [visable, setVisable] = useState(false); //因子选择
   const [factorList, setFactorList] = useState([]); //字段选择回调
 
-  useEffect(() => {}, []);
-
-  //station Change
+  //页码变化
   useEffect(() => {
     if (stationMsg.key && factorList.length) {
+      console.log("msgChange", pageMsg.pagination.current);
       getPageData();
     }
   }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
@@ -86,6 +83,7 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
   ];
   const getPageData = async ({ initFactor = factorList } = {}) => {
     let values = searchForm.getFieldsValue();
+    console.log("getData", values);
     if (
       !validateQuery(
         values.time.startTime,
@@ -96,31 +94,24 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
       return;
     }
 
-    let valueCopy = JSON.parse(JSON.stringify(values));
+    // let values = JSON.parse(JSON.stringify(values));
 
     setLoading(true);
-    valueCopy.startTime = formatePickTime(
-      valueCopy.time.type,
-      valueCopy.time.startTime
-    );
-    valueCopy.endTime = formatePickTime(
-      valueCopy.time.type,
-      valueCopy.time.endTime
-    );
+    values.startTime = formatePickTime(values.time.type, values.time.startTime);
+    values.endTime = formatePickTime(values.time.type, values.time.endTime);
     let params = {
       page: pageMsg.pagination.current,
       size: pageMsg.pagination.pageSize,
       data: {
-        beginTime: valueCopy.startTime,
-        endTime: valueCopy.endTime,
-        timeType: valueCopy.time.type,
-        dataSource: valueCopy.dataSource,
+        beginTime: values.startTime,
+        endTime: values.endTime,
+        timeType: values.time.type,
+        dataSource: values.dataSource,
         stationId: stationMsg.key,
         showFieldList: initFactor,
       },
     };
     let { additional_data, data: getdata } = await queryStation(params);
-    setLoading(false);
     setOtherData(additional_data);
     if (pageMsg.total !== additional_data.pagination.total) {
       setPagemsg({
@@ -155,7 +146,6 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
       };
     });
 
-    setColumns(newCol);
     getdata.forEach((item, idx) => {
       item.key = pageMsg.pagination.current + "-" + idx;
       item.index =
@@ -163,7 +153,9 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
         idx +
         1;
     });
+    setColumns(newCol);
     setData([...getdata]);
+    setLoading(false);
   };
   // 查询
   const search = () => {
@@ -181,6 +173,8 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
   };
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
+    console.log("pagination", pagination);
+    setLoading(true);
     setPagemsg({
       ...pageMsg,
       pagination: {
@@ -242,6 +236,10 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
   };
 
   const memoFiledSelect = useMemo(() => {
+    searchForm.setFieldsValue({
+      dataSource: metaData.dataSource[0].value,
+      time: formPickTime(metaData.computeDataLevel[0].value),
+    });
     return (
       metaData?.stationField.length &&
       facList.length && (
@@ -257,11 +255,7 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
         />
       )
     );
-  }, [visable, facList, metaData]);
-
-  useEffect(() => {
-    searchForm.resetFields();
-  }, [metaData]);
+  }, [visable, facList]);
 
   return (
     <>

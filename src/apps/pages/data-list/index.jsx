@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import LayMenu from "@App/layout/lay-menu";
 import StationTree from "@Shared/stationTree";
 import Lbreadcrumb from "@Components/Lbreadcrumb";
@@ -77,9 +77,14 @@ function DataList() {
   // 站点改变
   useEffect(() => {
     if (stationSelect.key) {
-      getFactorData();
-      getMetaData();
-      getEvaluteData();
+      //因为因子选择的来源是这两个，两个请求不知道什么时候到，将请求依次到位后再更新，
+      Promise.all([getEvaluteData(), getMetaData(), getFactorData()]).then(
+        (res) => {
+          setEvaluteList(res[0]);
+          setMetaData(res[1]);
+          setFacList(res[2]);
+        }
+      );
     }
   }, [stationSelect.key]);
 
@@ -90,7 +95,7 @@ function DataList() {
     data?.forEach((item) => {
       item.checked = true;
     });
-    setFacList(data);
+    return data;
   };
 
   const getMetaData = async () => {
@@ -98,7 +103,7 @@ function DataList() {
       id: menuSelect.query,
     });
     if (success) {
-      setMetaData(data);
+      return data;
     }
   };
   const getEvaluteData = async () => {
@@ -106,25 +111,33 @@ function DataList() {
       id: stationSelect.key,
     });
     if (success) {
-      setEvaluteList(data);
+      return data;
     }
   };
+
+  const tableComponent = useMemo(() => {
+    console.log(metaData);
+    return (
+      <DataTable
+        stationMsg={stationSelect}
+        menuMsg={menuSelect}
+        facList={facList}
+        metaData={metaData}
+      />
+    );
+  }, [facList]);
+
   const items = [
     {
       key: "1",
       label: `站点数据`,
-      children: menuSelect.key &&
+      children:
+        menuSelect.key &&
         stationSelect.key &&
         facList.length &&
         metaData.dataSource.length &&
-        activeKey == 1 && (
-          <DataTable
-            stationMsg={stationSelect}
-            menuMsg={menuSelect}
-            facList={facList}
-            metaData={metaData}
-          />
-        ),
+        activeKey == 1 &&
+        tableComponent,
     },
     {
       key: "2",
