@@ -323,7 +323,7 @@ function RuleForm({ record, open, closeModal, groupId }) {
                 },
               ]}
             >
-              <InputNumber min={0} max={999999} />
+              <InputNumber min={1} max={999999} />
             </Form.Item>
             {ruleCode === "ALM20220906" && (
               <span
