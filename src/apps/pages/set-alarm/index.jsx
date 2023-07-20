@@ -69,7 +69,7 @@ function SetAlarm() {
     });
     setData(data);
     setLoading(false);
-    if (pageMsg.total !== additional_data.pagination.total) {
+    if (pageMsg.pagination.total !== additional_data.pagination.total) {
       setPagemsg({
         ...pageMsg,
         pagination: {

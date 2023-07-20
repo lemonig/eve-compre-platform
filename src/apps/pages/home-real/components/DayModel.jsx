@@ -50,7 +50,7 @@ function DayModel({ open, closeModal, station, factor, timeType, time }) {
     setLoading(false);
     setOtherData(additional_data);
 
-    if (pageMsg.total !== additional_data.pagination.total) {
+    if (pageMsg.pagination.total !== additional_data.pagination.total) {
       setPagemsg({
         ...pageMsg,
         pagination: {
