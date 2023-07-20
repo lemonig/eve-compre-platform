@@ -7,6 +7,7 @@ import FiledSelect from "@Components/FiledSelect";
 import { SettingOutlined, WarningFilled } from "@ant-design/icons";
 import { formatePickTime, formPickTime } from "@Utils/util";
 import { validateQuery } from "@Utils/valid.js";
+import { throttle } from "@Utils/util";
 
 function tableRender(value) {
   if (value.divColor) {
@@ -64,7 +65,6 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
   //页码变化
   useEffect(() => {
     if (stationMsg.key && factorList.length) {
-      console.log("msgChange", pageMsg.pagination.current);
       getPageData();
     }
   }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
@@ -82,8 +82,9 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
     },
   ];
   const getPageData = async ({ initFactor = factorList } = {}) => {
+    // setLoading(true);
+
     let values = searchForm.getFieldsValue();
-    console.log("getData", values);
     if (
       !validateQuery(
         values.time.startTime,
@@ -93,10 +94,8 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
     ) {
       return;
     }
-
-    // let values = JSON.parse(JSON.stringify(values));
-
     setLoading(true);
+    // let values = JSON.parse(JSON.stringify(values));
     values.startTime = formatePickTime(values.time.type, values.time.startTime);
     values.endTime = formatePickTime(values.time.type, values.time.endTime);
     let params = {
@@ -112,17 +111,6 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
       },
     };
     let { additional_data, data: getdata } = await queryStation(params);
-    setOtherData(additional_data);
-    if (pageMsg.total !== additional_data.pagination.total) {
-      setPagemsg({
-        ...pageMsg,
-        pagination: {
-          ...pageMsg.pagination,
-          total: additional_data.pagination.total,
-        },
-      });
-    }
-
     let newCol = additional_data.columnList.map((item) => {
       return {
         title: (
@@ -148,14 +136,21 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
 
     getdata.forEach((item, idx) => {
       item.key = pageMsg.pagination.current + "-" + idx;
-      item.index =
-        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
-        idx +
-        1;
     });
     setColumns(newCol);
-    setData([...getdata]);
+    setData(getdata);
     setLoading(false);
+    setOtherData(additional_data);
+    //解决第一次请求两次的问题
+    if (pageMsg.pagination.total !== additional_data.pagination.total) {
+      setPagemsg({
+        ...pageMsg,
+        pagination: {
+          ...pageMsg.pagination,
+          total: additional_data.pagination.total,
+        },
+      });
+    }
   };
   // 查询
   const search = () => {
@@ -173,13 +168,8 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
   };
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
-    console.log("pagination", pagination);
-    setLoading(true);
     setPagemsg({
-      ...pageMsg,
-      pagination: {
-        ...pagination,
-      },
+      pagination,
       filters,
       ...sorter,
     });
@@ -188,6 +178,8 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
       setData([]);
     }
   };
+
+  const throttleTableChange = throttle(handleTableChange, 500);
 
   const closeModal = (flag) => {
     setVisable(false);
@@ -306,7 +298,7 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
             ...pageMsg.pagination,
             showSizeChanger: true,
           }}
-          onChange={handleTableChange}
+          onChange={throttleTableChange}
           size="small"
           scroll={{
             x: "max-content",
