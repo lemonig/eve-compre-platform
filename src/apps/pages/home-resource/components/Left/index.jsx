@@ -182,13 +182,12 @@ function Left({ countData } = {}) {
           <IconFont
             name="dashuju"
             size={76}
-            color="#00C7FF"
+            color="#0b49b0"
             style={{ fontWeight: "bold" }}
           ></IconFont>
           <Lstatistic
             value={countData?.typeTopicNum}
             valueStyle={{
-              color: "#FF6200",
               fontSize: "36px",
             }}
             title="数据资源主题"
@@ -197,7 +196,6 @@ function Left({ countData } = {}) {
           <Lstatistic
             value={countData?.typeStationNum}
             valueStyle={{
-              color: "#FF6200",
               fontSize: "36px",
             }}
             title="数据资源目录"

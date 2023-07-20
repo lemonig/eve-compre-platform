@@ -147,15 +147,14 @@ function Right({ countData }) {
           }}
         >
           <IconFont
-            name="yunshangchuan_o"
+            name="yunshangchuan_o-c"
             size={76}
-            color="#00C7FF"
+            color="#0b49b0"
             style={{ fontWeight: "bold" }}
           ></IconFont>
           <Lstatistic
             value={countData?.interfaceNum}
             valueStyle={{
-              color: "#FF6200",
               fontSize: "36px",
             }}
             title="数据接口"

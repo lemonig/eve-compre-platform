@@ -202,7 +202,6 @@ function Middle({ countData }) {
           <Lstatistic
             value={countData?.dataNum}
             valueStyle={{
-              color: "#00C7FF",
               fontSize: "28px",
             }}
             title="数据总量"
@@ -236,8 +235,6 @@ function Middle({ countData }) {
           <Lstatistic
             value={countData?.stationNum}
             valueStyle={{
-              color: "#00C7FF",
-
               fontSize: "28px",
             }}
             title="站点总量"
@@ -267,7 +264,6 @@ function Middle({ countData }) {
           <Lstatistic
             value={countData?.cameraNum}
             valueStyle={{
-              color: "#00C7FF",
               fontSize: "28px",
             }}
             title="视频总量"
