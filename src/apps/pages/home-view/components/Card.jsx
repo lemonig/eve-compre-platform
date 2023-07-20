@@ -50,7 +50,7 @@ function Card({
               type="circle"
               percent={data.rate}
               size={80}
-              strokeColor="#00c7ff"
+              // strokeColor="#00c7ff"
               format={(percent) => (
                 <div style={{ textAlign: "center", fontSize: "14px" }}>
                   <span style={{ fontWeight: "bold" }}>{`${percent}%`}</span>

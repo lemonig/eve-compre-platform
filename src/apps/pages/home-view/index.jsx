@@ -234,7 +234,7 @@ function HomeView() {
               title1={
                 <>
                   <span>异常</span>
-                  <Tooltip title="传输率＜90%的站点个数">
+                  <Tooltip title="传输率＜90%">
                     <QuestionCircleOutlined />
                   </Tooltip>
                 </>
