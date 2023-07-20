@@ -179,7 +179,7 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
     }
   };
 
-  const throttleTableChange = throttle(handleTableChange, 500);
+  const throttleTableChange = throttle(handleTableChange, 300);
 
   const closeModal = (flag) => {
     setVisable(false);
