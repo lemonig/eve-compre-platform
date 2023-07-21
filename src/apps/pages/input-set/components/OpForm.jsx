@@ -87,12 +87,12 @@ function OpForm({ record, open, closeModal }) {
   let inputwidth = {
     width: "180px",
   };
-  // const validatFactor = (flag, value) => {
-  //   if (flag && factorId.length === 0) {
-  //     return Promise.reject(new Error("请选择"));
-  //   }
-  //   return Promise.resolve();
-  // };
+  const validatFactor = () => {
+    if (stationId.length === 0) {
+      return Promise.reject(new Error("请选择"));
+    }
+    return Promise.resolve();
+  };
 
   return (
     <>
@@ -153,11 +153,11 @@ function OpForm({ record, open, closeModal }) {
             <Form.Item
               name="stationIdList"
               noStyle
-              // rules={[
-              //   {
-              //     validator: () => validatFactor(filterRequire("factorIds")),
-              //   },
-              // ]}
+              rules={[
+                {
+                  validator: validatFactor,
+                },
+              ]}
             >
               <a onClick={() => setIsModalOpen(true)}>选择站点</a>
             </Form.Item>
