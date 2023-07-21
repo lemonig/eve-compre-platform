@@ -137,7 +137,7 @@ function Right({ countData }) {
   };
   return (
     <div className="home-right">
-      <Card style={{ marginBottom: "25px", height: "14%" }}>
+      <Card style={{ marginBottom: "25px", height: "22%" }} title="数据调用">
         <div
           style={{
             display: "flex",
@@ -190,7 +190,7 @@ function Right({ countData }) {
       <Card
         title="数据调用TOP10"
         style={{
-          height: "49%",
+          height: "43%",
         }}
       >
         {chartdata1 && (

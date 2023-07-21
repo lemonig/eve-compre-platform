@@ -119,6 +119,7 @@ function Left({ countData } = {}) {
         formatter: "{b}:{d}%",
       },
       grid: {
+        top: "0%",
         left: "0%",
         right: "4%",
         bottom: "0%",
@@ -170,7 +171,7 @@ function Left({ countData } = {}) {
 
   return (
     <div className="home-left">
-      <Card style={{ marginBottom: "25px", height: "14%" }}>
+      <Card style={{ marginBottom: "25px", height: "22%" }} title="数据资源">
         <div
           style={{
             display: "flex",
@@ -234,7 +235,7 @@ function Left({ countData } = {}) {
 
       <Card
         title="数据资源统计"
-        style={{ marginBottom: "25px", height: "49%" }}
+        style={{ marginBottom: "25px", height: "43%" }}
         extra={
           <Radio.Group
             value={type1}

@@ -190,7 +190,7 @@ function Middle({ countData }) {
   };
   return (
     <div className="home-middle">
-      <Card style={{ marginBottom: "25px", height: "34%" }} title="数据接入">
+      <Card style={{ marginBottom: "25px", height: "35%" }} title="数据接入">
         <div
           style={{
             display: "flex",
@@ -284,7 +284,7 @@ function Middle({ countData }) {
         </div>
       </Card>
       <Card
-        style={{ marginBottom: "25px", height: "34%" }}
+        style={{ marginBottom: "25px", height: "35%" }}
         title="每月数据增长趋势"
       >
         {chartdata && (
