@@ -14,6 +14,13 @@ export function evalApiDataShare(data) {
     data,
   });
 }
+// 文档
+export function shareDoc(data) {
+  return _post({
+    url: `/api/dataShare/doc`,
+    data,
+  });
+}
 // 用户附件-站点
 export function stationDataShare(data) {
   return _post({
