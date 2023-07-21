@@ -18,7 +18,7 @@ function ShareLog() {
 
   useEffect(() => {
     getPageData();
-  }, []);
+  }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
 
   // 查询
   const search = () => {

@@ -20,8 +20,10 @@ function InputLog() {
 
   useEffect(() => {
     getMetaData();
-    getPageData();
   }, []);
+  useEffect(() => {
+    getPageData();
+  }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
 
   const getMetaData = async () => {
     let { data } = await metaList({
