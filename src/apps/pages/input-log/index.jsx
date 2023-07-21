@@ -85,8 +85,8 @@ function InputLog() {
     },
     {
       title: "接入时间",
-      dataIndex: "datatime",
-      key: "datatime",
+      dataIndex: "createTime",
+      key: "createTime",
     },
   ];
 
