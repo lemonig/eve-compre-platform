@@ -180,6 +180,7 @@ function SetMetaDataConfig({ configData, configOpen, configModal }) {
       title: "启用状态",
       dataIndex: "status",
       key: "status",
+      render: (value, record) => (!!Number(value) ? "启用" : "停用"),
     },
 
     {
