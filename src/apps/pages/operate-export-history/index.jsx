@@ -89,9 +89,10 @@ function OperateExportHistory({ isRouter = true, closeModal }) {
           return <a href={record.fileUrl}>下载</a>;
         } else {
           return (
-            <a style={{ cursor: "not-allowed", color: "rgba(0,0,0,0.24)" }}>
-              下载
-            </a>
+            <>--</>
+            // <a style={{ cursor: "not-allowed", color: "rgba(0,0,0,0.24)" }}>
+            //   下载
+            // </a>
           );
         }
       },
@@ -124,7 +125,7 @@ function OperateExportHistory({ isRouter = true, closeModal }) {
         </Button>
       </div>
       <p style={{ marginBottom: "15px" }}>
-        导出的文件只存储3天，失效文件无法下载
+      导出的文件存储3天.请及时下载
       </p>
       <Table
         columns={columns}
