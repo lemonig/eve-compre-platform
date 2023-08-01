@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Select, Button, Space, Table, Form, Cascader, DatePicker } from "antd";
+import { Select, Button, Space, Table, Form, Cascader, DatePicker, Input } from "antd";
 // com
 import Lbreadcrumb from "@Components/Lbreadcrumb";
 import dayjs from "dayjs";
@@ -188,20 +188,20 @@ function AlarmRecord() {
     }
     setLoading(false);
   };
-    // 查询
-    const search = () => {
-      if (pageMsg.pagination.current === 1) {
-        getPageData();
-      } else {
-        setPagemsg({
-          ...pageMsg,
-          pagination: {
-            ...pageMsg.pagination,
-            current: 1,
-          },
-        });
-      }
-    };
+  // 查询
+  const search = () => {
+    if (pageMsg.pagination.current === 1) {
+      getPageData();
+    } else {
+      setPagemsg({
+        ...pageMsg,
+        pagination: {
+          ...pageMsg.pagination,
+          current: 1,
+        },
+      });
+    }
+  };
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
     // `dataSource` is useless since `pageSize` changed
@@ -331,8 +331,28 @@ function AlarmRecord() {
                 allowClear
               />
             </Form.Item>
+            <Form.Item label="报警分类：" name="alarmType">
+              <Select
+                style={{ width: 120 }}
+                placeholder="报警分类："
+                options={[
+                  {
+                    label: '运维报警',
+                    value: 'operation'
+                  },
+                  {
+                    label: '超标报警',
+                    value: 'exceeded'
+                  }
+                ]}
+                allowClear
+              />
+            </Form.Item>
             <Form.Item label="报警时间" name="time">
               <RangePicker />
+            </Form.Item>
+            <Form.Item label="关键词" name="keywords">
+              <Input style={{ width: 120 }} placeholder="站点名称" />
             </Form.Item>
             <Form.Item>
               <Space>
