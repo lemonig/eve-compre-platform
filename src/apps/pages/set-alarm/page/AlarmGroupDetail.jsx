@@ -114,7 +114,10 @@ function AlarmGroupDetail({ record, open, closePage }) {
       title: "序号",
       key: "index",
       width: 60,
-      render: (_, record, index) => index + 1,
+      render: (_, record, index) =>
+      pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+      index +
+      1,
     },
     {
       title: "规则名称",
