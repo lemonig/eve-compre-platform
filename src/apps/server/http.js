@@ -25,8 +25,22 @@ axios.interceptors.response.use(
   (response) => {
     store.dispatch(SHIFT_LOADING());
     if (response.data && response.status === 200) {
+      // 处理blob 格式数据
       if (Object.prototype.toString.call(response.data) === "[object Blob]") {
-      } else if (response.data.code === 401) {
+        if (response.data.type === 'application/octet-stream') {
+        }
+        //blbo格式数据处理错误处理
+        else if (response.data.type === 'application/json') {
+          console.error('Excel 导出错误');
+          response.data.text().then(text => {
+            let jsonText = JSON.parse(text)
+            message.error(jsonText.message);
+          })
+          return Promise.reject(response);
+        }
+      }
+
+      else if (response.data.code === 401) {
         // window.location.href = window.location.origin + "/loading";
       } else if (response.data.code === 403) {
       } else if (!response.data.success) {
@@ -54,7 +68,7 @@ axios.interceptors.response.use(
           message.error("403");
           window.location.href = window.location.origin + "/403";
 
-          setTimeout(() => {}, 1000);
+          setTimeout(() => { }, 1000);
           break;
         case 404:
           message.error("404");
@@ -138,7 +152,9 @@ export const _download = ({ url, data, title }) => {
       a.click();
       URL.revokeObjectURL(objectUrl);
       rlv();
-    });
+    }).catch(error => {
+      rej(error)
+    })
   });
 };
 export const _downloadPdf = ({ url, data, title }) => {

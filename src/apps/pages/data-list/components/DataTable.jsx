@@ -215,7 +215,12 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
       stationId: stationMsg.key,
       showFieldList: factorList,
     };
-    await exportStation(params, `站点数据-${stationMsg.title}`);
+    try {
+      await exportStation(params, `站点数据-${stationMsg.title}`)
+    } catch (error) {
+      
+    }
+    
     setBtnLoading(false);
   };
 
