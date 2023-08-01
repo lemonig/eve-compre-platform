@@ -42,3 +42,17 @@ export function accessLog(data) {
     data,
   });
 }
+// 站点传输率
+export function rateStation(data) {
+  return _post({
+    url: `/api/data/access/rate/station`,
+    data,
+  });
+}
+//因子传输率
+export function rateFactor(data) {
+  return _post({
+    url: `/api/data/access/rate/factor`,
+    data,
+  });
+}

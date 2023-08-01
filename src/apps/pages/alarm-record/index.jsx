@@ -22,6 +22,39 @@ const getFormCasData = (data = []) => {
   });
 };
 
+const text = [
+  { label: "报警编号", key: "messageCode" },
+  { label: "站点名称", key: "stationName" },
+  { label: "报警因子", key: "factorName" },
+  { label: "规则类型", key: "ruleName" },
+  { label: "报警描述", key: "describe" },
+  { label: "累计次数", key: "times" },
+  { label: "数据时间", key: "spt" },
+  { label: "报警时间", key: "alarmTime" },
+  { label: "业务主题", key: "topicTypeName" },
+  { label: "站点类型", key: "stationTypeName" },
+  { label: "管控级别", key: "controlLevelName" },
+  { label: "省份   ", key: "region1" },
+  { label: "城市   ", key: "region2" },
+  { label: "区县   ", key: "region3" },
+  { label: "乡镇街道", key: "region4" },
+  { label: "运维厂家", key: "operationFactory" },
+  { label: "超标联系人", key: "exceededContact" },
+  { label: "运维联系人", key: "operationContact" },
+  { label: "河流   ", key: "river" },
+];
+
+const fields = text.map((item, idx) => {
+  return {
+    id: item.key,
+    label: item.label,
+    value: item.key,
+    title: item.label,
+    dataIndex: item.key,
+    checked: idx < 8 ? true : false,
+  };
+});
+
 function AlarmRecord() {
   const [searchForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -155,7 +188,20 @@ function AlarmRecord() {
     }
     setLoading(false);
   };
-
+    // 查询
+    const search = () => {
+      if (pageMsg.pagination.current === 1) {
+        getPageData();
+      } else {
+        setPagemsg({
+          ...pageMsg,
+          pagination: {
+            ...pageMsg.pagination,
+            current: 1,
+          },
+        });
+      }
+    };
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
     // `dataSource` is useless since `pageSize` changed
@@ -206,7 +252,7 @@ function AlarmRecord() {
           <Form
             name="station"
             form={searchForm}
-            onFinish={getPageData}
+            onFinish={search}
             layout="inline"
             initialValues={{
               time: [dayjs().subtract(1, "month"), dayjs()],
@@ -323,6 +369,7 @@ function AlarmRecord() {
         open={visable}
         closeModal={() => setVisable(false)}
         onOk={confirmModal}
+        fields={fields}
       />
     </div>
   );

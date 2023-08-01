@@ -14,3 +14,18 @@ export function pageAlarmExport(data, title) {
     title,
   });
 }
+
+//消息记录
+export function pageAlarmLog(data) {
+  return _post({
+    url: `/api/alarm/log/page`,
+    data,
+  });
+}
+export function pageAlarmLogExport(data, title) {
+  return _download({
+    url: `/api/alarm/log/export`,
+    data,
+    title
+  });
+}
