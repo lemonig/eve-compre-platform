@@ -33,7 +33,7 @@ const creatHour = () => {
   let res = [];
   for (let i = 0; i <= 23; i++) {
     res.push({
-      value: i,
+      value: String(i),
       label: i + "时",
     });
   }
