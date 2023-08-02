@@ -32,9 +32,7 @@ function Login() {
         navigate("/", { replace: true });
         // window.location.href = "/"; //FIXME刷新menu,应改成navigate,但有异步
       }
-    } else {
-      message.error(msg);
-    }
+    } 
   };
 
   const getUserInfo = async () => {
@@ -43,9 +41,7 @@ function Login() {
       dispatch(SET_USER(data));
       localStorage.setItem("user", JSON.stringify(data));
       return data;
-    } else {
-      message.error(msg);
-    }
+    } 
   };
 
   const getMenuList = async () => {

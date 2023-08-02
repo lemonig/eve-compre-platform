@@ -5,6 +5,7 @@ import Lbreadcrumb from "@Components/Lbreadcrumb";
 import dayjs from "dayjs";
 import { SettingOutlined } from "@ant-design/icons";
 import AlarmFiled from "@Components/AlarmFiled";
+import StationDetail from './components/StationDetail';
 // api
 import { pageAlarm, pageAlarmExport } from "@Api/alarm.js";
 import { stationPage as stationMetaPage, topicList } from "@Api/user.js";
@@ -69,6 +70,7 @@ function AlarmRecord() {
   const [factorList, setFactorList] = useState([]); //字段选择回调
   const [factorOption, setFactorOption] = useState([]); //报警因子
   const [ruleOption, setRuleOption] = useState([]); //规则类型
+  const [detailVisable, setDetailVisable] = useState(false)
   const [pageMsg, setPagemsg] = useState({
     pagination: {
       current: 1,
@@ -217,6 +219,19 @@ function AlarmRecord() {
   };
 
   const confirmModal = (data) => {
+    let res = data.find(ele => ele.value === "stationName")
+    if (res) {
+      Reflect.defineProperty(res, 'render', {
+        value: (value, record, index) => <a onClick={() => setDetailVisable(true)}>{value}</a>,
+        configurable: true,
+        writable: true,
+        enumerable: true,
+      })
+      // res.render = function (value, record, index) {
+      //   return <a onClick={() => setDetailVisable(true)}>{value}</a>
+      // }
+    }
+    console.log(data);
     setColumns(data);
     setVisable(false);
     setFactorList(data);
@@ -391,6 +406,12 @@ function AlarmRecord() {
         onOk={confirmModal}
         fields={fields}
       />
+      {/* 站点详情 */}
+      <StationDetail
+        open={detailVisable}
+        closeModal={() => setDetailVisable(false)}
+      />
+
     </div>
   );
 }

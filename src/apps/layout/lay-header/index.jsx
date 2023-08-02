@@ -24,6 +24,7 @@ const Header = ({ message }) => {
   let navigate = useNavigate();
   let resolvedPath = useResolvedPath();
   useEffect(() => {
+    console.log(resolvedPath);
     if (resolvedPath.pathname == "/setting") {
       setActiveMenu("");
     } else {
