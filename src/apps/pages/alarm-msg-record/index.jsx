@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Select, Button, Space, Table, Form, Cascader, DatePicker, Input } from "antd";
+import { Select, Button, Space, Table, Form, Cascader, DatePicker, Input, message } from "antd";
 // com
 import Lbreadcrumb from "@Components/Lbreadcrumb";
 import dayjs from "dayjs";
@@ -155,8 +155,11 @@ function AlarmMsgRecord() {
   };
 
   const getPageData = async () => {
-    setLoading(true);
     let values = searchForm.getFieldsValue();
+    if (!values.time) {
+      message.info("开始日期或结束日期不能为空");
+      return false;
+    }
     if (!validateQuery(values.time[0], values.time[1])) {
       return;
     }
@@ -165,6 +168,7 @@ function AlarmMsgRecord() {
     if ("region" in values) {
       values.region = getFormCasData(values.region);
     }
+    setLoading(true);
     let params = {
       page: pageMsg.pagination.current,
       size: pageMsg.pagination.pageSize,
@@ -227,8 +231,11 @@ function AlarmMsgRecord() {
 
   //导出
   const download = async () => {
-    setBtnLoading(true);
     let values = searchForm.getFieldsValue();
+    if (!values.time) {
+      message.info("开始日期或结束日期不能为空");
+      return false;
+    }
     if (!validateQuery(values.time[0], values.time[1])) {
       return;
     }
@@ -238,6 +245,7 @@ function AlarmMsgRecord() {
       values.region = getFormCasData(values.region);
     }
     values.columns = columns.map((item) => item.id);
+    setBtnLoading(true);
     let params = {
       page: pageMsg.pagination.current,
       size: pageMsg.pagination.pageSize,
