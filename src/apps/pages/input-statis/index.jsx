@@ -17,17 +17,53 @@ import dayjs from "dayjs";
 import { rateStation, rateFactor } from "@Api/input_set.js";
 import { stationPage as stationMetaPage } from "@Api/user.js";
 
-import './index.less'
+const columnsf = [
+  {
+    title: "序号",
+    key: "index",
+    width: 60,
+    dataIndex: "index",
 
-function tableRender(value, record) {
-  console.log(value);
-  return value.map(item => {
-    return <>
-      <tr>{item.name}</tr>
+  },
+  {
+    title: "站点",
+    dataIndex: "name",
+    key: "name",
+  },
+  {
+    title: "站点类型",
+    dataIndex: "typeStationName",
+    key: "typeStationName",
+  },
+  {
+    title: "监测因子",
+    dataIndex: "factorName",
+    key: "factorName",
 
-    </>
-  })
-}
+  },
+  {
+    title: "应上传数量",
+    dataIndex: "totalNum",
+    key: "totalNum",
+
+  },
+  {
+    title: "实际上传数量",
+    dataIndex: "countNum",
+    key: "countNum",
+  },
+  {
+    title: "因子传输率(%)",
+    dataIndex: "rate",
+    key: "rate",
+  },
+  {
+    title: "站点平均传输率(%)",
+    dataIndex: "avgRate",
+    key: "avgRate",
+  },
+];
+
 
 function InputStatis() {
   const [searchForm] = Form.useForm();
@@ -41,18 +77,18 @@ function InputStatis() {
   });
   const [type, setType] = useState("factor"); // factor station
   const [data, setData] = useState([]);
-  const stytionOptionRef = useRef(null);
-  const [columns, setColumns] = useState([]);
+  const [data1, setData1] = useState([]);
+
   // 元数据
 
   const [stationList, setStationList] = useState([]);
 
   useEffect(() => {
     getPageData();
-  }, [pageMsg.pagination.current, pageMsg.pagination.pageSize, type]);
+  }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
 
   useEffect(() => {
-    setColumns(type === "station" ? columnss : columnsf);
+    search()
   }, [type]);
 
   //
@@ -84,28 +120,24 @@ function InputStatis() {
     const { additional_data, data } =
       type === "station" ? await rateStation(params) : await rateFactor(params);
     if (type !== "station") {
-      let res = data
-        .map((item, idx) => {
-          return item.list.map((jtem, jdx) => {
-            if (jdx === 0) {
-              let obj = {
-                ...item,
-                ...jtem,
-                sRate: item.rate,
-                sNmae: item.name
-              };
-              delete obj.list;
-              return obj;
-            } else {
-              return jtem;
-            }
-          });
+      let ndata = data.map((item, idx) => {
+        let temp = {
+          index: pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+            idx +
+            1,
+          key: idx,
+          ...item,
+          ...item.list[0]
+        }
+        temp.list.shift()
+        temp.list.forEach((jtem, jdx) => {
+          jtem.key = idx + '-' + jdx
         })
-        .flat();
-      console.log(res);
-      setData(res);
+        return temp
+      })
+      setData(ndata);
     } else {
-      setData(data);
+      setData1(data);
     }
     setLoading(false);
     setPagemsg({
@@ -117,58 +149,27 @@ function InputStatis() {
     });
   };
 
+
+  // 查询
+  const search = () => {
+    if (pageMsg.pagination.current === 1) {
+      getPageData();
+    } else {
+      setPagemsg({
+        ...pageMsg,
+        pagination: {
+          ...pageMsg.pagination,
+          current: 1,
+        },
+      });
+    }
+  };
+
   const getStationMetaPage = async () => {
     let { data } = await stationMetaPage();
     setStationList(data);
   };
-  const columnsf = [
-    {
-      title: "序号",
-      key: "index",
-      width: 60,
-      render: (_, record, index) =>
-        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
-        index +
-        1,
-    },
-    {
-      title: "站点",
-      dataIndex: "sNmae",
-      key: "name",
-    },
-    {
-      title: "站点类型",
-      dataIndex: "typeStationName",
-      key: "typeStationName",
-    },
-    {
-      title: "监测因子",
-      dataIndex: "name",
-      key: "list1",
 
-    },
-    // {
-    //   title: "应上传数量",
-    //   dataIndex: "list",
-    //   key: "list2",
-
-    // },
-    // {
-    //   title: "实际上传数量",
-    //   dataIndex: "list",
-    //   key: "lis3t",
-    // },
-    // {
-    //   title: "因子传输率(%)",
-    //   dataIndex: "list",
-    //   key: "lis4t",
-    // },
-    {
-      title: "站点平均传输率(%)",
-      dataIndex: "avgRate",
-      key: "avgRate",
-    },
-  ];
   const columnss = [
     {
       title: "序号",
@@ -217,43 +218,16 @@ function InputStatis() {
   };
 
 
-  // 自定义表格行的渲染组件
-  const CustomRow = (props) => {
-    console.log(props);
-    const { index, children, ...restProps } = props
-    const { record } = children[0].props
-    console.log(record);
-    console.log(children);
-    return <tr style={{ backgroundColor: index % 2 === 0 ? '#000' : 'white' }} {...restProps}>
-      {children}
-    </tr>
-  }
-  const CustomCell = ({ children, ...restProps }) => {
-    return (
-      <td style={{ color: 'red' }} {...restProps}>
-        {children}
-      </td>
-    );
-  }
-
-
-  const components = {
-    body: {
-      row: CustomRow, // 使用自定义的行渲染组件
-      cell: CustomCell
-    },
-  };
 
   return (
     <div className="content-wrap">
-      <Lbreadcrumb data={["数据共享", "调用日志"]} />
-
+      <Lbreadcrumb data={["数据接入", "传输率统计"]} />
       <>
         <div className="search">
           <Form
             layout="inline"
             form={searchForm}
-            onFinish={getPageData}
+            onFinish={search}
             autoComplete="off"
             initialValues={{
               beginTime: dayjs().startOf("day").subtract(1, "month"),
@@ -329,24 +303,33 @@ function InputStatis() {
           </Radio.Group>
         </div>
         {
-          data.length &&
-          <Table
-            // scroll={{ y: 500 }}
-            columns={columns}
+          !loading && type === 'factor' && <Table
+            columns={columnsf}
             dataSource={data}
             loading={loading}
-            rowKey={(record) => record.id}
-            pagination={{
-              ...pageMsg.pagination,
-
-            }}
+            pagination={pageMsg.pagination}
             onChange={handleTableChange}
-            components={components}
-          // rowClassName={(record, index) => (index % 2 === 0 ? 'zebra-stripe' : '')}
-
+            childrenColumnName="list"
+            defaultExpandAllRows={true}
+            expandIcon={
+              ({ expanded, onExpand, record }) =>
+                expanded ? (
+                  <span onClick={e => onExpand(record, e)} />
+                ) : (
+                  <span onClick={e => onExpand(record, e)} />
+                )
+            }
           />
         }
-
+        {
+          type === 'station' && <Table
+            columns={columnss}
+            dataSource={data1}
+            loading={loading}
+            pagination={pageMsg.pagination}
+            onChange={handleTableChange}
+          />
+        }
       </>
     </div>
   );
