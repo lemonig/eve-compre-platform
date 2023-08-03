@@ -127,9 +127,10 @@ const routerList = [
       },
     ],
   },
+  // 时间报表
   {
     path: "operation_report",
-    element: lazyLoad("operate-sql"),
+    element: lazyLoad("operate-date-report"),
   },
   {
     path: "operation_report_batch_export",
