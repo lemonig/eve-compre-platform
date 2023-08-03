@@ -29,3 +29,10 @@ export function pageAlarmLogExport(data, title) {
     title
   });
 }
+//报警站点详情
+export function pageAlarmdetail(data) {
+  return _post({
+    url: `/api/alarm/data/detail`,
+    data,
+  });
+}

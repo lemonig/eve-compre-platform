@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Select, Button, Space, Table, Form, Cascader, DatePicker, Input, message } from "antd";
+import {
+  Select,
+  Button,
+  Space,
+  Table,
+  Form,
+  Cascader,
+  DatePicker,
+  Input,
+  message,
+} from "antd";
 // com
 import Lbreadcrumb from "@Components/Lbreadcrumb";
 import dayjs from "dayjs";
 import { SettingOutlined } from "@ant-design/icons";
 import AlarmFiled from "@Components/AlarmFiled";
-import StationDetail from './components/StationDetail';
+import StationDetail from "./components/StationDetail";
 // api
 import { pageAlarm, pageAlarmExport } from "@Api/alarm.js";
 import { stationPage as stationMetaPage, topicList } from "@Api/user.js";
@@ -70,13 +80,14 @@ function AlarmRecord() {
   const [factorList, setFactorList] = useState([]); //字段选择回调
   const [factorOption, setFactorOption] = useState([]); //报警因子
   const [ruleOption, setRuleOption] = useState([]); //规则类型
-  const [detailVisable, setDetailVisable] = useState(false)
+  const [detailVisable, setDetailVisable] = useState(false);
   const [pageMsg, setPagemsg] = useState({
     pagination: {
       current: 1,
       pageSize: 20,
     },
   });
+  const [operateId, setOperateId] = useState("");
 
   let normalCol = [
     {
@@ -221,19 +232,22 @@ function AlarmRecord() {
       setData([]);
     }
   };
-
+  const showDetail = (record) => {
+    setDetailVisable(true)
+    setOperateId(record)
+  }
   const confirmModal = (data) => {
-    let res = data.find(ele => ele.value === "stationName")
+    let res = data.find((ele) => ele.value === "stationName");
     if (res) {
-      Reflect.defineProperty(res, 'render', {
-        value: (value, record, index) => <a onClick={() => setDetailVisable(true)}>{value}</a>,
+      Reflect.defineProperty(res, "render", {
+        value: (value, record, index) => (
+          <a onClick={() => showDetail(record)}>{value}</a>
+        ),
         configurable: true,
         writable: true,
         enumerable: true,
-      })
-      // res.render = function (value, record, index) {
-      //   return <a onClick={() => setDetailVisable(true)}>{value}</a>
-      // }
+      });
+
     }
     setColumns(data);
     setVisable(false);
@@ -359,13 +373,13 @@ function AlarmRecord() {
                 placeholder="报警分类："
                 options={[
                   {
-                    label: '运维报警',
-                    value: 'operation'
+                    label: "运维报警",
+                    value: "operation",
                   },
                   {
-                    label: '超标报警',
-                    value: 'exceeded'
-                  }
+                    label: "超标报警",
+                    value: "exceeded",
+                  },
                 ]}
                 allowClear
               />
@@ -414,10 +428,13 @@ function AlarmRecord() {
         fields={fields}
       />
       {/* 站点详情 */}
-      <StationDetail
-        open={detailVisable}
-        closeModal={() => setDetailVisable(false)}
-      />
+      {
+        detailVisable && <StationDetail
+          open={detailVisable}
+          closeModal={() => setDetailVisable(false)}
+          record={operateId}
+        />
+      }
 
     </div>
   );
