@@ -90,9 +90,8 @@ const Header = ({ message }) => {
           item.children && (
             <Dropdown placement="bottom" menu={createCSubMenu(item.children)}>
               <li
-                className={`li-outer ${
-                  activeMenu === item.id ? "activeStyle" : undefined
-                }`}
+                className={`li-outer ${activeMenu === item.id ? "activeStyle" : undefined
+                  }`}
               >
                 {/* {item.icon} */}
                 <IconFont name={item.icon} size="16" color="#fff" />
@@ -108,7 +107,7 @@ const Header = ({ message }) => {
     navigate("comment");
   };
   const gotoWeChart = () => {
-    window.location.href = "weixin://";
+    window.location.href = "https://work.weixin.qq.com/kfid/kfc032962d5866cf9d5";
   };
   return (
     <div className="page-title">
