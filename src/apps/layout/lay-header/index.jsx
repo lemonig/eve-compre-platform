@@ -31,6 +31,7 @@ const Header = ({ message }) => {
       let res = menu.find((item) => item.path === resolvedPath.pathname);
       if (res) {
         let res1 = menu.find((item) => item.id === res.pid);
+        console.log(res1);
         setActiveMenu(res1.id);
       }
     }
@@ -137,8 +138,13 @@ const Header = ({ message }) => {
               </Badge>
             </li> */}
           {creatMenu()}
-          <li className="li-outer" onClick={gotoWeChart}>
-            客服
+          <li className="li-outer">
+            <IconFont name={'kefu'} size="16" color="#fff" />
+            <span style={{ marginLeft: "4px" }}>
+              <a href="https://work.weixin.qq.com/kfid/kfc032962d5866cf9d5" target='_blank' rel="noreferrer">
+                客服
+              </a>
+            </span>
           </li>
           <User></User>
         </ul>
