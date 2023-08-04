@@ -151,8 +151,8 @@ function InputSet() {
     },
     {
       title: "接入数据",
-      dataIndex: "accessData",
-      key: "accessData",
+      dataIndex: "accessDataName",
+      key: "accessDataName",
     },
     {
       title: "最近接入时间",
