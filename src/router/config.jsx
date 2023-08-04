@@ -192,7 +192,7 @@ const routerList = [
       {
         path: "system",
         element: lazyLoad("set-base"),
-        index: true,
+        // index: true,
       },
       {
         path: "user",
@@ -319,7 +319,7 @@ const config = [
   {
     path: "/",
     element: (
-      <React.Suspense fallback={<>...</>}>
+      <React.Suspense fallback={<>Loading...</>}>
         <RouterAuth>
           <BodyLayout />
         </RouterAuth>

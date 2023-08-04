@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Checkbox, Affix, message } from "antd";
 import "./index.less";
-import pic_login_side from "@/assets/image/login-side.png";
+import pic_login_side from "@/assets/image/login-side.jpg";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { dbLogin, owner } from "@Api/user";
@@ -20,7 +20,7 @@ function Login() {
   let navigate = useNavigate();
   const [isCodeLogin, setIsCodeLogin] = useState(true);
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   const onFinish = async (values) => {
     let { message: msg, success, data } = await dbLogin(values);
@@ -32,7 +32,7 @@ function Login() {
         navigate("/", { replace: true });
         // window.location.href = "/"; //FIXME刷新menu,应改成navigate,但有异步
       }
-    } 
+    }
   };
 
   const getUserInfo = async () => {
@@ -41,7 +41,7 @@ function Login() {
       dispatch(SET_USER(data));
       localStorage.setItem("user", JSON.stringify(data));
       return data;
-    } 
+    }
   };
 
   const getMenuList = async () => {
@@ -52,7 +52,7 @@ function Login() {
     // localStorage.setItem("menuTree", JSON.stringify(menuTree));
     // navigate("/", { replace: true });
   };
-  const onFinishFailed = (errorInfo) => {};
+  const onFinishFailed = (errorInfo) => { };
 
   const handleLoginState = () => {
     setIsCodeLogin(!isCodeLogin);

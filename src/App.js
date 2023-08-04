@@ -3,7 +3,7 @@ import "./styles/index.less";
 import { BrowserRouter } from "react-router-dom";
 import Router from "./router/index";
 import React, { useEffect } from "react";
-import Loading from "./apps/components/Loading";
+import Processing from "./apps/components/Processing";
 import "./App.less";
 import { settingGet, settingUpdate } from "@Api/set_base.js";
 import { SET_PLATFORM } from "@Store/features/platformSlice";
@@ -34,7 +34,7 @@ function App() {
         <Router />
       </BrowserRouter>
 
-      <Loading id="app-load"></Loading>
+      <Processing id="app-load"></Processing>
     </div>
   );
 }
