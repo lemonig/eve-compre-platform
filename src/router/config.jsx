@@ -190,9 +190,9 @@ const routerList = [
     element: <SetLayout />,
     children: [
       {
-        path: "system",
+        // path: "system",
         element: lazyLoad("set-base"),
-        // index: true,
+        index: true,
       },
       {
         path: "user",
