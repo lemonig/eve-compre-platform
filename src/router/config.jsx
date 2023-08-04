@@ -109,9 +109,9 @@ const routerList = [
     element: <OperateLayout />,
     children: [
       {
-        path: "alarm_record", //报警记录
+        // path: "alarm_record", //报警记录
         element: lazyLoad("alarm-record"),
-        // index: true,
+        index: true,
       },
       {
         path: "send_record", //消息记录

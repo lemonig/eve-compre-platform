@@ -14,6 +14,8 @@ import menu from "../../utils/menuData";
 import { handleMenu } from "@Utils/menu";
 import { inputTrim } from "@Utils/util";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { settingGet, settingUpdate } from "@Api/set_base.js";
+import { SET_PLATFORM } from "@Store/features/platformSlice";
 
 function Login() {
   let dispatch = useDispatch();
@@ -28,6 +30,7 @@ function Login() {
       localStorage.setItem("token", data.access_token);
       let res1 = await getMenuList();
       let res = await getUserInfo();
+      getSetData()
       if ("id" in res && res1.length > 0) {
         navigate("/", { replace: true });
         // window.location.href = "/"; //FIXME刷新menu,应改成navigate,但有异步
@@ -51,6 +54,13 @@ function Login() {
     // let menuTree = handleMenu(menu);
     // localStorage.setItem("menuTree", JSON.stringify(menuTree));
     // navigate("/", { replace: true });
+
+  };
+
+
+  const getSetData = async () => {
+    let { data } = await settingGet();
+    dispatch(SET_PLATFORM(data));
   };
   const onFinishFailed = (errorInfo) => { };
 
