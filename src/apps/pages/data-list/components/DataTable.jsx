@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useLayoutEffect } from "react";
 import { Select, Button, Table, Form, Tooltip } from "antd";
 import LtimePicker from "@Components/LtimePicker";
 import WaterLevel from "@Components/WaterLevel";
@@ -21,9 +21,9 @@ function tableRender(value) {
               style={
                 value.color
                   ? {
-                      color: "#F82504",
-                      fontWeight: "bold",
-                    }
+                    color: "#F82504",
+                    fontWeight: "bold",
+                  }
                   : {}
               }
             >
@@ -68,6 +68,15 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
       getPageData();
     }
   }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
+
+  //站点变化->因子变化->表单数据清空
+  useLayoutEffect(() => {
+    searchForm.setFieldsValue({
+      dataSource: metaData.dataSource[0].value,
+      time: formPickTime(metaData.computeDataLevel[0].value),
+    });
+  }, [facList])
+
 
   let normalCol = [
     {
@@ -127,8 +136,8 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
         // align: "center",
         fixed:
           item.key === "datatime" ||
-          item.key === "station_type" ||
-          item.key === "name"
+            item.key === "station_type" ||
+            item.key === "name"
             ? true
             : false,
       };
@@ -218,9 +227,9 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
     try {
       await exportStation(params, `站点数据-${stationMsg.title}`)
     } catch (error) {
-      
+
     }
-    
+
     setBtnLoading(false);
   };
 
@@ -232,27 +241,9 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
     },
   };
 
-  const memoFiledSelect = useMemo(() => {
-    searchForm.setFieldsValue({
-      dataSource: metaData.dataSource[0].value,
-      time: formPickTime(metaData.computeDataLevel[0].value),
-    });
-    return (
-      metaData?.stationField.length &&
-      facList.length && (
-        <FiledSelect
-          title={["站点属性", "评价因子", "监测因子"]}
-          options1={metaData?.stationField}
-          options2={metaData?.evaluateIndex}
-          options3={facList}
-          stationId={stationMsg.key}
-          open={visable}
-          closeModal={() => setVisable(false)}
-          onOk={confirmModal}
-        />
-      )
-    );
-  }, [visable, facList]);
+
+
+
 
   return (
     <>
@@ -362,7 +353,19 @@ function DataTable({ stationMsg, menuMsg, facList, metaData }) {
           </Table.Summary> */}
         </Table>
       </div>
-      {memoFiledSelect}
+      {
+        facList.length &&
+        <FiledSelect
+          title={["站点属性", "评价因子", "监测因子"]}
+          options1={metaData?.stationField}
+          options2={metaData?.evaluateIndex}
+          options3={facList}
+          stationId={stationMsg.key}
+          open={visable}
+          closeModal={() => setVisable(false)}
+          onOk={confirmModal}
+        />
+      }
     </>
   );
 }
