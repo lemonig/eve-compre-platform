@@ -331,10 +331,6 @@ function AlarmStatis() {
     setCurrentPage(pagination.current);
   };
 
-  const confirmModal = (data) => {
-    setVisable(false);
-    setFactorList(data);
-  };
 
   return (
     <div className="content-wrap">
@@ -410,15 +406,10 @@ function AlarmStatis() {
                   <Button loading={loading}>导出</Button>
                 </Space>
               </Form.Item>
-              <Form.Item>
-                <Checkbox>热图</Checkbox>
-              </Form.Item>
+
             </Form>
           )}
-          <SettingOutlined
-            onClick={() => setVisable(true)}
-            style={{ fontSize: "18px" }}
-          />
+
         </div>
         {columns.length > 0 && (
           <Table
@@ -431,19 +422,6 @@ function AlarmStatis() {
           ></Table>
         )}
       </>
-
-      {/* 弹出表单 */}
-      {metaData?.stationField.length ? (
-        <FiledSelect
-          title={["站点属性", "评价因子", "监测因子"]}
-          options1={metaData?.stationField}
-          options2={metaData?.evaluateIndex}
-          options3={metaData.factor}
-          open={visable}
-          closeModal={() => setVisable(false)}
-          onOk={confirmModal}
-        />
-      ) : null}
     </div>
   );
 }

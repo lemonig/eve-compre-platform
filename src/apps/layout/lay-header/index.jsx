@@ -17,22 +17,26 @@ import { handleMenu } from "@Utils/menu";
 
 const Header = ({ message }) => {
   const [fullOrno, setfullOrno] = useState(true);
-  const menu = useSelector((state) => state.menu);
+  const menus = useSelector((state) => state.menu);
   const platform = useSelector((state) => state.platform);
-  const menuTree = menu ? handleMenu(menu) : [];
+  const menuTree = menus ? handleMenu(menus) : [];
   const [activeMenu, setActiveMenu] = useState({});
   let navigate = useNavigate();
   let resolvedPath = useResolvedPath();
   useEffect(() => {
-    console.log(resolvedPath);
+    function getLastPid(menu) {
+      if (menu.pid === '0') {
+        return menu.id
+      }
+      let res = menus.find((item) => item.id === menu.pid);
+      return getLastPid(res)
+    }
     if (resolvedPath.pathname == "/setting") {
       setActiveMenu("");
     } else {
-      let res = menu.find((item) => item.path === resolvedPath.pathname);
+      let res = menus.find((item) => item.path === resolvedPath.pathname);
       if (res) {
-        let res1 = menu.find((item) => item.id === res.pid);
-        console.log(res1);
-        setActiveMenu(res1.id);
+        setActiveMenu(getLastPid(res));
       }
     }
   }, [resolvedPath.pathname]);
