@@ -9,6 +9,7 @@ import { dbLogin, owner } from "@Api/user";
 import { useDispatch, useSelector } from "react-redux";
 import { SET_USER } from "@Store/features/userSlice";
 import { getMenuData } from "@Store/features/menulistSlice";
+import { getPlatformData } from "@Store/features/platformSlice";
 
 import menu from "../../utils/menuData";
 import { handleMenu } from "@Utils/menu";
@@ -30,10 +31,9 @@ function Login() {
       localStorage.setItem("token", data.access_token);
       let res1 = await getMenuList();
       let res = await getUserInfo();
-      getSetData()
+      await dispatch(getPlatformData())
       if ("id" in res && res1.length > 0) {
         navigate("/", { replace: true });
-        // window.location.href = "/"; //FIXME刷新menu,应改成navigate,但有异步
       }
     }
   };
@@ -58,10 +58,7 @@ function Login() {
   };
 
 
-  const getSetData = async () => {
-    let { data } = await settingGet();
-    dispatch(SET_PLATFORM(data));
-  };
+
   const onFinishFailed = (errorInfo) => { };
 
   const handleLoginState = () => {

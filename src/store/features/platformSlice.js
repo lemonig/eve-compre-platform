@@ -2,12 +2,11 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { settingGet, settingUpdate } from "@Api/set_base.js";
 
 const initialState = {
-  platform: "",
+  platform: {},
 };
 
 const getPlatform = async () => {
   let { message: msg, success, data } = await settingGet();
-  // localStorage.setItem("platform", JSON.stringify(data));
   return data;
 };
 
@@ -20,14 +19,25 @@ export const platformSlice = createSlice({
   name: "platform",
   initialState: initialState.platform,
   reducers: {
-    SET_PLATFORM: (state, { payload }) => {
-      // localStorage.setItem("platform", JSON.stringify(payload));
+    loadSettingData: (state, { payload }) => {
       return (state = payload);
     },
+  },
+  extraReducers(builder) {
+    builder
+      .addCase(getPlatformData.pending, (state) => {
+        // console.log('setting pending');
+      })
+      .addCase(getPlatformData.fulfilled, (state, { payload }) => {
+        return (state = payload);
+      })
+      .addCase(getPlatformData.rejected, (state, err) => {
+        // console.log('setting err');
+      });
   },
 });
 
 const { actions, reducer } = platformSlice;
 
-export const { SET_PLATFORM } = actions;
+export const { loadSettingData } = actions;
 export default reducer;

@@ -39,7 +39,7 @@ export const menulistSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(getMenuData.pending, (state) => {
-        console.log("🚀 ~ 进行中！");
+        console.log("🚀 ~ getMenu进行中！");
       })
       .addCase(getMenuData.fulfilled, (state, { payload }) => {
         // window.location.href = "/";

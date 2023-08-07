@@ -3,10 +3,11 @@ import Lbreadcrumb from "@Components/Lbreadcrumb";
 import { Button, Space, Form, Input, Upload, message } from "antd";
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons";
 import { settingGet, settingUpdate } from "@Api/set_base.js";
+import { getPlatformData } from "@Store/features/platformSlice";
+import { useDispatch } from "react-redux";
 
-const onFinishFailed = (errorInfo) => {
-  console.log("Failed:", errorInfo);
-};
+
+
 
 const normFile = (e) => {
   if (Array.isArray(e)) {
@@ -33,9 +34,11 @@ const beforeUpload = (file) => {
 };
 
 function SetBase() {
+  let dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState();
   const [form] = Form.useForm();
+
   useEffect(() => {
     getPageData();
   }, []);
@@ -50,6 +53,7 @@ function SetBase() {
     let { success, message: msg } = await settingUpdate(values);
     if (success) {
       message.success(msg);
+      await dispatch(getPlatformData())
     } else {
       message.error(msg);
     }
@@ -105,7 +109,6 @@ function SetBase() {
           maxWidth: 600,
         }}
         onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
         autoComplete="off"
         colon={false}
       >
