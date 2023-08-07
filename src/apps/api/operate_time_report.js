@@ -14,6 +14,14 @@ export function reportTimeMeta(data) {
     data,
   });
 }
+// 时间报表
+export function reportTimeExport(data, title) {
+  return _download({
+    url: `/api/data/report/time/export`,
+    data,
+    title
+  });
+}
 // 批量导出
 export function batchExport(data, title) {
   return _post({

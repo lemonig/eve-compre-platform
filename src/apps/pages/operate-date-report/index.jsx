@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from "react";
 import {
-  Input,
   Select,
   Button,
   Space,
   Table,
-  Tag,
-  Modal,
   Form,
   message,
   Tooltip,
-  Switch,
   Cascader,
   Checkbox,
 } from "antd";
@@ -23,13 +19,14 @@ import { SettingOutlined, WarningFilled } from "@ant-design/icons";
 import FiledSelect from "@Components/FiledSelect";
 import WaterLevel from "@Components/WaterLevel";
 // api
-import { reportTime, reportTimeMeta } from "@Api/operate_time_report.js";
+import { reportTime, reportTimeMeta, reportTimeExport } from "@Api/operate_time_report.js";
 import { stationPage as stationMetaPage } from "@Api/user.js";
 import { regionList } from "@Api/set_region.js";
 import { riverList } from "@Api/set_rival.js";
 import { searchMeta } from "@Api/data-list.js";
 // util
 import { formatePickTime } from "@Utils/util";
+import { validateQuery } from "@Utils/valid.js";
 
 const { Option } = Select;
 
@@ -70,7 +67,6 @@ function tableRender(value) {
   }
 }
 
-const pageSize = 10;
 
 const DynamicTableHeader = ({ columns }) => {
   return columns.map((column) => (
@@ -110,7 +106,14 @@ function OperateDateReport() {
   const [data, setData] = useState([]);
   const [visable, setVisable] = useState(false); //因子选择
   const [factorList, setFactorList] = useState([]); //字段选择回调
-  const [currentPage, setCurrentPage] = useState(1);
+  const [pageMsg, setPagemsg] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+
   useEffect(() => {
     // 元数据获取
 
@@ -137,9 +140,15 @@ function OperateDateReport() {
       key: "index",
       width: 50,
       dataIndex: "index",
-      render: (text, record, index) => (currentPage - 1) * pageSize + index + 1,
+      render: (_, record, idx) =>
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        idx +
+        1,
     },
   ];
+
+
+
 
   const getMetaData = async () => {
     let values = searchForm.getFieldsValue();
@@ -263,8 +272,21 @@ function OperateDateReport() {
   };
 
   const getPageData = async () => {
-    setLoading(true);
     let values = searchForm.getFieldsValue();
+    if (!values.time) {
+      message.info("开始日期或结束日期不能为空");
+      return false;
+    }
+    if (
+      !validateQuery(
+        values.time.startTime,
+        values.time.endTime,
+        values.time.type
+      )
+    ) {
+      return;
+    }
+
     values.beginTime = formatePickTime(values.time.type, values.time.startTime);
     values.endTime = formatePickTime(values.time.type, values.time.endTime);
     values.timeType = values.time.type;
@@ -276,6 +298,7 @@ function OperateDateReport() {
     if ("river" in values) {
       values.river = getFormCasData(values.river);
     }
+    setLoading(true);
 
     let { additional_data, data, success } = await reportTime(values);
     if (success) {
@@ -286,7 +309,12 @@ function OperateDateReport() {
       setData(iData);
 
       let newCol = additional_data.columnList.map((item) => ({
-        title: item.label,
+        title: (
+          <p>
+            <p>{item.label}</p>
+            <p>{item.unit ? `(${item.unit})` : ""}</p>
+          </p>
+        ),
         dataIndex: item.key,
         key: item.key,
         render: (value) => tableRender(value),
@@ -299,42 +327,72 @@ function OperateDateReport() {
     setLoading(false);
   };
 
-  // 新建
-  const handleAdd = () => {
-    setOperate(null);
-    setIsModalOpen({
-      ...isModalOpen,
-      form: true,
-    });
-  };
-  // 编辑
-  const handleEdit = (record) => {
-    setOperate(record);
-    setIsModalOpen({
-      ...isModalOpen,
-      form: true,
-    });
+  // 查询
+  const search = () => {
+    if (pageMsg.pagination.current === 1) {
+      getPageData();
+    } else {
+      setPagemsg({
+        ...pageMsg,
+        pagination: {
+          ...pageMsg.pagination,
+          current: 1,
+        },
+      });
+    }
   };
 
-  //表单回调
-  const closeModal = (flag) => {
-    // flag 确定还是取消
-    setIsModalOpen({
-      ...isModalOpen,
-      form: false,
-    });
-    if (flag) getPageData();
-  };
+
 
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
     // `dataSource` is useless since `pageSize` changed
-    setCurrentPage(pagination.current);
+    setPagemsg({
+      pagination,
+      filters,
+      ...sorter,
+    });
   };
 
   const confirmModal = (data) => {
     setVisable(false);
     setFactorList(data);
+  };
+
+  //导出
+  const download = async () => {
+    let values = searchForm.getFieldsValue();
+    if (!values.time) {
+      message.info("开始日期或结束日期不能为空");
+      return false;
+    }
+    if (
+      !validateQuery(
+        values.time.startTime,
+        values.time.endTime,
+        values.time.type
+      )
+    ) {
+      return;
+    }
+    values.beginTime = formatePickTime(values.time.type, values.time.startTime);
+    values.endTime = formatePickTime(values.time.type, values.time.endTime);
+    values.timeType = values.time.type;
+    values.showFieldList = factorList;
+
+    if ("region" in values) {
+      values.region = getFormCasData(values.region);
+    }
+    if ("river" in values) {
+      values.river = getFormCasData(values.river);
+    }
+    setBtnLoading(true);
+
+    try {
+      await reportTimeExport(values, "时间报表");
+    } catch (error) {
+    }
+    setBtnLoading(false);
   };
 
   return (
@@ -346,7 +404,7 @@ function OperateDateReport() {
             <Form
               name="station"
               form={searchForm}
-              onFinish={getPageData}
+              onFinish={search}
               layout="inline"
             >
               <Form.Item label="站点类型" name="stationType">
@@ -408,12 +466,10 @@ function OperateDateReport() {
                   <Button type="primary" htmlType="submit">
                     查询
                   </Button>
-                  <Button loading={btnloading}>导出</Button>
+                  <Button loading={btnloading} onClick={download}>导出</Button>
                 </Space>
               </Form.Item>
-              <Form.Item>
-                <Checkbox>热图</Checkbox>
-              </Form.Item>
+
             </Form>
           )}
           <SettingOutlined
@@ -423,12 +479,16 @@ function OperateDateReport() {
         </div>
         {columns.length > 0 && (
           <Table
+            pagination={{
+              ...pageMsg.pagination,
+              showSizeChanger: true,
+            }}
+            scroll={{ y: 620 }}
             columns={[...normalCol, ...columns]}
             dataSource={data}
             loading={loading}
             rowKey={(record) => record.idx}
             onChange={handleTableChange}
-            pagination={{ pageSize }}
           ></Table>
         )}
       </>
