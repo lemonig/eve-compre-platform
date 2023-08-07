@@ -16,7 +16,7 @@ import {
 import Lbreadcrumb from "@Components/Lbreadcrumb";
 import IconFont from "@Components/IconFont";
 import Detail from "./components/Detail";
-import { stationUpdate, stationPage, stationDelete } from "@Api/set_station.js";
+import { stationPage, stationPageExport } from "@Api/data_info.js";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 import { topicList } from "@Api/set_meta_theme.js";
@@ -220,17 +220,7 @@ function StationData() {
     setIsModalOpen(true);
   };
 
-  const handleStatusChange = async (checked, record) => {
-    record.status = checked ? "1" : "0";
 
-    let { success, message: msg } = await stationUpdate(record);
-    if (success) {
-      message.success(msg);
-      closeModal(true);
-    } else {
-      message.error(msg);
-    }
-  };
 
 
   const columns = [
@@ -317,8 +307,8 @@ function StationData() {
     },
     {
       title: "水质目标类型",
-      dataIndex: "wtLevel",
-      key: "wtLevel",
+      dataIndex: "targetWaterQualityLevel",
+      key: "targetWaterQualityLevel",
     },
 
 
@@ -346,30 +336,24 @@ function StationData() {
   //导出
   const download = async () => {
     let values = searchForm.getFieldsValue();
-    if (!values.time) {
-      message.info("开始日期或结束日期不能为空");
-      return false;
+    if ("region" in values) {
+      values.region = getFormCasData(values.region);
     }
-    // if (!validateQuery(values.time[0], values.time[1])) {
-    //   return;
-    // }
-    // values.notificationBeginDate = dayjs(values.time[0]).format("YYYYMMDD");
-    // values.notificationEndDate = dayjs(values.time[1]).format("YYYYMMDD");
-    // if ("region" in values) {
-    //   values.region = getFormCasData(values.region);
-    // }
-    // values.columns = columns.map((item) => item.id);
-    // setBtnLoading(true);
-    // let params = {
-    //   page: pageMsg.pagination.current,
-    //   size: pageMsg.pagination.pageSize,
-    //   data: values,
-    // };
-    // try {
-    //   await pageAlarmLogExport(params, "消息记录");
-    // } catch (error) {
-    // }
-    // setBtnLoading(false);
+    if ("river" in values) {
+      values.river = getFormCasData(values.river);
+    }
+
+    setBtnLoading(true);
+    let params = {
+      page: pageMsg.pagination.current,
+      size: pageMsg.pagination.pageSize,
+      data: values,
+    };
+    try {
+      await stationPageExport(params, "站点资料");
+    } catch (error) {
+    }
+    setBtnLoading(false);
   };
 
   return (
