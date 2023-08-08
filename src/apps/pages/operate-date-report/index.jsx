@@ -205,7 +205,9 @@ function OperateDateReport() {
   };
 
   const getStationMetaPage = async () => {
-    let { data } = await stationMetaPage();
+    let { data } = await stationMetaPage({
+      filterNoComputeDataLevel: true
+    });
     setStationList(data);
     setStationType(data[0]);
     searchForm.setFieldsValue({
@@ -397,7 +399,7 @@ function OperateDateReport() {
 
   return (
     <div className="content-wrap">
-      <Lbreadcrumb data={["当前位置：数据运营", "报表统计", "时间报表"]} />
+      <Lbreadcrumb data={["当前位置：数据运营", "时间报表"]} />
       <>
         <div className="search">
           {!!stationType && (
@@ -428,7 +430,7 @@ function OperateDateReport() {
                   changeOnSelect
                   fieldNames={{
                     label: "name",
-                    value: "name",
+                    value: "code",
                   }}
                   multiple
                   maxTagCount="responsive"
