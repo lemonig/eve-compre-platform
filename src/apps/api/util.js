@@ -50,10 +50,11 @@ export function imgUpload(data) {
   });
 }
 // 文件上传
-export function fileUpload(data) {
+export function fileUpload(data, headers) {
   return _post({
     url: `/api/upload/file`,
     data,
+    headers
   });
 }
 // 角色权限列表
