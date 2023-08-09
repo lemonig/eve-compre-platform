@@ -153,8 +153,6 @@ function Detail({
   searchData,
   tableRow
 }) {
-  console.log(tableRow);
-  console.log(searchData);
   const handleOk = async () => { };
   const [loading, setLoading] = useState(false);
   const [chartdata, setChartdata] = useState(null);
@@ -185,8 +183,13 @@ function Detail({
     let params = JSON.parse(JSON.stringify(searchData))
     params.notificationBeginDate = dayjs(params.time[0]).format("YYYYMMDD");
     params.notificationEndDate = dayjs(params.time[1]).format("YYYYMMDD");
-    params.topicType = [params.topicType]
-    params.wechatGroupName = tableRow.wechatGroupName
+    params.topicType = params.topicType ? [params.topicType] : undefined
+    if (tableRow.wechatGroupName) {
+      params.wechatGroupName = tableRow.wechatGroupName
+    }
+    if (tableRow.stationId) {
+      params.stationId = tableRow.stationId
+    }
     let { data, success, message } = await logDayStat(params);
     if (success) {
       let xData = data.map(item => item.datatime)
@@ -352,19 +355,6 @@ function Detail({
           </>
         ) : null}
 
-        {chartdata ? (
-          <>
-            <ReactECharts
-              option={chartdata}
-              lazyUpdate={true}
-              theme={"theme_name"}
-              style={{ height: "300px" }}
-              ref={chartRef}
-              notMerge={true}
-              showLoading={loading}
-            />
-          </>
-        ) : null}
       </Modal>
       <style jsx="true">
         {`

@@ -26,6 +26,9 @@ import Detail from "./components/Detail";
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
+
+
+
 const getFormCasData = (data = []) => {
   return data?.map((item) => {
     return item[item.length - 1];
@@ -35,75 +38,7 @@ const getFormCasData = (data = []) => {
 
 const pageSize = 10;
 
-const columsList = [
-  {
-    title: "日质控未通过",
-    key: 'ALM20220901',
-    dataIndex: 'ALM20220901', sorter: (a, b) => a.ALM20220901 - b.ALM20220901,
-  },
-  {
-    title: "电导率过低",
-    key: 'ALM20220902',
-    dataIndex: 'ALM20220902', sorter: (a, b) => a.ALM20220902 - b.ALM20220902,
-  },
-  {
-    title: "零值",
-    dataIndex: 'ALM20220903',
-    key: 'ALM20220903', sorter: (a, b) => a.ALM20220903 - b.ALM20220903,
-  },
-  {
-    title: "负值",
-    dataIndex: 'ALM20220904',
-    key: 'ALM20220904', sorter: (a, b) => a.ALM20220904 - b.ALM20220904,
-  },
-  {
-    title: "连续值",
-    key: 'ALM20220905',
-    dataIndex: 'ALM20220905', sorter: (a, b) => a.ALM20220905 - b.ALM20220905,
-  },
-  {
-    title: "离群",
-    key: 'ALM20220906',
-    dataIndex: 'ALM20220906', sorter: (a, b) => a.ALM20220906 - b.ALM20220906,
-  },
-  {
-    title: "超限值",
-    key: 'ALM20220907',
-    dataIndex: 'ALM20220907', sorter: (a, b) => a.ALM20220907 - b.ALM20220907,
-  },
-  {
-    title: "疑似站点离线",
-    key: 'ALM20220908',
-    dataIndex: 'ALM20220908', sorter: (a, b) => a.ALM20220908 - b.ALM20220908,
-  },
-  {
-    title: "氨氮异常",
-    key: 'ALM20220909',
-    dataIndex: 'ALM20220909', sorter: (a, b) => a.ALM20220909 - b.ALM20220909,
-  },
-  {
-    title: "水质超标",
-    key: 'ALM20220910',
-    dataIndex: 'ALM20220910', sorter: (a, b) => a.ALM20220910 - b.ALM20220910,
-  },
-  {
-    title: "仪器故障",
-    key: 'ALM20220911',
-    dataIndex: 'ALM20220911', sorter: (a, b) => a.ALM20220911 - b.ALM20220911,
-  },
-  {
-    title: "空气质量超标",
-    key: 'ALM20220912',
-    dataIndex: 'ALM20220912',
-    sorter: (a, b) => a.ALM20220912 - b.ALM20220912,
-  },
-  {
-    title: "PM2.5与PM10倒挂",
-    key: 'ALM20220913',
-    dataIndex: 'ALM20220913',
-    sorter: (a, b) => a.ALM20220913 - b.ALM20220913,
-  },
-]
+
 
 
 
@@ -131,11 +66,10 @@ function AlarmMsgStatis() {
   const [currentPage, setCurrentPage] = useState(1);
   const [factorOption, setFactorOption] = useState([]); //报警因子
   const themeId = Form.useWatch("topicType", searchForm);
+  const statType = Form.useWatch("statType", searchForm);
   const [ruleOption, setRuleOption] = useState([]); //规则类型
-
   const [visable, setVisable] = useState(false)
   const [tableRow, setTableRow] = useState(null)
-  const [columns, setClumns] = useState(columsList)
   const [pageMsg, setPagemsg] = useState({
     pagination: {
       current: 1,
@@ -143,11 +77,75 @@ function AlarmMsgStatis() {
     },
   });
 
+  const normalColumns = [
+    {
+      title: "序号",
+      key: "index",
+      width: 60,
+      render: (_, record, idx) =>
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        idx +
+        1,
+    },
+    {
+      title: "群聊名称",
+      key: "wechatGroupName",
+      dataIndex: "wechatGroupName",
+      render: (text, record, index) => <a onClick={() => showDetail(record)}>{text}</a>
+    },
+    {
+      title: "报警总数",
+      dataIndex: 'count',
+      key: 'count', sorter: (a, b) => a.count - b.count,
+
+    },
+  ];
+
+  const normalColumns1 = [
+    {
+      title: "序号",
+      key: "index",
+      width: 60,
+      render: (_, record, idx) =>
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        idx +
+        1,
+    },
+    {
+      title: "站点名称",
+      key: "stationName",
+      dataIndex: "stationName",
+      render: (text, record, index) => <a onClick={() => showDetail(record)}>{text}</a>
+    },
+    {
+      title: "站点类型",
+      dataIndex: 'stationType',
+      key: 'stationType',
+    },
+    {
+      title: "超标联系人",
+      dataIndex: 'exceededContact',
+      key: 'exceededContact',
+    },
+    {
+      title: "运维联系人",
+      dataIndex: 'operationContact',
+      key: 'operationContact',
+    },
+    {
+      title: "消息总数",
+      dataIndex: 'count',
+      key: 'count',
+      sorter: (a, b) => a.count - b.count,
+    },
+  ];
+
+  const [columns, setClumns] = useState(normalColumns1)
+
+
+
   useEffect(() => {
     // 元数据获取
-
-
-    // getStationMetaPage();
     getTopicListAsync()
     getFactorList()
     getRuleList()
@@ -173,29 +171,6 @@ function AlarmMsgStatis() {
     let { data: data1 } = await listRule();
     setRuleOption(data1);
   };
-  const normalColumns = [
-    {
-      title: "序号",
-      key: "index",
-      width: 60,
-      render: (_, record, idx) =>
-        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
-        idx +
-        1,
-    },
-    {
-      title: "群聊名称",
-      key: "wechatGroupName",
-      dataIndex: "wechatGroupName",
-      render: (text, record, index) => <a onClick={() => showDetail(record)}>{text}</a>
-    },
-    {
-      title: "报警总数",
-      dataIndex: 'count',
-      key: 'count', sorter: (a, b) => a.count - b.count,
-    },
-
-  ];
 
 
   const showDetail = (record) => {
@@ -203,7 +178,6 @@ function AlarmMsgStatis() {
     setTableRow(record)
   }
   useEffect(() => {
-    console.log(themeId);
     const getStationMetaPage = async () => {
       let { data } = await stationMetaPage({
         topicType: themeId
@@ -239,17 +213,10 @@ function AlarmMsgStatis() {
         ...item,
         idx,
       }));
-      if (values.ruleCode && values.ruleCode.length > 0) {
-        let res = columsList.map(item => {
-          if (
-            values.ruleCode.findIndex(ele => ele === item.dataIndex) !== -1
-          ) {
-            return item
-          }
-        }).filter(Boolean)
-        setClumns(res)
+      if (values.statType === 'station') {
+        setClumns(normalColumns1)
       } else {
-        setClumns(columsList)
+        setClumns(normalColumns)
       }
       setData(iData);
     }
@@ -304,65 +271,61 @@ function AlarmMsgStatis() {
             onFinish={getPageData}
             layout="inline"
             initialValues={{
-              time: [dayjs().subtract(1, 'month'), dayjs()]
+              time: [dayjs().subtract(1, 'month'), dayjs()],
+              statType: 'station'
             }}
           >
-            <Form.Item label="业务主题" name="topicType">
+            <Form.Item label="统计纬度" name="statType">
               <Select
                 className="width-3"
                 placeholder="请选择"
-                fieldNames={{
-                  label: "name",
-                  value: "id",
-                }}
-                options={themeList}
-                style={{ width: "120px" }}
+                options={[
 
+                  {
+                    label: '站点',
+                    value: "station"
+                  },
+                  {
+                    label: '微信群',
+                    value: "wechatGroupName"
+                  },
+                ]}
+                style={{ width: "120px" }}
               />
 
             </Form.Item>
-            <Form.Item label="站点类型" name="stationType">
-              <Select
-                options={stationList}
-                placeholder="请选择"
-                fieldNames={{
-                  label: "name",
-                  value: "id",
-                }}
-                style={{ width: "120px" }}
-                mode="multiple"
-                maxTagCount="responsive"
-                allowClear
-              />
-            </Form.Item>
-            <Form.Item label="报警因子" name="factorName">
-              <Select
-                style={{ width: 120 }}
-                placeholder="报警因子"
-                options={factorOption}
-                fieldNames={{
-                  label: "factorName",
-                  value: "factorName",
-                }}
-                mode="multiple"
-                maxTagCount="responsive"
-                allowClear
-              />
-            </Form.Item>
-            <Form.Item label="规则类型" name="ruleCode">
-              <Select
-                style={{ width: 120 }}
-                placeholder="规则类型"
-                options={ruleOption}
-                fieldNames={{
-                  label: "name",
-                  value: "code",
-                }}
-                mode="multiple"
-                maxTagCount="responsive"
-                allowClear
-              />
-            </Form.Item>
+
+
+            {
+              statType == 'station' ? <>  <Form.Item label="业务主题" name="topicType">
+                <Select
+                  className="width-3"
+                  placeholder="请选择"
+                  fieldNames={{
+                    label: "name",
+                    value: "id",
+                  }}
+                  options={themeList}
+                  style={{ width: "120px" }}
+
+                />
+
+              </Form.Item>
+                <Form.Item label="站点类型" name="stationType">
+                  <Select
+                    options={stationList}
+                    placeholder="请选择"
+                    fieldNames={{
+                      label: "name",
+                      value: "id",
+                    }}
+                    style={{ width: "120px" }}
+                    mode="multiple"
+                    maxTagCount="responsive"
+                    allowClear
+                  />
+                </Form.Item> </> : null
+            }
 
             <Form.Item label="报警时间" name="time">
               <RangePicker />
@@ -372,34 +335,39 @@ function AlarmMsgStatis() {
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
-                <Button loading={btnLoading} onClick={download}>
+                {/* <Button loading={btnLoading} onClick={download}>
                   导出
-                </Button>
+                </Button> */}
               </Space>
             </Form.Item>
 
           </Form>
 
         </div>
-        {/* <ReactECharts
-          option={chartdata}
-          lazyUpdate={true}
-          theme={"theme_name"}
-          style={{ height: "200px" }}
-          ref={chartRef}
-          notMerge={true}
-        showLoading={loading}
-        /> */}
+        {
+          statType === 'station' ?
+            <Table
+              dataSource={data}
+              loading={loading}
+              rowKey={(record) => record.idx}
+              onChange={handleTableChange}
+              pagination={{ pageSize }}
+              columns={columns}
+            >
 
-        <Table
-          columns={[...normalColumns, ...columns]}
-          dataSource={data}
-          loading={loading}
-          rowKey={(record) => record.idx}
-          onChange={handleTableChange}
-          pagination={{ pageSize }}
-        ></Table>
+            </Table>
+            :
+            <Table
+              columns={columns}
+              dataSource={data}
+              loading={loading}
+              rowKey={(record) => record.idx}
+              onChange={handleTableChange}
+              pagination={{ pageSize }}
+            >
 
+            </Table>
+        }
 
       </>
       {visable && (

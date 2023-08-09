@@ -254,7 +254,6 @@ function AlarmStatis() {
             return item
           }
         }).filter(Boolean)
-        console.log(res);
         setClumns(res)
       } else {
         setClumns(columsList)
