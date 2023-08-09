@@ -8,11 +8,10 @@ import {
   message,
   Tooltip,
   Cascader,
-  Checkbox,
+  Empty,
 } from "antd";
 // com
 import Lbreadcrumb from "@Components/Lbreadcrumb";
-import IconFont from "@Components/IconFont";
 import dayjs from "dayjs";
 import LtimePicker from "@Components/LtimePicker";
 import { SettingOutlined, WarningFilled } from "@ant-design/icons";
@@ -23,12 +22,9 @@ import { reportTime, reportTimeMeta, reportTimeExport } from "@Api/operate_time_
 import { stationPage as stationMetaPage } from "@Api/user.js";
 import { regionList } from "@Api/set_region.js";
 import { riverList } from "@Api/set_rival.js";
-import { searchMeta } from "@Api/data-list.js";
 // util
 import { formatePickTime } from "@Utils/util";
 import { validateQuery } from "@Utils/valid.js";
-
-const { Option } = Select;
 
 const getFormCasData = (data = []) => {
   return data?.map((item) => {
@@ -68,15 +64,6 @@ function tableRender(value) {
 }
 
 
-const DynamicTableHeader = ({ columns }) => {
-  return columns.map((column) => (
-    <Table.Column
-      title={column.title}
-      dataIndex={column.dataIndex}
-      key={column.key}
-    />
-  ));
-};
 
 function OperateDateReport() {
   const [searchForm] = Form.useForm();
@@ -112,9 +99,12 @@ function OperateDateReport() {
     },
   });
 
+
   useEffect(() => {
     // 元数据获取
+
     getOriginPage();
+    getRiverPage();
     getStationMetaPage();
   }, []);
 
@@ -122,13 +112,9 @@ function OperateDateReport() {
     if (!!stationTypeValue) {
       getMetaData();
     }
-  }, [stationTypeValue, regionValue]);
+  }, [stationTypeValue, riverValue, regionValue]);
 
-  useEffect(() => {
-    if (factorList.length > 0) {
-      getPageData();
-    }
-  }, [JSON.stringify(factorList)]);
+
 
   let normalCol = [
     {
@@ -204,11 +190,14 @@ function OperateDateReport() {
     let { data } = await stationMetaPage({
       filterNoComputeDataLevel: true
     });
-    setStationList(data);
-    setStationType(data[0]);
-    searchForm.setFieldsValue({
-      stationType: data[0].id,
-    });
+    if (data.length) {
+      setStationList(data);
+      setStationType(data[0]);
+      searchForm.setFieldsValue({
+        stationType: data[0].id,
+      });
+    }
+
   };
 
   // 区域
@@ -269,8 +258,12 @@ function OperateDateReport() {
     }
   };
 
-  const getPageData = async () => {
+  const getPageData = async ({ initFactor = factorList } = {}) => {
     let values = searchForm.getFieldsValue();
+    if (!values.stationType) {
+      message.info("站点类型不能为空");
+      return false;
+    }
     if (!values.time) {
       message.info("开始日期或结束日期不能为空");
       return false;
@@ -288,7 +281,7 @@ function OperateDateReport() {
     values.beginTime = formatePickTime(values.time.type, values.time.startTime);
     values.endTime = formatePickTime(values.time.type, values.time.endTime);
     values.timeType = values.time.type;
-    values.showFieldList = factorList;
+    values.showFieldList = initFactor;
 
     if ("region" in values) {
       values.region = getFormCasData(values.region);
@@ -355,11 +348,16 @@ function OperateDateReport() {
   const confirmModal = (data) => {
     setVisable(false);
     setFactorList(data);
+    getPageData({ initFactor: data });
   };
 
   //导出
   const download = async () => {
     let values = searchForm.getFieldsValue();
+    if (!values.stationType) {
+      message.info("站点类型不能为空");
+      return false;
+    }
     if (!values.time) {
       message.info("开始日期或结束日期不能为空");
       return false;
@@ -398,31 +396,45 @@ function OperateDateReport() {
       <Lbreadcrumb data={["当前位置：数据运营", "时间报表"]} />
       <>
         <div className="search">
-          {!!stationType && (
-            <Form
-              name="station"
-              form={searchForm}
-              onFinish={search}
-              layout="inline"
-            >
-              <Form.Item label="站点类型" name="stationType">
-                <Select
-                  options={stationList}
-                  placeholder="请选择"
-                  fieldNames={{
-                    label: "name",
-                    value: "id",
-                  }}
-                  style={{ width: "120px" }}
-                  onChange={onStationTypeChange}
-                />
-              </Form.Item>
+          <Form
+            name="station"
+            form={searchForm}
+            onFinish={search}
+            layout="inline"
+          >
+            <Form.Item label="站点类型" name="stationType">
+              <Select
+                options={stationList}
+                placeholder="请选择"
+                fieldNames={{
+                  label: "name",
+                  value: "id",
+                }}
+                style={{ width: "120px" }}
+                onChange={onStationTypeChange}
+              />
+            </Form.Item>
 
-              <Form.Item label="行政区" name="region">
+            <Form.Item label="行政区" name="region">
+              <Cascader
+                style={{ width: "120px" }}
+                options={originOptions}
+                loadData={loadeReginData}
+                changeOnSelect
+                fieldNames={{
+                  label: "name",
+                  value: "code",
+                }}
+                multiple
+                maxTagCount="responsive"
+              />
+            </Form.Item>
+            {stationType?.showRiver && (
+              <Form.Item label="河流" name="river">
                 <Cascader
                   style={{ width: "120px" }}
-                  options={originOptions}
-                  loadData={loadeReginData}
+                  options={riverOptions}
+                  loadData={loadRiverData}
                   changeOnSelect
                   fieldNames={{
                     label: "name",
@@ -432,50 +444,37 @@ function OperateDateReport() {
                   maxTagCount="responsive"
                 />
               </Form.Item>
-              {stationType.showRiver && (
-                <Form.Item label="河流" name="river">
-                  <Cascader
-                    style={{ width: "120px" }}
-                    options={riverOptions}
-                    loadData={loadRiverData}
-                    changeOnSelect
-                    fieldNames={{
-                      label: "name",
-                      value: "code",
-                    }}
-                    multiple
-                    maxTagCount="responsive"
-                  />
-                </Form.Item>
-              )}
+            )}
 
-              <Form.Item label="" name="dataSource">
-                <Select
-                  style={{ width: 120 }}
-                  placeholder="数据来源"
-                  options={metaData?.dataSource}
-                />
-              </Form.Item>
-              <Form.Item label="" name="time">
-                <LtimePicker options={metaData?.computeDataLevel} />
-              </Form.Item>
-              <Form.Item>
-                <Space>
-                  <Button type="primary" htmlType="submit">
-                    查询
-                  </Button>
-                  <Button loading={btnloading} onClick={download}>导出</Button>
-                </Space>
-              </Form.Item>
+            <Form.Item label="" name="dataSource">
+              <Select
+                style={{ width: 120 }}
+                placeholder="数据来源"
+                options={metaData?.dataSource}
+              />
+            </Form.Item>
+            <Form.Item label="" name="time">
+              <LtimePicker options={metaData?.computeDataLevel} />
+            </Form.Item>
+            <Form.Item>
+              <Space>
+                <Button type="primary" htmlType="submit">
+                  查询
+                </Button>
+                <Button loading={btnloading} onClick={download}>导出</Button>
+              </Space>
+            </Form.Item>
 
-            </Form>
-          )}
-          <SettingOutlined
-            onClick={() => setVisable(true)}
-            style={{ fontSize: "18px" }}
-          />
+          </Form>
+          {
+            stationList.length > 0 && <SettingOutlined
+              onClick={() => setVisable(true)}
+              style={{ fontSize: "18px" }}
+            />
+          }
+
         </div>
-        {columns.length > 0 && (
+        {columns.length > 0 ? (
           <Table
             pagination={{
               ...pageMsg.pagination,
@@ -488,7 +487,19 @@ function OperateDateReport() {
             rowKey={(record) => record.idx}
             onChange={handleTableChange}
           ></Table>
-        )}
+        )
+          :
+          <div
+            style={{
+              height: "500px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Empty />
+          </div>
+        }
       </>
 
       {/* 弹出表单 */}
