@@ -23,6 +23,29 @@ import { validateQuery } from "@Utils/valid.js";
 
 const { RangePicker } = DatePicker;
 const pageSize = 10;
+const statList = [
+  {
+    label: '行政区',
+    value: 'region'
+  },
+  {
+    label: '站点类型',
+    value: 'station_type'
+  },
+  {
+    label: '站点',
+    value: 'station'
+  },
+  {
+    label: '因子',
+    value: 'factor'
+  },
+  {
+    label: '运维厂家',
+    value: 'operationFactory'
+  },
+]
+
 
 function AlarmStatis() {
   const [searchForm] = Form.useForm();
@@ -37,10 +60,18 @@ function AlarmStatis() {
   const [currentPage, setCurrentPage] = useState(1);
   const [factorOption, setFactorOption] = useState([]); //报警因子
   const themeId = Form.useWatch("topicType", searchForm);
+  const statType = Form.useWatch("statType", searchForm);
   const [ruleOption, setRuleOption] = useState([]); //规则类型
 
   const [chartdata, setChartdata] = useState(null);
   const chartRef = useRef(null);
+  const [statTypeName, setStatTypeName] = useState("行政区")
+  const [pageMsg, setPagemsg] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
 
   useEffect(() => {
     const chart = chartRef.current && chartRef.current.getEchartsInstance();
@@ -58,8 +89,9 @@ function AlarmStatis() {
     getTopicListAsync()
     getFactorList()
     getRuleList()
-
   }, []);
+
+
 
   const getTopicListAsync = async () => {
     let { data } = await topicList();
@@ -84,11 +116,13 @@ function AlarmStatis() {
       title: "序号",
       key: "index",
       width: 60,
-      dataIndex: "index",
-      render: (text, record, index) => (currentPage - 1) * pageSize + index + 1,
+      render: (_, record, idx) =>
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        idx +
+        1,
     },
     {
-      title: "行政区",
+      title: statTypeName,
       dataIndex: 'statType',
       key: 'statType',
     },
@@ -184,13 +218,7 @@ function AlarmStatis() {
 
 
 
-  const sortSelf = (item) => {
-    if (item.isDigital) {
-      return (a, b) => a[item.key].value - b[item.key].value;
-    } else {
-      return false;
-    }
-  };
+
 
   const getPageData = async () => {
     setLoading(true);
@@ -214,6 +242,13 @@ function AlarmStatis() {
       setData(iData);
       let option = getOption(data)
       setChartdata(option)
+      // 表头
+      if (statType) {
+        let res = statList.find(ele => ele.value === statType)
+        if (res) {
+          setStatTypeName(res.label)
+        }
+      }
     }
     setLoading(false);
   };
@@ -224,7 +259,18 @@ function AlarmStatis() {
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
     // `dataSource` is useless since `pageSize` changed
-    setCurrentPage(pagination.current);
+    console.log(pagination);
+    console.log(sorter);
+    if (pagination) {
+      setPagemsg({
+        pagination,
+        filters,
+        ...sorter,
+      });
+    }
+
+    // `dataSource` is useless since `pageSize` changed
+
   };
 
   // 柱状
@@ -244,17 +290,7 @@ function AlarmStatis() {
       },
       tooltip: {
         trigger: "axis",
-        formatter: function (params, ticket) {
-          let html = `<div>${params[0].axisValue}</div>`;
-          let unit = ''
-          params.map((item) => {
-            if (item.value || item.value === 0) {
-              html += `<div>${item.marker} ${item.seriesName}：${item.value} ${unit ?? ""
-                }</div>`;
-            }
-          });
-          return html;
-        },
+
       },
       toolbox: {
         feature: {
@@ -303,7 +339,7 @@ function AlarmStatis() {
     }
     values.notificationBeginDate = dayjs(values.time[0]).format("YYYYMMDD");
     values.notificationEndDate = dayjs(values.time[1]).format("YYYYMMDD");
-    values.topicType = [values.topicType]
+    values.topicType = values.topicType ? [values.topicType] : undefined
     setBtnLoading(true);
 
     await alarmStatisexport(values, "报警统计");
@@ -329,28 +365,7 @@ function AlarmStatis() {
               <Select
                 className="width-3"
                 placeholder="请选择"
-                options={[
-                  {
-                    label: '行政区',
-                    value: 'region'
-                  },
-                  {
-                    label: '站点类型',
-                    value: 'station_type'
-                  },
-                  {
-                    label: '站点',
-                    value: 'station'
-                  },
-                  {
-                    label: '因子',
-                    value: 'factor'
-                  },
-                  {
-                    label: '运维厂家',
-                    value: 'operationFactory'
-                  },
-                ]}
+                options={statList}
                 style={{ width: "120px" }}
               />
 
@@ -423,7 +438,6 @@ function AlarmStatis() {
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
-                <Button loading={loading}>导出</Button>
               </Space>
             </Form.Item>
 
@@ -453,7 +467,7 @@ function AlarmStatis() {
           loading={loading}
           rowKey={(record) => record.idx}
           onChange={handleTableChange}
-          pagination={false}
+          pagination={pageMsg.pagination}
         ></Table>
       </>
     </div>

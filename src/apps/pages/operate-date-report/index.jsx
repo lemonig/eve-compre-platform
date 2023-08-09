@@ -85,7 +85,6 @@ function OperateDateReport() {
   const [isModalOpen, setIsModalOpen] = useState({
     form: false,
   });
-  const [operate, setOperate] = useState(null); //正在操作id
 
   // 元数据
   const [originOptions, setOriginOptions] = useState([]);
@@ -113,12 +112,9 @@ function OperateDateReport() {
     },
   });
 
-
   useEffect(() => {
     // 元数据获取
-
     getOriginPage();
-    getRiverPage();
     getStationMetaPage();
   }, []);
 
@@ -126,7 +122,7 @@ function OperateDateReport() {
     if (!!stationTypeValue) {
       getMetaData();
     }
-  }, [stationTypeValue, riverValue, regionValue]);
+  }, [stationTypeValue, regionValue]);
 
   useEffect(() => {
     if (factorList.length > 0) {
