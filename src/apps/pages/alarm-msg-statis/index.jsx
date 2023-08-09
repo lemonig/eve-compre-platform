@@ -35,6 +35,78 @@ const getFormCasData = (data = []) => {
 
 const pageSize = 10;
 
+const columsList = [
+  {
+    title: "日质控未通过",
+    key: 'ALM20220901',
+    dataIndex: 'ALM20220901', sorter: (a, b) => a.ALM20220901 - b.ALM20220901,
+  },
+  {
+    title: "电导率过低",
+    key: 'ALM20220902',
+    dataIndex: 'ALM20220902', sorter: (a, b) => a.ALM20220902 - b.ALM20220902,
+  },
+  {
+    title: "零值",
+    dataIndex: 'ALM20220903',
+    key: 'ALM20220903', sorter: (a, b) => a.ALM20220903 - b.ALM20220903,
+  },
+  {
+    title: "负值",
+    dataIndex: 'ALM20220904',
+    key: 'ALM20220904', sorter: (a, b) => a.ALM20220904 - b.ALM20220904,
+  },
+  {
+    title: "连续值",
+    key: 'ALM20220905',
+    dataIndex: 'ALM20220905', sorter: (a, b) => a.ALM20220905 - b.ALM20220905,
+  },
+  {
+    title: "离群",
+    key: 'ALM20220906',
+    dataIndex: 'ALM20220906', sorter: (a, b) => a.ALM20220906 - b.ALM20220906,
+  },
+  {
+    title: "超限值",
+    key: 'ALM20220907',
+    dataIndex: 'ALM20220907', sorter: (a, b) => a.ALM20220907 - b.ALM20220907,
+  },
+  {
+    title: "疑似站点离线",
+    key: 'ALM20220908',
+    dataIndex: 'ALM20220908', sorter: (a, b) => a.ALM20220908 - b.ALM20220908,
+  },
+  {
+    title: "氨氮异常",
+    key: 'ALM20220909',
+    dataIndex: 'ALM20220909', sorter: (a, b) => a.ALM20220909 - b.ALM20220909,
+  },
+  {
+    title: "水质超标",
+    key: 'ALM20220910',
+    dataIndex: 'ALM20220910', sorter: (a, b) => a.ALM20220910 - b.ALM20220910,
+  },
+  {
+    title: "仪器故障",
+    key: 'ALM20220911',
+    dataIndex: 'ALM20220911', sorter: (a, b) => a.ALM20220911 - b.ALM20220911,
+  },
+  {
+    title: "空气质量超标",
+    key: 'ALM20220912',
+    dataIndex: 'ALM20220912',
+    sorter: (a, b) => a.ALM20220912 - b.ALM20220912,
+  },
+  {
+    title: "PM2.5与PM10倒挂",
+    key: 'ALM20220913',
+    dataIndex: 'ALM20220913',
+    sorter: (a, b) => a.ALM20220913 - b.ALM20220913,
+  },
+]
+
+
+
 const DynamicTableHeader = ({ columns }) => {
   return columns.map((column) => (
     <Table.Column
@@ -63,6 +135,13 @@ function AlarmMsgStatis() {
 
   const [visable, setVisable] = useState(false)
   const [tableRow, setTableRow] = useState(null)
+  const [columns, setClumns] = useState(columsList)
+  const [pageMsg, setPagemsg] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
 
   useEffect(() => {
     // 元数据获取
@@ -94,14 +173,15 @@ function AlarmMsgStatis() {
     let { data: data1 } = await listRule();
     setRuleOption(data1);
   };
-
-  const columns = [
+  const normalColumns = [
     {
       title: "序号",
       key: "index",
       width: 60,
-      dataIndex: "index",
-      render: (text, record, index) => (currentPage - 1) * pageSize + index + 1,
+      render: (_, record, idx) =>
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        idx +
+        1,
     },
     {
       title: "群聊名称",
@@ -114,74 +194,9 @@ function AlarmMsgStatis() {
       dataIndex: 'count',
       key: 'count', sorter: (a, b) => a.count - b.count,
     },
-    {
-      title: "日质控未通过",
-      key: 'ALM20220901',
-      dataIndex: 'ALM20220901', sorter: (a, b) => a.ALM20220901 - b.ALM20220901,
-    },
-    {
-      title: "电导率过低",
-      key: 'ALM20220902',
-      dataIndex: 'ALM20220902', sorter: (a, b) => a.ALM20220902 - b.ALM20220902,
-    },
-    {
-      title: "零值",
-      dataIndex: 'ALM20220903',
-      key: 'ALM20220903', sorter: (a, b) => a.ALM20220903 - b.ALM20220903,
-    },
-    {
-      title: "负值",
-      dataIndex: 'ALM20220904',
-      key: 'ALM20220904', sorter: (a, b) => a.ALM20220904 - b.ALM20220904,
-    },
-    {
-      title: "连续值",
-      key: 'ALM20220905',
-      dataIndex: 'ALM20220905', sorter: (a, b) => a.ALM20220905 - b.ALM20220905,
-    },
-    {
-      title: "离群",
-      key: 'ALM20220906',
-      dataIndex: 'ALM20220906', sorter: (a, b) => a.ALM20220906 - b.ALM20220906,
-    },
-    {
-      title: "超限值",
-      key: 'ALM20220907',
-      dataIndex: 'ALM20220907', sorter: (a, b) => a.ALM20220907 - b.ALM20220907,
-    },
-    {
-      title: "疑似站点离线",
-      key: 'ALM20220908',
-      dataIndex: 'ALM20220908', sorter: (a, b) => a.ALM20220908 - b.ALM20220908,
-    },
-    {
-      title: "氨氮异常",
-      key: 'ALM20220909',
-      dataIndex: 'ALM20220909', sorter: (a, b) => a.ALM20220909 - b.ALM20220909,
-    },
-    {
-      title: "水质超标",
-      key: 'ALM20220910',
-      dataIndex: 'ALM20220910', sorter: (a, b) => a.ALM20220910 - b.ALM20220910,
-    },
-    {
-      title: "仪器故障",
-      key: 'ALM20220911',
-      dataIndex: 'ALM20220911', sorter: (a, b) => a.ALM20220911 - b.ALM20220911,
-    },
-    {
-      title: "空气质量超标",
-      key: 'ALM20220912',
-      dataIndex: 'ALM20220912',
-      sorter: (a, b) => a.ALM20220912 - b.ALM20220912,
-    },
-    {
-      title: "PM2.5与PM10倒挂",
-      key: 'ALM20220913',
-      dataIndex: 'ALM20220913',
-      sorter: (a, b) => a.ALM20220913 - b.ALM20220913,
-    },
+
   ];
+
 
   const showDetail = (record) => {
     setVisable(true)
@@ -224,6 +239,18 @@ function AlarmMsgStatis() {
         ...item,
         idx,
       }));
+      if (values.ruleCode && values.ruleCode.length > 0) {
+        let res = columsList.map(item => {
+          if (
+            values.ruleCode.findIndex(ele => ele === item.dataIndex) !== -1
+          ) {
+            return item
+          }
+        }).filter(Boolean)
+        setClumns(res)
+      } else {
+        setClumns(columsList)
+      }
       setData(iData);
     }
     setLoading(false);
@@ -238,7 +265,13 @@ function AlarmMsgStatis() {
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
     // `dataSource` is useless since `pageSize` changed
-    setCurrentPage(pagination.current);
+    if (pagination) {
+      setPagemsg({
+        pagination,
+        filters,
+        ...sorter,
+      });
+    }
   };
   //导出
   const download = async () => {
@@ -359,7 +392,7 @@ function AlarmMsgStatis() {
         /> */}
 
         <Table
-          columns={columns}
+          columns={[...normalColumns, ...columns]}
           dataSource={data}
           loading={loading}
           rowKey={(record) => record.idx}
