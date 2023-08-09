@@ -3,14 +3,18 @@ import { message } from "antd";
 import { PUSH_LOADING, SHIFT_LOADING } from "@Store/features/loadSlice";
 import { store } from "../../store";
 
-axios.defaults.timeout = 30000;
-axios.interceptors.request.use(
+const instance = axios.create({
+  // headers: {
+  //   'Content-Type': "application/json; charset=utf-8",
+  //   "X-Requested-With": "XMLHttpRequest",
+  // },
+})
+
+
+instance.defaults.timeout = 30000;
+instance.interceptors.request.use(
   (config) => {
     store.dispatch(PUSH_LOADING());
-    config.headers = {
-      "Content-Type": "application/json; charset=utf-8",
-      "X-Requested-With": "XMLHttpRequest",
-    };
     if (localStorage.getItem("token") || !!localStorage.getItem("token")) {
       config.headers["token"] = localStorage.getItem("token");
     }
@@ -21,7 +25,7 @@ axios.interceptors.request.use(
   }
 );
 
-axios.interceptors.response.use(
+instance.interceptors.response.use(
   (response) => {
     store.dispatch(SHIFT_LOADING());
     if (response.data && response.status === 200) {
@@ -94,7 +98,7 @@ axios.interceptors.response.use(
  */
 export const _get = ({ url, params }) => {
   return new Promise((rlv, rej) => {
-    axios
+    instance
       .get(url, {
         params: params,
       })
@@ -114,10 +118,13 @@ export const _get = ({ url, params }) => {
  * @returns {Promise<unknown>}
  * @private
  */
-export const _post = ({ url, data }) => {
+export const _post = ({ url, data, headers = {
+  'Content-Type': "application/json; charset=utf-8",
+  "X-Requested-With": "XMLHttpRequest",
+} }) => {
   return new Promise((rlv, rej) => {
-    axios
-      .post(url, data, {})
+    instance
+      .post(url, data, { headers })
       .then((res) => {
         rlv(res.data);
       })
@@ -133,7 +140,7 @@ export const _download = ({ url, data, title }) => {
   let month = nowDate.getMonth() + 1;
   let year = nowDate.getFullYear();
   return new Promise((rlv, rej) => {
-    axios({
+    instance({
       method: "post",
       url: url,
       data: data,
@@ -162,7 +169,7 @@ export const _downloadPdf = ({ url, data, title }) => {
   let day = nowDate.getDate();
   let month = nowDate.getMonth() + 1;
   let year = nowDate.getFullYear();
-  return axios({
+  return instance({
     method: "post",
     url: url,
     data: data,
