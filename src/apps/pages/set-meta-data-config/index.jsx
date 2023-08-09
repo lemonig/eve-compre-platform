@@ -43,7 +43,7 @@ function SetMetaDataConfig({ configData, configOpen, configModal }) {
 
   useEffect(() => {
     getPageData();
-  }, [JSON.stringify(pageMsg)]);
+  }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
   // 查询
   const search = () => {
     // FIXME 第一页会不触发hooks,故分开
@@ -246,7 +246,7 @@ function SetMetaDataConfig({ configData, configOpen, configModal }) {
                 <Input
                   placeholder="选项名称/编码"
                   style={{ width: 180 }}
-                  // value={searchVal}
+                // value={searchVal}
                 />
               </Form.Item>
               <Form.Item>

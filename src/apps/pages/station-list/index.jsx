@@ -95,7 +95,7 @@ function StationList() {
   }, []);
   useEffect(() => {
     getPageData();
-  }, [JSON.stringify(pageMsg)]);
+  }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
 
   const getOriginPage = async () => {
     let { data } = await regionList({
@@ -417,7 +417,7 @@ function StationList() {
                 <Input
                   placeholder="站点名称/编码"
                   className="width-18"
-                  // value={searchVal}
+                // value={searchVal}
                 />
               </Form.Item>
               <Form.Item>

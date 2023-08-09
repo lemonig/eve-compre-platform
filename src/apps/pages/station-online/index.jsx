@@ -48,7 +48,7 @@ function StationOnline() {
 
   useEffect(() => {
     getPageData();
-  }, [JSON.stringify(pageMsg)]);
+  }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
 
   useEffect(() => {
     // 元数据
@@ -186,9 +186,9 @@ function StationOnline() {
       key: "index",
       width: 60,
       render: (_, record, index) =>
-      pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
-      index +
-      1,
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        index +
+        1,
     },
     {
       title: "业务主题",
@@ -369,7 +369,7 @@ function StationOnline() {
               <Input
                 placeholder="站点名称/编码"
                 className="width-18"
-                // value={searchVal}
+              // value={searchVal}
               />
             </Form.Item>
             <Form.Item label="行政区" name="region">

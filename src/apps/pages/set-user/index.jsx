@@ -37,7 +37,7 @@ function SetUser() {
 
   useEffect(() => {
     getPageData();
-  }, [JSON.stringify(pageMsg)]);
+  }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
   // 查询
   const search = () => {
     // FIXME 第一页会不触发hooks,故分开
@@ -228,7 +228,7 @@ function SetUser() {
                 <Input
                   placeholder="用户姓名/登录账号"
                   className="width-18"
-                  // value={searchVal}
+                // value={searchVal}
                 />
               </Form.Item>
               <Form.Item>
