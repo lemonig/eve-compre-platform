@@ -306,7 +306,7 @@ function StationData() {
       key: "factorTemplateId",
     },
     {
-      title: "水质目标类型",
+      title: "水质目标类别",
       dataIndex: "targetWaterQualityLevel",
       key: "targetWaterQualityLevel",
     },

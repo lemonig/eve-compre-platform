@@ -17,12 +17,14 @@ import {
   Row,
   Cascader,
   TreeSelect,
+  Upload
 } from "antd";
 import IconFont from "@Components/IconFont";
 import PageHead from "@Components/PageHead";
 import MetaSelect from "@Shared/MetaSelect";
 import Map from "./Map";
 import dayjs from "dayjs";
+import { InboxOutlined, UploadOutlined } from '@ant-design/icons';
 
 import {
   stationAdd,
@@ -52,6 +54,8 @@ import { drinkWaterSourcelist } from "@Api/set_msg_drink.js";
 import { waterZonelist } from "@Api/set_msg_river_area.js";
 import { airZonelist } from "@Api/set_msg_air_area.js";
 import { companylist } from "@Api/set_msg_company.js";
+import { fileUpload } from "@Api/util.js";
+import axios from "axios";
 
 function OpForm({ record, open, closeModal }) {
   const [form] = Form.useForm();
@@ -65,6 +69,7 @@ function OpForm({ record, open, closeModal }) {
   const [originOptions, setOriginOptions] = useState([]);
   const [riverOptions, setRiverOptions] = useState([]);
   const [reginList, setReginList] = useState([]);
+  const [fileData, setFileData] = useState(null) //文件
 
   const [showMapVis, setShowMapVis] = useState(false);
 
@@ -173,6 +178,10 @@ function OpForm({ record, open, closeModal }) {
     });
 
     data.build_date = dayjs(data.build_date);
+    data.attachment = data.attachment.map(item => ({
+      ...item,
+      name: item.originalFilename
+    }))
     form.setFieldsValue(data);
     setStationTypes(data.station_type);
     get_station_connect_upper_region_code(data.station_connect_type_code);
@@ -271,6 +280,31 @@ function OpForm({ record, open, closeModal }) {
     });
     return data1;
   };
+
+
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e?.fileList;
+  };
+
+  const customRequest = async ({ file, onSuccess, onError, data }) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    let headers = { 'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryGMA3AgU3lRxaQE0K' }
+    const res = await fileUpload(formData, headers);
+    res.data.name = res.data.originalFilename
+    setFileData(res)
+    let attachment = form.getFieldValue('attachment')
+    attachment.splice(attachment.length - 1, 1, res.data)
+    form.setFieldsValue({
+      attachment: attachment
+    })
+    onSuccess()
+  }
+
+
 
   return (
     <>
@@ -530,7 +564,7 @@ function OpForm({ record, open, closeModal }) {
                     value: "id",
                   }}
                   style={inputwidtg}
-                  // dropdownRender={treeDropdownRender}
+                // dropdownRender={treeDropdownRender}
                 />
               </Form.Item>
             </Col>
@@ -601,12 +635,12 @@ function OpForm({ record, open, closeModal }) {
               <Form.Item
                 label="饮用水源地"
                 name="drink_water_source_code"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: "请输入",
-                //   },
-                // ]}
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: "请输入",
+              //   },
+              // ]}
               >
                 <Select
                   className="width-3"
@@ -625,12 +659,12 @@ function OpForm({ record, open, closeModal }) {
               <Form.Item
                 label="地表水环境功能区"
                 name="function_zone_water_code"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: "请输入",
-                //   },
-                // ]}
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: "请输入",
+              //   },
+              // ]}
               >
                 <Select
                   className="width-3"
@@ -649,12 +683,12 @@ function OpForm({ record, open, closeModal }) {
               <Form.Item
                 label="空气质量功能区"
                 name="function_zone_air_code"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: "请输入",
-                //   },
-                // ]}
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: "请输入",
+              //   },
+              // ]}
               >
                 <Select
                   className="width-3"
@@ -673,12 +707,12 @@ function OpForm({ record, open, closeModal }) {
               <Form.Item
                 label="所属企业"
                 name="pollution_company_code"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: "请输入",
-                //   },
-                // ]}
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: "请输入",
+              //   },
+              // ]}
               >
                 <Select
                   className="width-3"
@@ -781,12 +815,12 @@ function OpForm({ record, open, closeModal }) {
               <Form.Item
                 label="断面交接类别"
                 name="station_connect_attribute_code"
-                // rules={[
-                //   {
-                //     required: filterRequire("station_connect_attribute_code"),
-                //     message: "请输入",
-                //   },
-                // ]}
+              // rules={[
+              //   {
+              //     required: filterRequire("station_connect_attribute_code"),
+              //     message: "请输入",
+              //   },
+              // ]}
               >
                 <MetaSelect dictType="station_connect_attribute" />
               </Form.Item>
@@ -916,8 +950,16 @@ function OpForm({ record, open, closeModal }) {
               </Form.Item>
             </Col>
             <Col span={12} style={filterElement("attachment")}>
-              <Form.Item label="附件" name="attachment">
-                <Input className="width-3" placeholder="请输入" />
+              <Form.Item
+                name="attachment"
+                label="附件"
+                valuePropName="fileList"
+                getValueFromEvent={normFile}
+                extra="最多上传十个附件"
+              >
+                <Upload name="file" customRequest={customRequest} listType="text" >
+                  <Button icon={<UploadOutlined />}> 上传附件</Button>
+                </Upload>
               </Form.Item>
             </Col>
           </Row>
@@ -931,7 +973,9 @@ function OpForm({ record, open, closeModal }) {
             </Col>
           </Row>
         </Form>
+
       )}
+
       {/* 地图 */}
       {showMapVis ? (
         <Map
