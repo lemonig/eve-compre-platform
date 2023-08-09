@@ -142,14 +142,14 @@ const Header = ({ message }) => {
               </Badge>
             </li> */}
           {creatMenu()}
-          <li className="li-outer">
-            <IconFont name={'kefu'} size="16" color="#fff" />
-            <span style={{ marginLeft: "4px" }}>
-              <a href="https://work.weixin.qq.com/kfid/kfc032962d5866cf9d5" target='_blank' rel="noreferrer">
+          <a href="https://work.weixin.qq.com/kfid/kfc032962d5866cf9d5" target='_blank' rel="noreferrer">
+            <li className="li-outer">
+              <IconFont name={'kefu'} size="16" color="#fff" />
+              <span style={{ marginLeft: "4px" }}>
                 客服
-              </a>
-            </span>
-          </li>
+              </span>
+            </li>
+          </a>
           <User></User>
         </ul>
       </div>
