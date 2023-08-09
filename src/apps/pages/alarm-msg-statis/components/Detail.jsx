@@ -22,6 +22,7 @@ import {
   oneFactorChart,
   chartEvaluateIndex,
 } from "@Api/data-list.js";
+import { logDayStat } from "@Api/alarm_statis.js";
 import ReactECharts from "echarts-for-react";
 import { formatePickTime } from "@Utils/util";
 
@@ -52,16 +53,108 @@ const colorList = [
   "#0050B3",
 ];
 
+const lineSeries = [
+  {
+    type: 'line',
+    name: "日质控未通过",
+    key: 'ALM20220901',
+    dataIndex: 'ALM20220901',
+    data: []
+  },
+  {
+    type: 'line',
+    name: "电导率过低",
+    key: 'ALM20220902',
+    dataIndex: 'ALM20220902',
+    data: []
+  },
+  {
+    data: [],
+    type: 'line',
+    name: "零值",
+    dataIndex: 'ALM20220903',
+    key: 'ALM20220903',
+  },
+  {
+    data: [],
+    type: 'line',
+    name: "负值",
+    dataIndex: 'ALM20220904',
+    key: 'ALM20220904',
+  },
+  {
+    data: [],
+    type: 'line',
+    name: "连续值",
+    key: 'ALM20220905',
+    dataIndex: 'ALM20220905',
+  },
+  {
+    data: [],
+    type: 'line',
+    name: "离群",
+    key: 'ALM20220906',
+    dataIndex: 'ALM20220906',
+  },
+  {
+    data: [],
+    type: 'line',
+    name: "超限值",
+    key: 'ALM20220907',
+    dataIndex: 'ALM20220907',
+  },
+  {
+    data: [],
+    type: 'line',
+    name: "疑似站点离线",
+    key: 'ALM20220908',
+    dataIndex: 'ALM20220908',
+  },
+  {
+    data: [],
+    type: 'line',
+    name: "氨氮异常",
+    key: 'ALM20220909',
+    dataIndex: 'ALM20220909',
+  },
+  {
+    data: [],
+    type: 'line',
+    name: "水质超标",
+    key: 'ALM20220910',
+    dataIndex: 'ALM20220910',
+  },
+  {
+    data: [],
+    type: 'line',
+    name: "仪器故障",
+    key: 'ALM20220911',
+    dataIndex: 'ALM20220911',
+  },
+  {
+    data: [],
+    type: 'line',
+    name: "空气质量超标",
+    key: 'ALM20220912',
+    dataIndex: 'ALM20220912',
+  },
+  {
+    data: [],
+    type: 'line',
+    name: "PM2.5与PM10倒挂",
+    key: 'ALM20220913',
+    dataIndex: 'ALM20220913',
+  },
+];
+
 function Detail({
   open,
   closeModal,
-  station = {
-    name: {},
-    time: {},
-  },
-  factor,
-  timeType,
+  searchData,
+  tableRow
 }) {
+  console.log(tableRow);
+  console.log(searchData);
   const handleOk = async () => { };
   const [loading, setLoading] = useState(false);
   const [chartdata, setChartdata] = useState(null);
@@ -81,38 +174,39 @@ function Detail({
       window.removeEventListener("resize", handleResize);
     };
   }, [chartRef, chartRef1]);
+
+
   useEffect(() => {
-    if (!factor.id) {
-      return;
-    }
-    getPageData();
-  }, [JSON.stringify(factor)]);
+    getPageData()
+  }, [])
 
   const getPageData = async () => {
     setLoading(true);
+    let params = JSON.parse(JSON.stringify(searchData))
+    params.notificationBeginDate = dayjs(params.time[0]).format("YYYYMMDD");
+    params.notificationEndDate = dayjs(params.time[1]).format("YYYYMMDD");
+    params.topicType = [params.topicType]
+    params.wechatGroupName = tableRow.wechatGroupName
+    let { data, success, message } = await logDayStat(params);
+    if (success) {
+      let xData = data.map(item => item.datatime)
+      let res = getOption({ data, xData });
+      let res1 = getOption1({ data, xData });
+      setChartdata(res);
+      setChartdata1(res1);
+    }
 
-    let params = {
-      beginTime: formatePickTime(
-        timeType,
-        dayjs(station.time.value).subtract(7, "days")
-      ),
-      endTime: formatePickTime(timeType, dayjs(station.time.value)),
-      timeType: timeType,
-      dataSource: "1",
-      stationId: station.name.id,
-      showFieldList: [factor.id],
-    };
-    let { data, success, message } = await oneFactorChart(params);
-    let res = getOption(data);
-    setChartdata({ ...res });
     setLoading(false);
   };
 
   // 柱状
-  const getOption1 = ({ legend, series, xAxis, title, extraData }) => {
-    let xData = xAxis[0].data;
+  const getOption1 = ({ data, xData }) => {
 
     const option = {
+      title: {
+        text: '每日消息统计',
+        left: 'center'
+      },
       color: colorList,
       grid: {
         left: "3%",
@@ -121,19 +215,66 @@ function Detail({
         top: "20%",
         containLabel: true,
       },
-      legend: legend,
+
       tooltip: {
         trigger: "axis",
-        formatter: function (params, ticket) {
-          let html = `<div>${params[0].axisValue}</div>`;
-          let unit = extraData[0].unit;
-          params.map((item) => {
-            if (item.value || item.value === 0) {
-              html += `<div>${item.marker} ${item.seriesName}：${item.value} ${unit ?? ""
-                }</div>`;
-            }
-          });
-          return html;
+      },
+      toolbox: {
+        feature: {
+          dataZoom: {
+            yAxisIndex: "none",
+            title: {
+              zoom: "区域缩放",
+              back: "区域还原",
+            },
+          },
+          saveAsImage: {
+            title: "保存为图片",
+            name: `${tableRow.wechatGroupName}每日消息统计`,
+          },
+
+        },
+      },
+
+      xAxis: {
+        type: "category",
+        boundaryGap: false,
+        data: xData,
+      },
+      yAxis: {
+        type: "value",
+      },
+      series: [
+        {
+          data: data.map((item) => item.count),
+          type: 'bar'
+        }
+      ]
+    };
+    return option;
+  };
+
+  // 折线
+  const getOption = ({ data, xData }) => {
+    lineSeries.forEach(item => {
+      data.forEach(jtem => {
+        item.data.push(jtem[item.dataIndex])
+      })
+    })
+    const option = {
+
+      title: {
+        text: '报警趋势统计',
+        left: 'center',
+      },
+      color: colorList,
+      legend: {
+        top: "6%",
+      },
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          type: "shadow",
         },
       },
       toolbox: {
@@ -147,62 +288,21 @@ function Detail({
           },
           saveAsImage: {
             title: "保存为图片",
-            name: `${station.name.value}-${title.text}`,
+            name: `${tableRow.wechatGroupName}报警趋势统计`,
           },
-          dataView: {
-            show: true,
-            title: "数据视图",
-            lang: ["数据视图", "关闭", "刷新"],
-          },
-          magicType: {
-            show: true,
-            type: ["line", "bar"],
-            title: ["折线图", "柱状图"],
-          },
-        },
-      },
 
-      xAxis: {
-        type: "category",
-        boundaryGap: false,
-        data: xData,
-      },
-      yAxis: {
-        type: "value",
-      },
-      series: series.map((item) => {
-        delete item.xAxisIndex;
-        return item;
-      }),
-    };
-    return option;
-  };
-
-  // 折线
-  const getOption = (data) => {
-    let { xAxis, series } = data;
-    const option = {
-      color: colorList,
-      legend: {
-        top: "top",
-      },
-      tooltip: {
-        trigger: "axis",
-        axisPointer: {
-          type: "shadow",
         },
       },
       grid: {
-        left: "3%",
-        right: "4%",
-        bottom: "0%",
-        top: "14%",
-        containLabel: true,
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
       },
 
       xAxis: {
         type: "category",
-        data: xAxis[0].data,
+        data: xData,
         axisLabel: {
           interval: 0,
           rotate: 60,
@@ -220,9 +320,7 @@ function Detail({
         },
       },
 
-      series: series.map((item) => ({
-        ...item,
-      })),
+      series: lineSeries,
     };
     return option;
   };
@@ -230,7 +328,7 @@ function Detail({
   return (
     <div>
       <Modal
-        title={station.name.value}
+        title={tableRow.wechatGroupName}
         open={open}
         onOk={handleOk}
         onCancel={() => closeModal(false)}
@@ -239,34 +337,28 @@ function Detail({
         footer={null}
         width={1200}
       >
-        {chartdata ? (
+        {chartdata1 ? (
           <>
-            <div className="trendChart_title">
-              每日消息统计
-            </div>
-            {/* <Spin spinning={loading}> */}
+
             <ReactECharts
-              option={chartdata}
-              // lazyUpdate={true}
+              option={chartdata1}
+              lazyUpdate={true}
               theme={"theme_name"}
-              style={{ height: "500px" }}
-              ref={chartRef}
+              style={{ height: "300px" }}
+              ref={chartRef1}
               notMerge={true}
               showLoading={loading}
             />
           </>
         ) : null}
-        {chartdata1 ? (
+
+        {chartdata ? (
           <>
-            <div className="trendChart_title">
-              报警趋势统计
-            </div>
-            {/* <Spin spinning={loading}> */}
             <ReactECharts
-              option={chartdata1}
-              // lazyUpdate={true}
+              option={chartdata}
+              lazyUpdate={true}
               theme={"theme_name"}
-              style={{ height: "500px" }}
+              style={{ height: "300px" }}
               ref={chartRef}
               notMerge={true}
               showLoading={loading}

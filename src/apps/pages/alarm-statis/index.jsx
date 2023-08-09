@@ -1,68 +1,43 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Input,
   Select,
   Button,
   Space,
   Table,
-  Tag,
-  Modal,
   Form,
   message,
-  Tooltip,
-  Switch,
-  Cascader,
-  Checkbox,
   DatePicker
 } from "antd";
 // com
 import Lbreadcrumb from "@Components/Lbreadcrumb";
-import IconFont from "@Components/IconFont";
 import dayjs from "dayjs";
-import LtimePicker from "@Components/LtimePicker";
-import { SettingOutlined, WarningFilled } from "@ant-design/icons";
 import ReactECharts from "echarts-for-react";
 // api
-
 import { alarmStatis, alarmStatisexport } from "@Api/alarm_statis.js";
 import { stationPage as stationMetaPage, topicList } from "@Api/user.js";
-
 import { listRule } from "@Api/set_alarm.js";
 import { allListFactor as listFactor } from "@Api/set_alarm_pub.js";
 
 // util
-import { formatePickTime } from "@Utils/util";
 import { validateQuery } from "@Utils/valid.js";
 
 const { RangePicker } = DatePicker;
-
-const getFormCasData = (data = []) => {
-  return data?.map((item) => {
-    return item[item.length - 1];
-  });
-};
-
-
-
 const pageSize = 10;
 
 function AlarmStatis() {
   const [searchForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
-  const [operate, setOperate] = useState(null); //正在操作id
 
   // 元数据
   const [themeList, setThemeList] = useState([]); //业务主题
   const [stationList, setStationList] = useState([]);
-
 
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [factorOption, setFactorOption] = useState([]); //报警因子
   const themeId = Form.useWatch("topicType", searchForm);
   const [ruleOption, setRuleOption] = useState([]); //规则类型
-
 
   const [chartdata, setChartdata] = useState(null);
   const chartRef = useRef(null);
@@ -83,16 +58,13 @@ function AlarmStatis() {
     getTopicListAsync()
     getFactorList()
     getRuleList()
-    getPageData()
 
   }, []);
-
-
-
 
   const getTopicListAsync = async () => {
     let { data } = await topicList();
     setThemeList(data)
+    getPageData()
   };
 
   //报警因子
@@ -106,7 +78,6 @@ function AlarmStatis() {
     let { data: data1 } = await listRule();
     setRuleOption(data1);
   };
-
 
   const columns = [
     {
@@ -197,12 +168,14 @@ function AlarmStatis() {
 
 
   useEffect(() => {
-    console.log(themeId);
     const getStationMetaPage = async () => {
       let { data } = await stationMetaPage({
         topicType: themeId
       });
       setStationList(data);
+      searchForm.setFieldsValue({
+        stationType: []
+      })
     };
     if (themeId) {
       getStationMetaPage()
@@ -231,7 +204,7 @@ function AlarmStatis() {
     }
     values.notificationBeginDate = dayjs(values.time[0]).format("YYYYMMDD");
     values.notificationEndDate = dayjs(values.time[1]).format("YYYYMMDD");
-    values.topicType = [values.topicType]
+    values.topicType = values.topicType ? [values.topicType] : undefined
     let { data, success } = await alarmStatis(values);
     if (success) {
       let iData = data.map((item, idx) => ({

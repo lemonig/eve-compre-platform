@@ -194,6 +194,9 @@ function AlarmMsgStatis() {
         topicType: themeId
       });
       setStationList(data);
+      searchForm.setFieldsValue({
+        stationType: []
+      })
     };
     if (themeId) {
       getStationMetaPage()
@@ -213,7 +216,7 @@ function AlarmMsgStatis() {
     }
     values.notificationBeginDate = dayjs(values.time[0]).format("YYYYMMDD");
     values.notificationEndDate = dayjs(values.time[1]).format("YYYYMMDD");
-    values.topicType = [values.topicType]
+    values.topicType = values.topicType ? [values.topicType] : undefined
 
     let { additional_data, data, success } = await logStat(values);
     if (success) {
@@ -371,6 +374,7 @@ function AlarmMsgStatis() {
           open={visable}
           closeModal={closeModal}
           tableRow={tableRow}
+          searchData={searchForm.getFieldsValue()}
         />
       )}
     </div>

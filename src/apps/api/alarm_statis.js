@@ -24,6 +24,13 @@ export function logStat(data) {
     data
   })
 }
+// 消息统计 
+export function logDayStat(data) {
+  return _post({
+    url: `/api/alarm/log/day/stat`,
+    data
+  })
+}
 // 消息统计导出 
 export function logExport(data, title) {
   return _download({
