@@ -401,7 +401,7 @@ function AlarmStatis() {
                 allowClear
               />
             </Form.Item>
-            <Form.Item label="报警因子" name="factorName">
+            <Form.Item label="报警因子" name="factorId">
               <Select
                 style={{ width: 120 }}
                 placeholder="报警因子"
