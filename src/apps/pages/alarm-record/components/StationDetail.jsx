@@ -50,7 +50,7 @@ function StationDetail({ record, open, closeModal }) {
                       {item}
                     </p>
                     <p>
-                      ({data.unit[idx]})
+                      {data.unit[idx] ? `(${data.unit[idx]})` : null}
                     </p>
                   </th>
                 })
@@ -61,8 +61,11 @@ function StationDetail({ record, open, closeModal }) {
               data.body.map((item, idx) => {
                 return <tr>
                   <td>{idx + 1}</td>
-                  <td>{item[0]}</td>
-                  <td>{item[1]}</td>
+                  {
+                    item.map(jtem => <td>{jtem}</td>)
+                  }
+
+
                 </tr>
               })
             }
