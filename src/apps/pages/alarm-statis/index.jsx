@@ -225,7 +225,6 @@ function AlarmStatis() {
 
 
   const getPageData = async () => {
-    setLoading(true);
     let values = searchForm.getFieldsValue();
     if (!values.time) {
       message.info("开始日期或结束日期不能为空");
@@ -237,6 +236,8 @@ function AlarmStatis() {
     values.notificationBeginDate = dayjs(values.time[0]).format("YYYYMMDD");
     values.notificationEndDate = dayjs(values.time[1]).format("YYYYMMDD");
     values.topicType = values.topicType ? [values.topicType] : undefined
+    setLoading(true);
+
     let { data, success } = await alarmStatis(values);
     if (success) {
       // 表头
@@ -373,7 +374,7 @@ function AlarmStatis() {
               time: [dayjs().subtract(1, 'month'), dayjs()]
             }}
           >
-            <Form.Item label="统计纬度" name="statType">
+            <Form.Item label="统计维度" name="statType">
               <Select
                 className="width-3"
                 placeholder="请选择"
@@ -393,9 +394,9 @@ function AlarmStatis() {
                 value={themeId}
                 options={themeList}
                 style={{ width: "120px" }}
-              // mode="multiple"
-              // maxTagCount="responsive"
-              // allowClear
+                // mode="multiple"
+                // maxTagCount="responsive"
+                allowClear
               />
 
             </Form.Item>
