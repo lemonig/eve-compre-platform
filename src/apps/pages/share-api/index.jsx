@@ -162,7 +162,7 @@ function ShareApi() {
               <h3>1.接口文档</h3>
               <p>{data.description}</p>
               <h3>2.请求URL</h3>
-              <p>{data.baseUrl}</p>
+              <p>{data.baseUrl + data.path}</p>
               <h3>3.请求方式</h3>
               <p>{data.method}</p>
               <h3>4.输入参数</h3>
