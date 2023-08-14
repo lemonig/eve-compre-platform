@@ -59,13 +59,13 @@ function FiledSelect({
   }, [options3]); //TODO可能要根据站点变化刷新
 
   useEffect(() => {
-    if (data1.length && data2.length && data3.length) {
-      setRdata([
-        ...filterOption(data1),
-        ...filterOption(data2),
-        ...filterOption(data3),
-      ]);
-    }
+    // if (data1.length && data2.length && data3.length) {
+    setRdata([
+      ...filterOption(data1),
+      ...filterOption(data2),
+      ...filterOption(data3),
+    ]);
+    // }
   }, [data1, data2, data3]);
 
   // 选择
@@ -146,9 +146,9 @@ function FiledSelect({
       transition,
       ...(isDragging
         ? {
-            position: "relative",
-            zIndex: 9999,
-          }
+          position: "relative",
+          zIndex: 9999,
+        }
         : {}),
     };
     return (
