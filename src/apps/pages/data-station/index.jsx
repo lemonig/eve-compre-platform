@@ -96,7 +96,8 @@ function StationData() {
   }, []);
   useEffect(() => {
     getPageData();
-  }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
+  }, [pageMsg.pagination.current, pageMsg.pagination.pageSize, JSON.stringify(pageMsg.filters)]);
+
 
   const getOriginPage = async () => {
     let { data } = await regionList({

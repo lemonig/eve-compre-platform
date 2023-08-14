@@ -95,7 +95,8 @@ function StationList() {
   }, []);
   useEffect(() => {
     getPageData();
-  }, [pageMsg.pagination.current, pageMsg.pagination.pageSize]);
+  }, [pageMsg.pagination.current, pageMsg.pagination.pageSize, JSON.stringify(pageMsg.filters)]);
+
 
   const getOriginPage = async () => {
     let { data } = await regionList({
@@ -357,6 +358,7 @@ function StationList() {
   };
 
   const onTableChange = (pagination, filters, sorter, extra) => {
+    console.log(filters);
     setPagemsg({
       pagination,
       filters,
