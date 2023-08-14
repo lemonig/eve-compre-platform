@@ -275,7 +275,7 @@ function AlarmMsgStatis() {
               statType: 'station'
             }}
           >
-            <Form.Item label="统计纬度" name="statType">
+            <Form.Item label="统计维度" name="statType">
               <Select
                 className="width-3"
                 placeholder="请选择"
@@ -307,6 +307,7 @@ function AlarmMsgStatis() {
                   }}
                   options={themeList}
                   style={{ width: "120px" }}
+                  allowClear
 
                 />
 
