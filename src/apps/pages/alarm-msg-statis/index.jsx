@@ -94,7 +94,7 @@ function AlarmMsgStatis() {
       render: (text, record, index) => <a onClick={() => showDetail(record)}>{text}</a>
     },
     {
-      title: "报警总数",
+      title: "消息总数",
       dataIndex: 'count',
       key: 'count', sorter: (a, b) => a.count - b.count,
 
@@ -206,7 +206,7 @@ function AlarmMsgStatis() {
     values.notificationBeginDate = dayjs(values.time[0]).format("YYYYMMDD");
     values.notificationEndDate = dayjs(values.time[1]).format("YYYYMMDD");
     values.topicType = values.topicType ? [values.topicType] : undefined
-
+    setLoading(true)
     let { additional_data, data, success } = await logStat(values);
     if (success) {
       let iData = data.map((item, idx) => ({
