@@ -44,8 +44,15 @@ function StationDetail({ record, open, closeModal }) {
             <tr>
               <th>序号</th>
               {
-                data.header.map(item => {
-                  return <th>{item}</th>
+                data.header.map((item, idx) => {
+                  return <th>
+                    <p>
+                      {item}
+                    </p>
+                    <p>
+                      ({data.unit[idx]})
+                    </p>
+                  </th>
                 })
               }
 
