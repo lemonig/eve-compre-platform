@@ -113,9 +113,9 @@ function AlarmFiled({
       transition,
       ...(isDragging
         ? {
-            position: "relative",
-            zIndex: 9999,
-          }
+          position: "relative",
+          zIndex: 9999,
+        }
         : {}),
     };
     return (
@@ -154,7 +154,7 @@ function AlarmFiled({
                   overflow: "auto",
                 }}
               >
-                {data1.slice(0, 8).map((item, idx) => (
+                {data1.slice(0, 9).map((item, idx) => (
                   <Col
                     span={6}
                     key={item.id + "-" + idx}
@@ -181,7 +181,7 @@ function AlarmFiled({
                   overflow: "auto",
                 }}
               >
-                {data1.slice(8).map((item, idx) => (
+                {data1.slice(10).map((item, idx) => (
                   <Col
                     span={6}
                     key={item.id + "-" + idx}

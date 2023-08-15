@@ -39,7 +39,8 @@ const text = [
   { label: "报警因子", key: "factorName" },
   { label: "规则类型", key: "ruleName" },
   { label: "报警描述", key: "describe" },
-  { label: "累计次数", key: "times" },
+  { label: "重要程度", key: "important_degree" },
+  { label: "连续次数/周期", key: "times" },
   { label: "数据时间", key: "spt" },
   { label: "报警时间", key: "alarmTime" },
   { label: "业务主题", key: "topicTypeName" },
@@ -62,7 +63,7 @@ const fields = text.map((item, idx) => {
     value: item.key,
     title: item.label,
     dataIndex: item.key,
-    checked: idx < 8 ? true : false,
+    checked: idx < 9 ? true : false,
   };
 });
 

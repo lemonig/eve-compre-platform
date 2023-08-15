@@ -96,9 +96,17 @@ function RuleForm({ record, open, closeModal, groupId }) {
   };
 
   const onRuleCodeChange = async (value) => {
+    let option = meta.find(ele => ele.code === value)
+    if (option) {
+      form.setFieldsValue({
+        name: option.name
+      })
+    }
+
     let { data } = await getParametersByRuleCode({
       code: value,
     });
+
     setFactorFile(data);
   };
 
@@ -141,19 +149,6 @@ function RuleForm({ record, open, closeModal, groupId }) {
           }}
         >
           <Form.Item
-            label="规则名称"
-            name="name"
-            rules={[
-              {
-                required: true,
-                message: "请输入",
-              },
-            ]}
-            getValueFromEvent={inputTrim}
-          >
-            <Input placeholder="请输入" />
-          </Form.Item>
-          <Form.Item
             label="规则类型"
             name="ruleCode"
             rules={[
@@ -174,7 +169,19 @@ function RuleForm({ record, open, closeModal, groupId }) {
               onChange={onRuleCodeChange}
             />
           </Form.Item>
-
+          <Form.Item
+            label="规则名称"
+            name="name"
+            rules={[
+              {
+                required: true,
+                message: "请输入",
+              },
+            ]}
+            getValueFromEvent={inputTrim}
+          >
+            <Input placeholder="请输入" />
+          </Form.Item>
           {/* 零值 负值 连续*/}
 
           <Form.Item
@@ -217,10 +224,13 @@ function RuleForm({ record, open, closeModal, groupId }) {
               }}
             />
           </Form.Item>
-
+          {/* 水质超标、空气质量超标、超限值
+            ALM20220910
+            ALM20220912
+            ALM20220907 */}
           <Form.Item
             style={filterElement("continuousCount")}
-            label="连续次数 "
+            label={ruleCode === 'ALM20220910' || ruleCode === 'ALM20220912' || ruleCode === 'ALMALM202209070220910' ? '持续周期 ' : '连续次数'}
             name="continuousCount"
             rules={[
               {
@@ -341,13 +351,15 @@ function RuleForm({ record, open, closeModal, groupId }) {
       </Modal>
 
       {/* 弹出表单 */}
-      {isModalOpen && (
-        <FactorSelectModal
-          open={isModalOpen}
-          factorSelectCallback={factorSelectCallback}
-          record={factorId}
-        />
-      )}
+      {
+        isModalOpen && (
+          <FactorSelectModal
+            open={isModalOpen}
+            factorSelectCallback={factorSelectCallback}
+            record={factorId}
+          />
+        )
+      }
     </>
   );
 }

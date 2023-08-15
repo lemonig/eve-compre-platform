@@ -168,7 +168,7 @@ function AlarmGroup({ record, open, closePage }) {
           onFinish={onFinish}
           autoComplete="off"
           colon={false}
-          initialValues={{ isScheduledSend: 0, notificationFormat: 1 }}
+          initialValues={{ isScheduledSend: 0, notificationFormat: 1, important_degree: 1 }}
         >
           <Form.Item
             label="规则组名称"
@@ -181,6 +181,21 @@ function AlarmGroup({ record, open, closePage }) {
             ]}
           >
             <Input />
+          </Form.Item>
+          <Form.Item
+            label="重要程度"
+            name="important_degree"
+            rules={[
+              {
+                required: true,
+                message: "请输入",
+              },
+            ]}
+          >
+            <Radio.Group>
+              <Radio value="一般">一般</Radio>
+              <Radio value="重要">重要</Radio>
+            </Radio.Group>
           </Form.Item>
           <Form.Item label="生效月份" required>
             <Space>
@@ -327,7 +342,7 @@ function AlarmGroup({ record, open, closePage }) {
         <GroupCreate
           open={isModalOpen}
           closeModal={closeStationModal}
-          // record={operate}
+        // record={operate}
         />
       )}
     </>
