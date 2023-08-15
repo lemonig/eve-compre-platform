@@ -347,13 +347,13 @@ function HomeReal() {
                 style={
                   value.color
                     ? {
-                        color: "#F82504",
-                        fontWeight: "bold",
-                        cursor: colum.isDigital ? "pointer" : "",
-                      }
+                      color: "#F82504",
+                      fontWeight: "bold",
+                      cursor: colum.isDigital ? "pointer" : "",
+                    }
                     : {
-                        cursor: colum.isDigital ? "pointer" : "",
-                      }
+                      cursor: colum.isDigital ? "pointer" : "",
+                    }
                 }
               >
                 {value.value}
@@ -452,7 +452,10 @@ function HomeReal() {
             loading={loading}
             rowKey={(record) => record.key}
             size="small"
-            pagination={pageMsg.pagination}
+            pagination={{
+              ...pageMsg.pagination,
+              showSizeChanger: true
+            }}
             onChange={handleTableChange}
             scroll={{
               x: "max-content",
