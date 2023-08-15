@@ -230,7 +230,10 @@ function RuleForm({ record, open, closeModal, groupId }) {
             ALM20220907 */}
           <Form.Item
             style={filterElement("continuousCount")}
-            label={ruleCode === 'ALM20220910' || ruleCode === 'ALM20220912' || ruleCode === 'ALMALM202209070220910' ? '持续周期 ' : '连续次数'}
+            label={ruleCode === 'ALM20220910'
+              || ruleCode === 'ALM20220912'
+              || ruleCode === 'ALM20220907' ?
+              '持续周期 ' : '连续次数'}
             name="continuousCount"
             rules={[
               {
