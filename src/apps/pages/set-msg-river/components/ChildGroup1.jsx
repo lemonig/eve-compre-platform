@@ -31,7 +31,12 @@ function ChildGroup({ precord, pcloseModal, show }) {
   const [operate, setOperate] = useState(null); //正在操作id
 
   const [data, setData] = useState([]);
-
+  const [pageMsg, setPagemsg] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
   useEffect(() => {
     getPageData();
   }, []);
@@ -168,7 +173,18 @@ function ChildGroup({ precord, pcloseModal, show }) {
       ),
     },
   ];
-
+  const onTableChange = (pagination, filters, sorter, extra) => {
+    console.log(filters);
+    setPagemsg({
+      pagination,
+      filters,
+      ...sorter,
+    });
+    // `dataSource` is useless since `pageSize` changed
+    if (pagination.pageSize !== pageMsg.pagination?.pageSize) {
+      setData([]);
+    }
+  };
   //表单回调
   const closeModal = (flag) => {
     // flag 确定还是取消
@@ -201,6 +217,8 @@ function ChildGroup({ precord, pcloseModal, show }) {
             dataSource={data}
             loading={loading}
             rowKey={(record) => record.id}
+            pagination={pageMsg.pagination}
+            onChange={onTableChange}
           />
         </>
       )}

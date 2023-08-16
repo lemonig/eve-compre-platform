@@ -31,7 +31,12 @@ function SetMsgRiver() {
   const [operate, setOperate] = useState(null); //正在操作id
 
   const [data, setData] = useState([]);
-
+  const [pageMsg, setPagemsg] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
   useEffect(() => {
     getPageData();
   }, []);
@@ -111,7 +116,10 @@ function SetMsgRiver() {
       title: "序号",
       key: "index",
       width: 60,
-      render: (_, record, index) => index + 1,
+      render: (_, record, index) =>
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        index +
+        1,
     },
     {
       title: "级别  ",
@@ -168,7 +176,17 @@ function SetMsgRiver() {
       ),
     },
   ];
-
+  const onTableChange = (pagination, filters, sorter, extra) => {
+    setPagemsg({
+      pagination,
+      filters,
+      ...sorter,
+    });
+    // `dataSource` is useless since `pageSize` changed
+    if (pagination.pageSize !== pageMsg.pagination?.pageSize) {
+      setData([]);
+    }
+  };
   //表单回调
   const closeModal = (flag) => {
     // flag 确定还是取消
@@ -201,6 +219,8 @@ function SetMsgRiver() {
             dataSource={data}
             loading={loading}
             rowKey={(record) => record.id}
+            pagination={pageMsg.pagination}
+            onChange={onTableChange}
           />
         </>
       )}
