@@ -236,41 +236,41 @@ const routerList = [
         element: lazyLoad("set-meta-data"),
       },
       // 信息管理
-      {
+      {//行政区
         path: "msg_region",
         element: lazyLoad("set-msg-region"),
       },
-      {
+      {//水体
         path: "msg_river",
         element: lazyLoad("set-msg-river"),
       },
-      {
+      {//企业
         path: "msg_company",
         element: lazyLoad("set-msg-company"),
       },
-      {
+      {//园区
         path: "msg_park",
         element: lazyLoad("set-msg-park"),
       },
-      {
+      {//引用水源地
         path: "msg_drink_water_source",
-        element: lazyLoad("set-msg-drink"),
+        element: lazyLoad("set-msg-drink-place"),
       },
-      {
+      {//空气质量功能功能区
         path: "msg_air_zone",
-        element: lazyLoad("set-msg-air"),
+        element: lazyLoad("set-msg-air-area"),
       },
-      {
+      {//地表水功能区
         path: "msg_water_zone",
-        element: lazyLoad("set-msg-water"),
+        element: lazyLoad("set-msg-river-area"),
       },
       {
-        path: "msg_sensitive_point",
-        element: lazyLoad("set-msg-sensitive"),
+        path: "msg_sensitive_point", //环境敏感点
+        element: lazyLoad("set-msg-eve-sensitive"),
       },
-      {
+      {//生活信息库
         path: "msg_domestic_pollution_source",
-        element: lazyLoad("set-msg-live"),
+        element: lazyLoad("set-msg-live-library"),
       },
       // 报表管理
       {

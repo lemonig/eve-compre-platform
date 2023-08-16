@@ -96,11 +96,11 @@ function RuleForm({ record, open, closeModal, groupId }) {
   };
 
   const onRuleCodeChange = async (value) => {
-    let option = meta.find(ele => ele.code === value)
+    let option = meta.find((ele) => ele.code === value);
     if (option) {
       form.setFieldsValue({
-        name: option.name
-      })
+        name: option.name,
+      });
     }
 
     let { data } = await getParametersByRuleCode({
@@ -230,10 +230,13 @@ function RuleForm({ record, open, closeModal, groupId }) {
             ALM20220907 */}
           <Form.Item
             style={filterElement("continuousCount")}
-            label={ruleCode === 'ALM20220910'
-              || ruleCode === 'ALM20220912'
-              || ruleCode === 'ALM20220907' ?
-              '持续周期 ' : '连续次数'}
+            label={
+              ruleCode === "ALM20220910" ||
+                ruleCode === "ALM20220912" ||
+                ruleCode === "ALM20220907"
+                ? "持续周期 "
+                : "连续次数"
+            }
             name="continuousCount"
             rules={[
               {
@@ -337,7 +340,10 @@ function RuleForm({ record, open, closeModal, groupId }) {
               ]}
             >
               {/* 超限制 大于 0 */}
-              <InputNumber min={ruleCode === "ALM20220907" ? 0.00000001 : 1} max={999999} />
+              <InputNumber
+                min={ruleCode === "ALM20220907" ? 0.00000001 : 1}
+                max={999999}
+              />
             </Form.Item>
             {ruleCode === "ALM20220906" && (
               <span
@@ -354,15 +360,13 @@ function RuleForm({ record, open, closeModal, groupId }) {
       </Modal>
 
       {/* 弹出表单 */}
-      {
-        isModalOpen && (
-          <FactorSelectModal
-            open={isModalOpen}
-            factorSelectCallback={factorSelectCallback}
-            record={factorId}
-          />
-        )
-      }
+      {isModalOpen && (
+        <FactorSelectModal
+          open={isModalOpen}
+          factorSelectCallback={factorSelectCallback}
+          record={factorId}
+        />
+      )}
     </>
   );
 }

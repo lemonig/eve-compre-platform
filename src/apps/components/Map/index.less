@@ -1,0 +1,101 @@
+.map-wrap {
+  #map_container {
+    position: relative;
+    flex: 1;
+    #map {
+      width: 100%;
+      height: 70vh;
+    }
+    #center_icon {
+      position: absolute;
+      z-index: 101;
+      > img {
+        width: 32px;
+        height: 32px;
+        // --------以下代码下面会做详细介绍---------
+        position: relative;
+        top: -32px;
+        left: -16px;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+    }
+  }
+  .location {
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    background-color: #eee;
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    z-index: 2200;
+  }
+  .poi-wrap {
+    // height: calc(100vh - 300px - 35px);
+    overflow-y: auto;
+  }
+  .list {
+    --font-size: 14px;
+  }
+
+  .map-show-tool-con {
+    padding: 10px 5px 10px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .map-msg-show {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      font-weight: bold;
+      .text {
+        max-width: 70%;
+        font-size: 14px;
+        margin: 0;
+      }
+      .number {
+        padding: 0 10px;
+        margin: 0;
+      }
+    }
+    .map-address-btn-con {
+    }
+  }
+}
+// 空心灰圆
+.gray-circle-icon {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border: 1px solid rgba(128, 128, 128, 0.5);
+  border-radius: 50%;
+}
+
+.pinAnima {
+  animation: bounce 1.5s normal;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-20px);
+  }
+  40% {
+    transform: translateY(0px);
+  }
+  60% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
