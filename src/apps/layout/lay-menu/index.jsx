@@ -88,6 +88,7 @@ function LayMenu({ menuList, onChange, value = [] }) {
           collapsible
           collapsed={collapsed}
           collapsedWidth={20}
+          className="menu-warp-solder"
           // onCollapse={(value) => setCollapsed(value)}
         >
           <div className="menu">

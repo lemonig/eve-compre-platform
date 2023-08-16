@@ -119,11 +119,11 @@ module.exports = {
       ...whenProd(
         () => [
           // new webpackBundleAnalyzer(),
-
           new compressionWebpackPlugin({
             test: /\.js$|\.html$|\.css$/u,
             threshold: 8192,
           }),
+
         ],
         []
       ),
@@ -132,6 +132,8 @@ module.exports = {
       presets: [],
       plugins: [
         // AntDesign 按需加载
+        ['import', { libraryName: 'antd', style: 'css' }],
+
       ],
       loaderOptions: (babelLoaderOptions, { env, paths }) => {
         return babelLoaderOptions;
