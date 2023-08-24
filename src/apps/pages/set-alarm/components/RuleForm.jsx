@@ -22,7 +22,6 @@ function RuleForm({ record, open, closeModal, groupId }) {
   const [factorFile, setFactorFile] = useState([]); //表单字段
   const [symbol, setSymbol] = useState([]); //单位
   const [timeType, setTimeType] = useState([]);
-  const ruleCode = Form.useWatch("ruleCode", form);
   useEffect(() => {
     getMetaData();
   }, []);
@@ -140,7 +139,7 @@ function RuleForm({ record, open, closeModal, groupId }) {
           form={form}
           colon={false}
           initialValues={{
-            continuousCount: ruleCode === "ALM20220905" ? 3 : 1, //连续值 3
+            continuousCount: 1,
             comparisonOperator: "1",
             airLevel: 2,
             wtLevel: 0,
@@ -159,7 +158,6 @@ function RuleForm({ record, open, closeModal, groupId }) {
             ]}
           >
             <Select
-              className="width-3"
               options={meta}
               placeholder="请选择"
               fieldNames={{
@@ -224,19 +222,10 @@ function RuleForm({ record, open, closeModal, groupId }) {
               }}
             />
           </Form.Item>
-          {/* 水质超标、空气质量超标、超限值
-            ALM20220910
-            ALM20220912
-            ALM20220907 */}
+
           <Form.Item
             style={filterElement("continuousCount")}
-            label={
-              ruleCode === "ALM20220910" ||
-                ruleCode === "ALM20220912" ||
-                ruleCode === "ALM20220907"
-                ? "持续周期 "
-                : "连续次数"
-            }
+            label="连续次数"
             name="continuousCount"
             rules={[
               {
@@ -245,11 +234,21 @@ function RuleForm({ record, open, closeModal, groupId }) {
               },
             ]}
           >
-            <InputNumber
-              placeholder="请输入"
-              min={ruleCode === "ALM20220905" ? 3 : 1}
-              max={999999}
-            />
+            <InputNumber placeholder="请输入" min={1} max={999999} />
+          </Form.Item>
+
+          <Form.Item
+            style={filterElement("durationPeriod")}
+            label="持续周期"
+            name="durationPeriod"
+            rules={[
+              {
+                required: filterRequire("durationPeriod"),
+                message: "请输入",
+              },
+            ]}
+          >
+            <InputNumber placeholder="请输入" min={1} max={999999} />
           </Form.Item>
 
           <Form.Item
@@ -339,22 +338,26 @@ function RuleForm({ record, open, closeModal, groupId }) {
                 },
               ]}
             >
-              {/* 超限制 大于 0 */}
-              <InputNumber
-                min={ruleCode === "ALM20220907" ? 0.00000001 : 1}
-                max={999999}
-              />
+              <InputNumber />
             </Form.Item>
-            {ruleCode === "ALM20220906" && (
-              <span
-                className="ant-form-text"
-                style={{
-                  marginLeft: 8,
-                }}
-              >
-                倍
-              </span>
-            )}
+          </Form.Item>
+          <Form.Item
+            label="离群倍数"
+            style={filterElement("outlierMultiple")}
+            required
+          >
+            <Form.Item
+              name="outlierMultiple"
+              noStyle
+              rules={[
+                {
+                  required: filterRequire("outlierMultiple"),
+                  message: "请输入",
+                },
+              ]}
+            >
+              <InputNumber />
+            </Form.Item>
           </Form.Item>
         </Form>
       </Modal>
