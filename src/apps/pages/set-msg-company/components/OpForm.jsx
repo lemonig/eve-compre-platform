@@ -71,11 +71,13 @@ function OpForm({ record, open, closeModal }) {
     if (data.issuingDate) {
       data.issuingDate = dayjs(data.issuingDate);
     }
-  
+
     data.attachment = data.attachment.map((item) => ({
       ...item,
       name: item.originalFilename,
     }));
+    //解决后端默认parkId为0的问题
+    data.parkId = data.parkId ? data.parkId : undefined;
     form.setFieldsValue(data);
   };
 
