@@ -243,7 +243,6 @@ function OpForm({ record, open, closeModal }) {
             ]}
           >
             <Select
-              className="width-3"
               style={inputwidtg}
               options={metaSelect[0]}
               placeholder="请选择"
@@ -281,7 +280,6 @@ function OpForm({ record, open, closeModal }) {
           >
             <Select
               style={inputwidtg}
-              className="width-3"
               options={metaSelect[5]}
               placeholder="请选择"
               fieldNames={{
@@ -304,7 +302,6 @@ function OpForm({ record, open, closeModal }) {
           >
             <Select
               style={inputwidtg}
-              className="width-3"
               options={[
                 {
                   label: "是",
@@ -320,7 +317,6 @@ function OpForm({ record, open, closeModal }) {
           </Form.Item>
           <Form.Item label="汇聚级别" name="computeDataLevel">
             <Select
-              className="width-3"
               options={computeDataLevel}
               placeholder="请选择"
               fieldNames={{
@@ -343,7 +339,7 @@ function OpForm({ record, open, closeModal }) {
               },
             ]}
           >
-            <Select className="width-3" placeholder="请选择" style={inputwidtg}>
+            <Select placeholder="请选择" style={inputwidtg}>
               {metaSelect[7]?.map((item) => (
                 <Option
                   value={item.dictValue}
@@ -391,7 +387,6 @@ function OpForm({ record, open, closeModal }) {
           <Form.Item label="评价指标" name="evaluationIndex">
             <Select
               style={inputwidtg}
-              className="width-3"
               // options={metaSelect[2]}
               placeholder="请选择"
               // fieldNames={{
@@ -418,7 +413,6 @@ function OpForm({ record, open, closeModal }) {
           <Form.Item label="站点数据标记" name="stationDataTag">
             <Select
               style={inputwidtg}
-              className="width-3"
               options={metaSelect[6]}
               placeholder="请选择"
               // fieldNames={{
@@ -434,7 +428,6 @@ function OpForm({ record, open, closeModal }) {
           <Form.Item label="站点属性字段" name="stationField">
             <Select
               style={inputwidtg}
-              className="width-3"
               options={metaSelect[1]}
               placeholder="请选择"
               fieldNames={{

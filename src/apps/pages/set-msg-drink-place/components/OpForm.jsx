@@ -268,7 +268,6 @@ function OpForm({ record, open, closeModal }) {
             <Col span={12}>
               <Form.Item label="地表水环境功能区" name="waterZoneId">
                 <Select
-                  className="width-3"
                   placeholder="请选择"
                   fieldNames={{
                     label: "name",

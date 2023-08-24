@@ -347,13 +347,13 @@ function HomeReal() {
                 style={
                   value.color
                     ? {
-                      color: "#F82504",
-                      fontWeight: "bold",
-                      cursor: colum.isDigital ? "pointer" : "",
-                    }
+                        color: "#F82504",
+                        fontWeight: "bold",
+                        cursor: colum.isDigital ? "pointer" : "",
+                      }
                     : {
-                      cursor: colum.isDigital ? "pointer" : "",
-                    }
+                        cursor: colum.isDigital ? "pointer" : "",
+                      }
                 }
               >
                 {value.value}
@@ -389,7 +389,6 @@ function HomeReal() {
             <Space>
               业务主题：
               <Select
-                className="width-3"
                 placeholder="请选择"
                 fieldNames={{
                   label: "name",
@@ -402,7 +401,6 @@ function HomeReal() {
               />
               站点类型：
               <Select
-                className="width-3"
                 placeholder="请选择"
                 fieldNames={{
                   label: "name",
@@ -454,7 +452,7 @@ function HomeReal() {
             size="small"
             pagination={{
               ...pageMsg.pagination,
-              showSizeChanger: true
+              showSizeChanger: true,
             }}
             onChange={handleTableChange}
             scroll={{

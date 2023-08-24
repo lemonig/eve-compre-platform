@@ -193,7 +193,6 @@ function OpForm({ record, open, closeModal }) {
                   ]}
                 >
                   <Select
-                    className="width-3"
                     style={inputwidtg}
                     options={themeList}
                     placeholder="请选择"
@@ -218,7 +217,6 @@ function OpForm({ record, open, closeModal }) {
                 >
                   <Select
                     disabled
-                    className="width-3"
                     style={inputwidtg}
                     options={[
                       {

@@ -25,7 +25,7 @@ function MetaSelect({
 
   return (
     <Select
-      className="width-3"
+      // className="width-3"
       options={list}
       placeholder="请选择"
       fieldNames={fieldNames}

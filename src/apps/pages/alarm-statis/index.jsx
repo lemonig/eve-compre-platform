@@ -1,13 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Select,
-  Button,
-  Space,
-  Table,
-  Form,
-  message,
-  DatePicker
-} from "antd";
+import { Select, Button, Space, Table, Form, message, DatePicker } from "antd";
 // com
 import Lbreadcrumb from "@Components/Lbreadcrumb";
 import dayjs from "dayjs";
@@ -24,96 +16,107 @@ import { validateQuery } from "@Utils/valid.js";
 const { RangePicker } = DatePicker;
 const statList = [
   {
-    label: '行政区',
-    value: 'region'
+    label: "行政区",
+    value: "region",
   },
   {
-    label: '站点类型',
-    value: 'station_type'
+    label: "站点类型",
+    value: "station_type",
   },
   {
-    label: '站点',
-    value: 'station'
+    label: "站点",
+    value: "station",
   },
   {
-    label: '因子',
-    value: 'factor'
+    label: "因子",
+    value: "factor",
   },
   {
-    label: '运维厂家',
-    value: 'operationFactory'
+    label: "运维厂家",
+    value: "operationFactory",
   },
-]
+];
 
 const columsList = [
   {
     title: "日质控未通过",
-    key: 'ALM20220901',
-    dataIndex: 'ALM20220901', sorter: (a, b) => a.ALM20220901 - b.ALM20220901,
+    key: "ALM20220901",
+    dataIndex: "ALM20220901",
+    sorter: (a, b) => a.ALM20220901 - b.ALM20220901,
   },
   {
     title: "电导率过低",
-    key: 'ALM20220902',
-    dataIndex: 'ALM20220902', sorter: (a, b) => a.ALM20220902 - b.ALM20220902,
+    key: "ALM20220902",
+    dataIndex: "ALM20220902",
+    sorter: (a, b) => a.ALM20220902 - b.ALM20220902,
   },
   {
     title: "零值",
-    dataIndex: 'ALM20220903',
-    key: 'ALM20220903', sorter: (a, b) => a.ALM20220903 - b.ALM20220903,
+    dataIndex: "ALM20220903",
+    key: "ALM20220903",
+    sorter: (a, b) => a.ALM20220903 - b.ALM20220903,
   },
   {
     title: "负值",
-    dataIndex: 'ALM20220904',
-    key: 'ALM20220904', sorter: (a, b) => a.ALM20220904 - b.ALM20220904,
+    dataIndex: "ALM20220904",
+    key: "ALM20220904",
+    sorter: (a, b) => a.ALM20220904 - b.ALM20220904,
   },
   {
     title: "连续值",
-    key: 'ALM20220905',
-    dataIndex: 'ALM20220905', sorter: (a, b) => a.ALM20220905 - b.ALM20220905,
+    key: "ALM20220905",
+    dataIndex: "ALM20220905",
+    sorter: (a, b) => a.ALM20220905 - b.ALM20220905,
   },
   {
     title: "离群",
-    key: 'ALM20220906',
-    dataIndex: 'ALM20220906', sorter: (a, b) => a.ALM20220906 - b.ALM20220906,
+    key: "ALM20220906",
+    dataIndex: "ALM20220906",
+    sorter: (a, b) => a.ALM20220906 - b.ALM20220906,
   },
   {
     title: "超限值",
-    key: 'ALM20220907',
-    dataIndex: 'ALM20220907', sorter: (a, b) => a.ALM20220907 - b.ALM20220907,
+    key: "ALM20220907",
+    dataIndex: "ALM20220907",
+    sorter: (a, b) => a.ALM20220907 - b.ALM20220907,
   },
   {
     title: "疑似站点离线",
-    key: 'ALM20220908',
-    dataIndex: 'ALM20220908', sorter: (a, b) => a.ALM20220908 - b.ALM20220908,
+    key: "ALM20220908",
+    dataIndex: "ALM20220908",
+    sorter: (a, b) => a.ALM20220908 - b.ALM20220908,
   },
   {
     title: "氨氮异常",
-    key: 'ALM20220909',
-    dataIndex: 'ALM20220909', sorter: (a, b) => a.ALM20220909 - b.ALM20220909,
+    key: "ALM20220909",
+    dataIndex: "ALM20220909",
+    sorter: (a, b) => a.ALM20220909 - b.ALM20220909,
   },
   {
     title: "水质超标",
-    key: 'ALM20220910',
-    dataIndex: 'ALM20220910', sorter: (a, b) => a.ALM20220910 - b.ALM20220910,
+    key: "ALM20220910",
+    dataIndex: "ALM20220910",
+    sorter: (a, b) => a.ALM20220910 - b.ALM20220910,
   },
   {
     title: "仪器故障",
-    key: 'ALM20220911',
-    dataIndex: 'ALM20220911', sorter: (a, b) => a.ALM20220911 - b.ALM20220911,
+    key: "ALM20220911",
+    dataIndex: "ALM20220911",
+    sorter: (a, b) => a.ALM20220911 - b.ALM20220911,
   },
   {
     title: "空气质量超标",
-    key: 'ALM20220912',
-    dataIndex: 'ALM20220912',
+    key: "ALM20220912",
+    dataIndex: "ALM20220912",
     sorter: (a, b) => a.ALM20220912 - b.ALM20220912,
   },
   {
     title: "PM2.5与PM10倒挂",
-    key: 'ALM20220913',
-    dataIndex: 'ALM20220913',
+    key: "ALM20220913",
+    dataIndex: "ALM20220913",
     sorter: (a, b) => a.ALM20220913 - b.ALM20220913,
   },
-]
+];
 
 function AlarmStatis() {
   const [searchForm] = Form.useForm();
@@ -134,14 +137,14 @@ function AlarmStatis() {
 
   const [chartdata, setChartdata] = useState(null);
   const chartRef = useRef(null);
-  const [statTypeName, setStatTypeName] = useState("行政区")
+  const [statTypeName, setStatTypeName] = useState("行政区");
   const [pageMsg, setPagemsg] = useState({
     pagination: {
       current: 1,
       pageSize: 10,
     },
   });
-  const [columns, setClumns] = useState(columsList)
+  const [columns, setClumns] = useState(columsList);
 
   useEffect(() => {
     const chart = chartRef.current && chartRef.current.getEchartsInstance();
@@ -156,17 +159,15 @@ function AlarmStatis() {
 
   useEffect(() => {
     // 元数据获取
-    getTopicListAsync()
-    getFactorList()
-    getRuleList()
+    getTopicListAsync();
+    getFactorList();
+    getRuleList();
   }, []);
-
-
 
   const getTopicListAsync = async () => {
     let { data } = await topicList();
-    setThemeList(data)
-    getPageData()
+    setThemeList(data);
+    getPageData();
   };
 
   //报警因子
@@ -193,36 +194,31 @@ function AlarmStatis() {
     },
     {
       title: statTypeName,
-      dataIndex: 'statType',
-      key: 'statType',
+      dataIndex: "statType",
+      key: "statType",
     },
     {
       title: "报警总数",
-      dataIndex: 'count',
-      key: 'count', sorter: (a, b) => a.count - b.count,
+      dataIndex: "count",
+      key: "count",
+      sorter: (a, b) => a.count - b.count,
     },
-
   ];
-
 
   useEffect(() => {
     const getStationMetaPage = async () => {
       let { data } = await stationMetaPage({
-        topicType: themeId
+        topicType: themeId,
       });
       setStationList(data);
       searchForm.setFieldsValue({
-        stationType: []
-      })
+        stationType: [],
+      });
     };
     if (themeId) {
-      getStationMetaPage()
+      getStationMetaPage();
     }
-  }, [themeId])
-
-
-
-
+  }, [themeId]);
 
   const getPageData = async () => {
     let values = searchForm.getFieldsValue();
@@ -235,39 +231,38 @@ function AlarmStatis() {
     }
     values.notificationBeginDate = dayjs(values.time[0]).format("YYYYMMDD");
     values.notificationEndDate = dayjs(values.time[1]).format("YYYYMMDD");
-    values.topicType = values.topicType ? [values.topicType] : undefined
+    values.topicType = values.topicType ? [values.topicType] : undefined;
     setLoading(true);
 
     let { data, success } = await alarmStatis(values);
     if (success) {
       // 表头
       if (statType) {
-        let res = statList.find(ele => ele.value === statType)
+        let res = statList.find((ele) => ele.value === statType);
         if (res) {
-          setStatTypeName(res.label)
+          setStatTypeName(res.label);
         }
       }
       if (values.ruleCode && values.ruleCode.length > 0) {
-        let res = columsList.map(item => {
-          if (
-            values.ruleCode.findIndex(ele => ele === item.dataIndex) !== -1
-          ) {
-            return item
-          }
-        }).filter(Boolean)
-        setClumns(res)
+        let res = columsList
+          .map((item) => {
+            if (
+              values.ruleCode.findIndex((ele) => ele === item.dataIndex) !== -1
+            ) {
+              return item;
+            }
+          })
+          .filter(Boolean);
+        setClumns(res);
       } else {
-        setClumns(columsList)
+        setClumns(columsList);
       }
       setData(data);
-      let option = getOption(data)
-      setChartdata(option)
+      let option = getOption(data);
+      setChartdata(option);
     }
     setLoading(false);
   };
-
-
-
 
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
@@ -283,15 +278,14 @@ function AlarmStatis() {
     }
 
     // `dataSource` is useless since `pageSize` changed
-
   };
 
   // 柱状
   const getOption = (data) => {
     const option = {
       title: {
-        text: '报警统计',
-        left: 'center'
+        text: "报警统计",
+        left: "center",
       },
       // title: '报警统计',
       grid: {
@@ -303,7 +297,6 @@ function AlarmStatis() {
       },
       tooltip: {
         trigger: "axis",
-
       },
       toolbox: {
         feature: {
@@ -318,24 +311,23 @@ function AlarmStatis() {
             title: "保存为图片",
             name: ``,
           },
-
         },
       },
 
       xAxis: {
         type: "category",
         // boundaryGap: false,
-        data: data.map(item => item.statType),
+        data: data.map((item) => item.statType),
       },
       yAxis: {
         type: "value",
       },
       series: {
-        type: 'bar',
+        type: "bar",
         data: data.map((item) => {
           return item.count;
         }),
-      }
+      },
     };
     return option;
   };
@@ -352,7 +344,7 @@ function AlarmStatis() {
     }
     values.notificationBeginDate = dayjs(values.time[0]).format("YYYYMMDD");
     values.notificationEndDate = dayjs(values.time[1]).format("YYYYMMDD");
-    values.topicType = values.topicType ? [values.topicType] : undefined
+    values.topicType = values.topicType ? [values.topicType] : undefined;
     setBtnLoading(true);
 
     await alarmStatisexport(values, "报警统计");
@@ -370,22 +362,19 @@ function AlarmStatis() {
             onFinish={getPageData}
             layout="inline"
             initialValues={{
-              statType: 'region',
-              time: [dayjs().subtract(1, 'month'), dayjs()]
+              statType: "region",
+              time: [dayjs().subtract(1, "month"), dayjs()],
             }}
           >
             <Form.Item label="统计维度" name="statType">
               <Select
-                className="width-3"
                 placeholder="请选择"
                 options={statList}
                 style={{ width: "120px" }}
               />
-
             </Form.Item>
             <Form.Item label="业务主题" name="topicType">
               <Select
-                className="width-3"
                 placeholder="请选择"
                 fieldNames={{
                   label: "name",
@@ -398,7 +387,6 @@ function AlarmStatis() {
                 // maxTagCount="responsive"
                 allowClear
               />
-
             </Form.Item>
             <Form.Item label="站点类型" name="stationType">
               <Select
@@ -453,12 +441,10 @@ function AlarmStatis() {
                 </Button>
               </Space>
             </Form.Item>
-
           </Form>
-
         </div>
-        {
-          chartdata && <ReactECharts
+        {chartdata && (
+          <ReactECharts
             option={chartdata}
             lazyUpdate={true}
             theme={"theme_name"}
@@ -467,9 +453,8 @@ function AlarmStatis() {
             notMerge={true}
             showLoading={loading}
           />
-        }
-        <div style={{ textAlign: 'right' }}>
-
+        )}
+        <div style={{ textAlign: "right" }}>
           <Button loading={btnLoading} onClick={download}>
             导出
           </Button>

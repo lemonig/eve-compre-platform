@@ -171,7 +171,6 @@ function HomeView() {
         <Space>
           业务主题：
           <Select
-            className="width-3"
             placeholder="请选择"
             fieldNames={{
               label: "name",
@@ -184,7 +183,6 @@ function HomeView() {
           />
           统计时间：
           <Select
-            className="width-3"
             placeholder="请选择"
             style={inputwidtg}
             value={timeId}

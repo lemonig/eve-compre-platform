@@ -643,7 +643,6 @@ function OpForm({ record, open, closeModal }) {
                 // ]}
               >
                 <Select
-                  className="width-3"
                   placeholder="请选择"
                   fieldNames={{
                     label: "name",
@@ -667,7 +666,6 @@ function OpForm({ record, open, closeModal }) {
                 // ]}
               >
                 <Select
-                  className="width-3"
                   placeholder="请选择"
                   fieldNames={{
                     label: "name",
@@ -691,7 +689,6 @@ function OpForm({ record, open, closeModal }) {
                 // ]}
               >
                 <Select
-                  className="width-3"
                   placeholder="请选择"
                   fieldNames={{
                     label: "name",
@@ -715,7 +712,6 @@ function OpForm({ record, open, closeModal }) {
                 // ]}
               >
                 <Select
-                  className="width-3"
                   placeholder="请选择"
                   fieldNames={{
                     label: "name",
@@ -753,7 +749,6 @@ function OpForm({ record, open, closeModal }) {
                 ]}
               >
                 <Select
-                  className="width-3"
                   placeholder="请选择"
                   allowClear
                   options={[
@@ -782,7 +777,6 @@ function OpForm({ record, open, closeModal }) {
                 ]}
               >
                 <Select
-                  className="width-3"
                   placeholder="请选择"
                   allowClear
                   options={[
@@ -834,7 +828,6 @@ function OpForm({ record, open, closeModal }) {
                 name="station_connect_upper_region_code"
               >
                 <Select
-                  className="width-3"
                   placeholder="请选择"
                   fieldNames={{
                     label: "name",
@@ -855,7 +848,6 @@ function OpForm({ record, open, closeModal }) {
                 name="station_connect_lower_region_code"
               >
                 <Select
-                  className="width-3"
                   placeholder="请选择"
                   fieldNames={{
                     label: "name",
@@ -891,7 +883,6 @@ function OpForm({ record, open, closeModal }) {
                 ]}
               >
                 <Select
-                  className="width-3"
                   placeholder="请选择"
                   fieldNames={{
                     label: "name",

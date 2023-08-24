@@ -1,13 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Select,
-  Button,
-  Space,
-  Table,
-  Form,
-  message,
-  DatePicker
-} from "antd";
+import { Select, Button, Space, Table, Form, message, DatePicker } from "antd";
 // com
 import Lbreadcrumb from "@Components/Lbreadcrumb";
 import IconFont from "@Components/IconFont";
@@ -26,21 +18,13 @@ import Detail from "./components/Detail";
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-
-
-
 const getFormCasData = (data = []) => {
   return data?.map((item) => {
     return item[item.length - 1];
   });
 };
 
-
 const pageSize = 10;
-
-
-
-
 
 const DynamicTableHeader = ({ columns }) => {
   return columns.map((column) => (
@@ -61,15 +45,14 @@ function AlarmMsgStatis() {
   const [themeList, setThemeList] = useState([]); //业务主题
   const [stationList, setStationList] = useState([]);
 
-
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [factorOption, setFactorOption] = useState([]); //报警因子
   const themeId = Form.useWatch("topicType", searchForm);
   const statType = Form.useWatch("statType", searchForm);
   const [ruleOption, setRuleOption] = useState([]); //规则类型
-  const [visable, setVisable] = useState(false)
-  const [tableRow, setTableRow] = useState(null)
+  const [visable, setVisable] = useState(false);
+  const [tableRow, setTableRow] = useState(null);
   const [pageMsg, setPagemsg] = useState({
     pagination: {
       current: 1,
@@ -91,13 +74,15 @@ function AlarmMsgStatis() {
       title: "群聊名称",
       key: "wechatGroupName",
       dataIndex: "wechatGroupName",
-      render: (text, record, index) => <a onClick={() => showDetail(record)}>{text}</a>
+      render: (text, record, index) => (
+        <a onClick={() => showDetail(record)}>{text}</a>
+      ),
     },
     {
       title: "消息总数",
-      dataIndex: 'count',
-      key: 'count', sorter: (a, b) => a.count - b.count,
-
+      dataIndex: "count",
+      key: "count",
+      sorter: (a, b) => a.count - b.count,
     },
   ];
 
@@ -115,49 +100,49 @@ function AlarmMsgStatis() {
       title: "站点名称",
       key: "stationName",
       dataIndex: "stationName",
-      render: (text, record, index) => <a onClick={() => showDetail(record)}>{text}</a>
+      render: (text, record, index) => (
+        <a onClick={() => showDetail(record)}>{text}</a>
+      ),
     },
     {
       title: "站点类型",
-      dataIndex: 'stationType',
-      key: 'stationType',
+      dataIndex: "stationType",
+      key: "stationType",
     },
     {
       title: "超标联系人",
-      dataIndex: 'exceededContact',
-      key: 'exceededContact',
+      dataIndex: "exceededContact",
+      key: "exceededContact",
     },
     {
       title: "运维联系人",
-      dataIndex: 'operationContact',
-      key: 'operationContact',
+      dataIndex: "operationContact",
+      key: "operationContact",
     },
     {
       title: "消息总数",
-      dataIndex: 'count',
-      key: 'count',
+      dataIndex: "count",
+      key: "count",
       sorter: (a, b) => a.count - b.count,
     },
   ];
 
-  const [columns, setClumns] = useState(normalColumns1)
-
-
+  const [columns, setClumns] = useState(normalColumns1);
 
   useEffect(() => {
     // 元数据获取
-    getTopicListAsync()
-    getFactorList()
-    getRuleList()
+    getTopicListAsync();
+    getFactorList();
+    getRuleList();
   }, []);
 
   const getTopicListAsync = async () => {
     let { data } = await topicList();
     searchForm.setFieldsValue({
-      topicType: data[0].id
-    })
-    setThemeList(data)
-    getPageData()
+      topicType: data[0].id,
+    });
+    setThemeList(data);
+    getPageData();
   };
 
   //报警因子
@@ -172,27 +157,24 @@ function AlarmMsgStatis() {
     setRuleOption(data1);
   };
 
-
   const showDetail = (record) => {
-    setVisable(true)
-    setTableRow(record)
-  }
+    setVisable(true);
+    setTableRow(record);
+  };
   useEffect(() => {
     const getStationMetaPage = async () => {
       let { data } = await stationMetaPage({
-        topicType: themeId
+        topicType: themeId,
       });
       setStationList(data);
       searchForm.setFieldsValue({
-        stationType: []
-      })
+        stationType: [],
+      });
     };
     if (themeId) {
-      getStationMetaPage()
+      getStationMetaPage();
     }
-  }, [themeId])
-
-
+  }, [themeId]);
 
   const getPageData = async () => {
     let values = searchForm.getFieldsValue();
@@ -205,18 +187,18 @@ function AlarmMsgStatis() {
     }
     values.notificationBeginDate = dayjs(values.time[0]).format("YYYYMMDD");
     values.notificationEndDate = dayjs(values.time[1]).format("YYYYMMDD");
-    values.topicType = values.topicType ? [values.topicType] : undefined
-    setLoading(true)
+    values.topicType = values.topicType ? [values.topicType] : undefined;
+    setLoading(true);
     let { additional_data, data, success } = await logStat(values);
     if (success) {
       let iData = data.map((item, idx) => ({
         ...item,
         idx,
       }));
-      if (values.statType === 'station') {
-        setClumns(normalColumns1)
+      if (values.statType === "station") {
+        setClumns(normalColumns1);
       } else {
-        setClumns(normalColumns)
+        setClumns(normalColumns);
       }
       setData(iData);
     }
@@ -226,7 +208,7 @@ function AlarmMsgStatis() {
   //表单回调
   const closeModal = (flag) => {
     // flag 确定还是取消
-    setVisable(false)
+    setVisable(false);
   };
 
   const handleTableChange = (pagination, filters, sorter) => {
@@ -252,13 +234,12 @@ function AlarmMsgStatis() {
     }
     values.notificationBeginDate = dayjs(values.time[0]).format("YYYYMMDD");
     values.notificationEndDate = dayjs(values.time[1]).format("YYYYMMDD");
-    values.topicType = [values.topicType]
+    values.topicType = [values.topicType];
     setBtnLoading(true);
 
     await logExport(values, "消息统计");
     setBtnLoading(false);
   };
-
 
   return (
     <div className="content-wrap">
@@ -271,47 +252,42 @@ function AlarmMsgStatis() {
             onFinish={getPageData}
             layout="inline"
             initialValues={{
-              time: [dayjs().subtract(1, 'month'), dayjs()],
-              statType: 'station'
+              time: [dayjs().subtract(1, "month"), dayjs()],
+              statType: "station",
             }}
           >
             <Form.Item label="统计维度" name="statType">
               <Select
-                className="width-3"
                 placeholder="请选择"
                 options={[
-
                   {
-                    label: '站点',
-                    value: "station"
+                    label: "站点",
+                    value: "station",
                   },
                   {
-                    label: '微信群',
-                    value: "wechatGroupName"
+                    label: "微信群",
+                    value: "wechatGroupName",
                   },
                 ]}
                 style={{ width: "120px" }}
               />
-
             </Form.Item>
 
-
-            {
-              statType == 'station' ? <>  <Form.Item label="业务主题" name="topicType">
-                <Select
-                  className="width-3"
-                  placeholder="请选择"
-                  fieldNames={{
-                    label: "name",
-                    value: "id",
-                  }}
-                  options={themeList}
-                  style={{ width: "120px" }}
-                  allowClear
-
-                />
-
-              </Form.Item>
+            {statType == "station" ? (
+              <>
+                {" "}
+                <Form.Item label="业务主题" name="topicType">
+                  <Select
+                    placeholder="请选择"
+                    fieldNames={{
+                      label: "name",
+                      value: "id",
+                    }}
+                    options={themeList}
+                    style={{ width: "120px" }}
+                    allowClear
+                  />
+                </Form.Item>
                 <Form.Item label="站点类型" name="stationType">
                   <Select
                     options={stationList}
@@ -325,8 +301,9 @@ function AlarmMsgStatis() {
                     maxTagCount="responsive"
                     allowClear
                   />
-                </Form.Item> </> : null
-            }
+                </Form.Item>{" "}
+              </>
+            ) : null}
 
             <Form.Item label="报警时间" name="time">
               <RangePicker />
@@ -341,35 +318,27 @@ function AlarmMsgStatis() {
                 </Button> */}
               </Space>
             </Form.Item>
-
           </Form>
-
         </div>
-        {
-          statType === 'station' ?
-            <Table
-              dataSource={data}
-              loading={loading}
-              rowKey={(record) => record.idx}
-              onChange={handleTableChange}
-              pagination={{ pageSize }}
-              columns={columns}
-            >
-
-            </Table>
-            :
-            <Table
-              columns={columns}
-              dataSource={data}
-              loading={loading}
-              rowKey={(record) => record.idx}
-              onChange={handleTableChange}
-              pagination={{ pageSize }}
-            >
-
-            </Table>
-        }
-
+        {statType === "station" ? (
+          <Table
+            dataSource={data}
+            loading={loading}
+            rowKey={(record) => record.idx}
+            onChange={handleTableChange}
+            pagination={{ pageSize }}
+            columns={columns}
+          ></Table>
+        ) : (
+          <Table
+            columns={columns}
+            dataSource={data}
+            loading={loading}
+            rowKey={(record) => record.idx}
+            onChange={handleTableChange}
+            pagination={{ pageSize }}
+          ></Table>
+        )}
       </>
       {visable && (
         <Detail
