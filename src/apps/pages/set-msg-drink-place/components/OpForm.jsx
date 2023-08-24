@@ -209,7 +209,7 @@ function OpForm({ record, open, closeModal }) {
                   },
                 ]}
               >
-                <MetaSelect dictType="park_type" />
+                <MetaSelect dictType="drink_water_source_type" />
               </Form.Item>
             </Col>
 
