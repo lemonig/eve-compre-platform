@@ -168,7 +168,13 @@ function AlarmGroup({ record, open, closePage }) {
           onFinish={onFinish}
           autoComplete="off"
           colon={false}
-          initialValues={{ isScheduledSend: 0, notificationFormat: 1, important_degree: 1 }}
+          initialValues={{
+            isScheduledSend: 0,
+            notificationFormat: 1,
+            important_degree: "一般",
+            beginMonth: 1,
+            endMonth: 12,
+          }}
         >
           <Form.Item
             label="规则组名称"
@@ -342,7 +348,7 @@ function AlarmGroup({ record, open, closePage }) {
         <GroupCreate
           open={isModalOpen}
           closeModal={closeStationModal}
-        // record={operate}
+          // record={operate}
         />
       )}
     </>
