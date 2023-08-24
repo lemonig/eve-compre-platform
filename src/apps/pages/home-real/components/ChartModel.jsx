@@ -178,7 +178,7 @@ function ChartModel({
   return (
     <div>
       <Modal
-        title={station.name.value + "-" + factor.key}
+        title={station.name.value}
         open={open}
         onOk={handleOk}
         onCancel={() => closeModal(false)}
