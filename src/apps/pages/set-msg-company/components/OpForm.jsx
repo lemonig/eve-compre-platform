@@ -65,8 +65,13 @@ function OpForm({ record, open, closeModal }) {
     let { data } = await companyget({
       id: record.id,
     });
-    data.valcodeTill = dayjs(data.valcodeTill);
-    data.issuingDate = dayjs(data.issuingDate);
+    if (data.valcodeTill) {
+      data.valcodeTill = dayjs(data.valcodeTill);
+    }
+    if (data.issuingDate) {
+      data.issuingDate = dayjs(data.issuingDate);
+    }
+  
     data.attachment = data.attachment.map((item) => ({
       ...item,
       name: item.originalFilename,

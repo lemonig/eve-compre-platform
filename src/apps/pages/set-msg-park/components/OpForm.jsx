@@ -59,8 +59,7 @@ function OpForm({ record, open, closeModal }) {
     let { data } = await getPark({
       id: record.id,
     });
-    data.valcodeTill = dayjs(data.valcodeTill);
-    data.issuingDate = dayjs(data.issuingDate);
+
     data.attachment = data.attachment.map((item) => ({
       ...item,
       name: item.originalFilename,
@@ -92,12 +91,6 @@ function OpForm({ record, open, closeModal }) {
     let res = await form.validateFields();
     const values = form.getFieldsValue();
 
-    if (values.issuingDate) {
-      values.issuingDate = dayjs(values.issuingDate).format("YYYY-MM-DD");
-    }
-    if (values.valcodeTill) {
-      values.valcodeTill = dayjs(values.valcodeTill).format("YYYY-MM-DD");
-    }
     setLoading(true);
     // 编辑
     if (record?.id) {
@@ -218,7 +211,7 @@ function OpForm({ record, open, closeModal }) {
             <Col span={12}>
               <Form.Item
                 label="园区级别"
-                name="subType"
+                name="level"
                 rules={[
                   {
                     required: true,
