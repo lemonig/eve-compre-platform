@@ -71,7 +71,7 @@ function DayModel({ open, closeModal, station, factor, timeType, time }) {
         dataIndex: item.key,
         key: item.key,
         render: (value) => tableRender(value),
-        width: 60,
+        width: 80,
         // align: "center",
       };
     });
@@ -120,7 +120,6 @@ function DayModel({ open, closeModal, station, factor, timeType, time }) {
           rowKey={(record) => record.key}
           size="small"
           scroll={{
-            x: true,
             y: 500,
           }}
           components={components}
