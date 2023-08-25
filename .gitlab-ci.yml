@@ -12,7 +12,7 @@ build:
   stage: build
   # 运行脚本, 使用变量时要用到 $ 符号
   script:
-    - "docker build -t grean_env/env_front ."
+    - "docker build -t grean-env/env_front ."
   # 只作用在master分支
   only:
     - main
