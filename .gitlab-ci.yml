@@ -1,58 +1,21 @@
 image: tico/docker
 
-cache: # 缓存
-  untracked: true
-  paths:
-    - node_modules
-
 # 定义三个阶段
 stages:
-  - install
   - build
   - run
   - clean
 
-# 第一阶段 安装环境 打包dist
-install:
-  # 指定阶段
-  stage: install
-  image: node:18.15.0-alpine3.17
-  # 运行脚本, 使用变量时要用到 $ 符号
-  script:
-    - echo "=====start install======"
-    - node -v
-    - npm -v
-    - yarn config set registry https://registry.npm.taobao.org/
-    - yarn install
-    - export CI=false && yarn run build
-    - echo "=====end install======"
-  # 只作用在master分支
-  only:
-    - main
-  # 创建runner时指定的tag
-  tags:
-    - install
-  artifacts: # 产物
-    paths: # 产物生成地址
-      - build
-    when: on_success # 生命周期钩子
-    expire_in: 60 mins
-
-# 第二阶段
+# 第一阶段
 build:
-  dependencies:
-    - install
   # 指定阶段
   stage: build
   # 运行脚本, 使用变量时要用到 $ 符号
   script:
-    - echo "=====start docker build======"
-    - ls build | wc -l
-    - "docker build -t grean-env/env-front ."
-    - echo "=====end docker build======"
+    - "docker build -t grean_env/env_front ."
   # 只作用在master分支
   only:
-    - main
+    - master
   # 创建runner时指定的tag
   tags:
     - build
@@ -62,7 +25,7 @@ run:
   script:
     - "docker-compose up -d"
   only:
-    - main
+    - master
   tags:
     - run
 
@@ -84,6 +47,6 @@ clean:
          fi
       done
   only:
-    - main
+    - master
   tags:
     - clean
