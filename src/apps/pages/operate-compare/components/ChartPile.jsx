@@ -54,19 +54,17 @@ function ChartPile({
         left: "10%",
         right: "10%",
         top: (function () {
-          if (arr.length == 1) {
-            return "15%";
+          if (arr.length === 1 || idx === 0) {
+            return "10%";
           }
-          return `${
-            idx * Math.ceil((100 - (arr.length - 1) * 2) / arr.length) +
-            (idx == 0 ? 1 : 2)
-          }%`;
+
+          return `${idx * (90 / arr.length) + 10}%`;
         })(),
         height: (function () {
-          if (arr.length == 1) {
+          if (arr.length === 1) {
             return "80%";
           }
-          return `${Math.floor((100 - (arr.length - 1) * 5) / arr.length)}%`;
+          return `${(90 - arr.length * 5) / arr.length}%`;
         })(),
       });
       xAxis.push({
@@ -92,13 +90,11 @@ function ChartPile({
         nameLocation: "center",
         nameRotate: 0,
         gridIndex: idx,
-        nameTextStyle: {
-          ellipsis: "...",
-        },
         nameGap: 50,
         nameTextStyle: {
           fontSize: 12,
           fontWeight: "500",
+          ellipsis: "...",
         },
         axisLabel: {
           fontSize: 12,
@@ -148,6 +144,9 @@ function ChartPile({
         lazyUpdate={true}
         theme={"theme_name"}
         style={(function () {
+          if (chartOption.series.length === 1) {
+            return { height: "300px" };
+          }
           return {
             height: `${50 + chartOption.series.length * 150}px`,
           };
