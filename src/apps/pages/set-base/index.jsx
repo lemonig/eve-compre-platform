@@ -6,9 +6,6 @@ import { settingGet, settingUpdate } from "@Api/set_base.js";
 import { getPlatformData } from "@Store/features/platformSlice";
 import { useDispatch } from "react-redux";
 
-
-
-
 const normFile = (e) => {
   if (Array.isArray(e)) {
     return e;
@@ -53,7 +50,7 @@ function SetBase() {
     let { success, message: msg } = await settingUpdate(values);
     if (success) {
       message.success(msg);
-      await dispatch(getPlatformData())
+      await dispatch(getPlatformData());
     } else {
       message.error(msg);
     }
@@ -141,6 +138,18 @@ function SetBase() {
         <Form.Item
           label="系统名称"
           name="header_name"
+          rules={[
+            {
+              required: true,
+              message: "请输入",
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label="展示系统名称"
+          name="show_system_name"
           rules={[
             {
               required: true,
