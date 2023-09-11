@@ -62,15 +62,6 @@ function AlarmMsgStatis() {
 
   const normalColumns = [
     {
-      title: "序号",
-      key: "index",
-      width: 60,
-      render: (_, record, idx) =>
-        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
-        idx +
-        1,
-    },
-    {
       title: "群聊名称",
       key: "wechatGroupName",
       dataIndex: "wechatGroupName",
@@ -87,15 +78,6 @@ function AlarmMsgStatis() {
   ];
 
   const normalColumns1 = [
-    {
-      title: "序号",
-      key: "index",
-      width: 60,
-      render: (_, record, idx) =>
-        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
-        idx +
-        1,
-    },
     {
       title: "站点名称",
       key: "stationName",
@@ -214,6 +196,7 @@ function AlarmMsgStatis() {
   const handleTableChange = (pagination, filters, sorter) => {
     // if filters not changed, don't update pagination.current
     // `dataSource` is useless since `pageSize` changed
+    console.log(pagination);
     if (pagination) {
       setPagemsg({
         pagination,
@@ -326,17 +309,47 @@ function AlarmMsgStatis() {
             loading={loading}
             rowKey={(record) => record.idx}
             onChange={handleTableChange}
-            pagination={{ pageSize }}
-            columns={columns}
+            pagination={{
+              ...pageMsg.pagination,
+              showSizeChanger: true,
+            }}
+            columns={[
+              {
+                title: "序号",
+                key: "index",
+                width: 60,
+                render: (_, record, idx) =>
+                  pageMsg.pagination.pageSize *
+                    (pageMsg.pagination.current - 1) +
+                  idx +
+                  1,
+              },
+              ...columns,
+            ]}
           ></Table>
         ) : (
           <Table
-            columns={columns}
+            columns={[
+              {
+                title: "序号",
+                key: "index",
+                width: 60,
+                render: (_, record, idx) =>
+                  pageMsg.pagination.pageSize *
+                    (pageMsg.pagination.current - 1) +
+                  idx +
+                  1,
+              },
+              ...columns,
+            ]}
             dataSource={data}
             loading={loading}
             rowKey={(record) => record.idx}
             onChange={handleTableChange}
-            pagination={{ pageSize }}
+            pagination={{
+              ...pageMsg.pagination,
+              showSizeChanger: true,
+            }}
           ></Table>
         )}
       </>
