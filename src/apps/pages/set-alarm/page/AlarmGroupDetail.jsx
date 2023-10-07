@@ -115,9 +115,9 @@ function AlarmGroupDetail({ record, open, closePage }) {
       key: "index",
       width: 60,
       render: (_, record, index) =>
-      pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
-      index +
-      1,
+        pageMsg.pagination.pageSize * (pageMsg.pagination.current - 1) +
+        index +
+        1,
     },
     {
       title: "规则名称",
@@ -141,11 +141,11 @@ function AlarmGroupDetail({ record, open, closePage }) {
       key: "factorNames",
       render: (value) => <span>{value.toString()}</span>,
     },
-    {
-      title: "连续次数",
-      dataIndex: "continuousCount",
-      key: "continuousCount",
-    },
+    // {
+    //   title: "连续次数",
+    //   dataIndex: "continuousCount",
+    //   key: "continuousCount",
+    // },
     {
       title: "是否启用",
       dataIndex: "status",

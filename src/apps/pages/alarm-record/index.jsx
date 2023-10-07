@@ -40,7 +40,7 @@ const text = [
   { label: "规则类型", key: "ruleName" },
   { label: "报警描述", key: "describe" },
   { label: "重要程度", key: "important_degree" },
-  { label: "连续次数/周期", key: "times" },
+  // { label: "连续次数/周期", key: "times" },
   { label: "数据时间", key: "spt" },
   { label: "报警时间", key: "alarmTime" },
   { label: "业务主题", key: "topicTypeName" },
@@ -234,9 +234,9 @@ function AlarmRecord() {
     }
   };
   const showDetail = (record) => {
-    setDetailVisable(true)
-    setOperateId(record)
-  }
+    setDetailVisable(true);
+    setOperateId(record);
+  };
   const confirmModal = (data) => {
     let res = data.find((ele) => ele.value === "stationName");
     if (res) {
@@ -248,7 +248,6 @@ function AlarmRecord() {
         writable: true,
         enumerable: true,
       });
-
     }
     setColumns(data);
     setVisable(false);
@@ -429,14 +428,13 @@ function AlarmRecord() {
         fields={fields}
       />
       {/* 站点详情 */}
-      {
-        detailVisable && <StationDetail
+      {detailVisable && (
+        <StationDetail
           open={detailVisable}
           closeModal={() => setDetailVisable(false)}
           record={operateId}
         />
-      }
-
+      )}
     </div>
   );
 }
