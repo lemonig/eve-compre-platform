@@ -25,11 +25,11 @@ const Header = ({ message }) => {
   let resolvedPath = useResolvedPath();
   useEffect(() => {
     function getLastPid(menu) {
-      if (menu.pid === '0') {
-        return menu.id
+      if (menu.pid === "0") {
+        return menu.id;
       }
       let res = menus.find((item) => item.id === menu.pid);
-      return getLastPid(res)
+      return getLastPid(res);
     }
     if (resolvedPath.pathname == "/setting") {
       setActiveMenu("");
@@ -95,8 +95,9 @@ const Header = ({ message }) => {
           item.children && (
             <Dropdown placement="bottom" menu={createCSubMenu(item.children)}>
               <li
-                className={`li-outer ${activeMenu === item.id ? "activeStyle" : undefined
-                  }`}
+                className={`li-outer ${
+                  activeMenu === item.id ? "activeStyle" : undefined
+                }`}
               >
                 {/* {item.icon} */}
                 <IconFont name={item.icon} size="16" color="#fff" />
@@ -112,7 +113,8 @@ const Header = ({ message }) => {
     navigate("comment");
   };
   const gotoWeChart = () => {
-    window.location.href = "https://work.weixin.qq.com/kfid/kfc032962d5866cf9d5";
+    window.location.href =
+      "https://work.weixin.qq.com/kfid/kfc032962d5866cf9d5";
   };
   return (
     <div className="page-title">
@@ -142,12 +144,14 @@ const Header = ({ message }) => {
               </Badge>
             </li> */}
           {creatMenu()}
-          <a href="https://work.weixin.qq.com/kfid/kfc032962d5866cf9d5" target='_blank' rel="noreferrer">
+          <a
+            href="https://work.weixin.qq.com/kfid/kfc032962d5866cf9d5"
+            target="_blank"
+            rel="noreferrer"
+          >
             <li className="li-outer">
-              <IconFont name={'kefu'} size="16" color="#fff" />
-              <span style={{ marginLeft: "4px" }}>
-                客服
-              </span>
+              <IconFont name={"kefu"} size="16" color="#fff" />
+              <span style={{ marginLeft: "4px" }}>客服</span>
             </li>
           </a>
           <User></User>

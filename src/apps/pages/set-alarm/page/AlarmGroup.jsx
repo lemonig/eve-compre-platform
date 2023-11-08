@@ -48,6 +48,10 @@ function AlarmGroup({ record, open, closePage }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [stationGroup, setStationGroup] = useState([]); //站点组
   const enableWxNotification = Form.useWatch("enableWxNotification", form);
+  const enableDingtalkNotification = Form.useWatch(
+    "enableDingtalkNotification",
+    form
+  );
   const isScheduledSend = Form.useWatch("isScheduledSend", form);
   useEffect(() => {
     if (record) {
@@ -85,6 +89,9 @@ function AlarmGroup({ record, open, closePage }) {
     let params = JSON.parse(JSON.stringify(values));
     params.enableSmsNotification = params.enableSmsNotification ? 1 : 0;
     params.enableWxNotification = params.enableWxNotification ? 1 : 0;
+    params.enableDingtalkNotification = params.enableDingtalkNotification
+      ? 1
+      : 0;
     params.exceededContact = params.exceededContact ? 1 : 0;
     params.operationContact = params.operationContact ? 1 : 0;
     setLoading(true);
@@ -263,6 +270,7 @@ function AlarmGroup({ record, open, closePage }) {
               <Form.Item name="enableSmsNotification" valuePropName="checked">
                 <Checkbox>短信通知</Checkbox>
               </Form.Item>
+
               <Form.Item name="enableWxNotification" valuePropName="checked">
                 <Checkbox>微信通知</Checkbox>
               </Form.Item>
@@ -270,6 +278,22 @@ function AlarmGroup({ record, open, closePage }) {
                 <Form.Item
                   label="微信群聊名称"
                   name="wechatGroupName"
+                  colon={true}
+                >
+                  <Input></Input>
+                </Form.Item>
+              ) : null}
+              <Form.Item
+                name="enableDingtalkNotification"
+                valuePropName="checked"
+              >
+                <Checkbox>钉钉通知</Checkbox>
+              </Form.Item>
+
+              {enableDingtalkNotification ? (
+                <Form.Item
+                  label="钉钉群聊名称"
+                  name="dingtalkGroupName"
                   colon={true}
                 >
                   <Input></Input>

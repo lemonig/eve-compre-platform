@@ -43,35 +43,37 @@ function Detail({ record, open, closeModal }) {
       >
         站点详情
       </p>
-      {data.map((item) => {
+      {data.map((item, idx) => {
         return (
           <>
-            <p className="site-description-item-profile-p">{item.name}</p>
+            <p className="site-description-item-profile-p" key={idx}>
+              {item.name}
+            </p>
             <Row>
-              {item.list.map((jtem, index) => {
-                const key = `${jtem.name}-${index}`; // Create a unique key
+              {item?.list.length &&
+                item?.list.map((jtem, index) => {
+                  const key = `${jtem.name}-${index}`; // Create a unique key
+                  if (jtem.name === "附件") {
+                    return (
+                      <Col key={key} span={12}>
+                        <DescriptionItem
+                          title={jtem.name}
+                          content={jtem.value.map((ztem) => (
+                            <a key={ztem.name} href={ztem.value}>
+                              {ztem.name}
+                            </a>
+                          ))}
+                        />
+                      </Col>
+                    );
+                  }
 
-                if (jtem.name === "附件") {
                   return (
                     <Col key={key} span={12}>
-                      <DescriptionItem
-                        title={jtem.name}
-                        content={jtem.value.map((ztem) => (
-                          <a key={ztem.name} href={ztem.value}>
-                            {ztem.name}
-                          </a>
-                        ))}
-                      />
+                      <DescriptionItem title={jtem.name} content={jtem.value} />
                     </Col>
                   );
-                }
-
-                return (
-                  <Col key={key} span={12}>
-                    <DescriptionItem title={jtem.name} content={jtem.value} />
-                  </Col>
-                );
-              })}
+                })}
             </Row>
 
             <Divider />

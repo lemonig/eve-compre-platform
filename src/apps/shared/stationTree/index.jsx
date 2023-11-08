@@ -193,6 +193,36 @@ function StationTree({ query, onChange }) {
     // setAutoExpandParent(true);
   };
 
+  //过滤数据
+  const filterStation = (nodes, keyword) => {
+    let filterFn = function (node) {
+      if (!node.is_station) {
+        return true;
+      } else {
+        if (node.title.indexOf(keyword) > -1) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    };
+    if (!nodes.length) {
+      return [];
+    }
+    let newNodes = [];
+    for (let node of nodes) {
+      // 以下只需要考虑自身的节点满足条件即可,不用带上父节点
+      if (filterFn(node)) {
+        newNodes.push(node);
+        node.children = this.filterStation(
+          node.children ? node.children : [],
+          keyword
+        );
+      }
+    }
+    return newNodes;
+  };
+
   // useEffect(() => {
   //   let filterTree = loop(pageData[currentTab]);
   // }, [searchValue, pageData]);
